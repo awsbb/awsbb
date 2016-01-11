@@ -1,0 +1,23 @@
+{
+  "name": "awsBB",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awsbb/awsbb.git"
+  },
+  "author": "Ryan Wilson <syndicated.life@gmail.com> (http://syndicatedlife.com/)",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/awsbb/awsbb/issues"
+  },
+  "homepage": "http://awsbb.github.io/awsbb",
+  "devDependencies": {
+    "eslint": "^1.10.3",
+    "eslint-plugin-react": "^3.14.0"
+  }
+}
