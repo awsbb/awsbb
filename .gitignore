@@ -1,1 +1,8 @@
+.coverData/*
+configuration/env.json
+debug/*
 node_modules/*
+reports/*
+.coverrun
+
+.idea/*

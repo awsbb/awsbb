@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "NODE_ENV=development webpack-dev-server --hot --colors --content-base static/",
+    "start-production": "NODE_ENV=production webpack-dev-server --hot --colors --content-base static/",
+    "build": "echo 'File Size (before): ' && ls -lah static/js/bundle.min.js | awk '{ print $5}' && NODE_ENV=production webpack -p --config webpack.production.config.js --progress --colors"
   },
   "repository": {
     "type": "git",
@@ -17,7 +19,39 @@
   },
   "homepage": "http://awsbb.github.io/awsbb",
   "devDependencies": {
-    "eslint": "^1.10.3",
-    "eslint-plugin-react": "^3.14.0"
+    "babel-core": "*",
+    "babel-eslint": "*",
+    "babel-loader": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "bowser": "*",
+    "classnames": "*",
+    "compression-webpack-plugin": "*",
+    "eslint": "*",
+    "eslint-plugin-react": "*",
+    "file-loader": "*",
+    "flux": "*",
+    "gulp": "*",
+    "gulp-eslint": "*",
+    "gulp-lab": "*",
+    "gulp-minify-css": "*",
+    "gulp-param": "*",
+    "gulp-sourcemaps": "*",
+    "history": "*",
+    "lab": "*",
+    "lodash": "*",
+    "material-ui": "*",
+    "node-libs-browser": "*",
+    "node-uuid": "*",
+    "pusher-js": "*",
+    "react": "*",
+    "react-addons-css-transition-group": "*",
+    "react-dom": "*",
+    "react-hot-loader": "*",
+    "react-router": "*",
+    "react-tap-event-plugin": "*",
+    "underscore": "*",
+    "webpack": "*",
+    "webpack-dev-server": "*"
   }
 }
