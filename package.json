@@ -24,6 +24,7 @@
     "babel-loader": "*",
     "babel-preset-es2015": "*",
     "babel-preset-react": "*",
+    "babel-register": "*",
     "bowser": "*",
     "classnames": "*",
     "compression-webpack-plugin": "*",
@@ -41,7 +42,9 @@
     "gulp-param": "*",
     "gulp-sass": "*",
     "gulp-sourcemaps": "*",
+    "hapi": "*",
     "history": "*",
+    "inert": "*",
     "lab": "*",
     "lodash": "*",
     "material-ui": "*",
@@ -56,6 +59,7 @@
     "react-tap-event-plugin": "*",
     "style-loader": "*",
     "underscore": "*",
+    "vision": "*",
     "webpack": "*",
     "webpack-dev-server": "*"
   }

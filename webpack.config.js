@@ -4,13 +4,18 @@ var webpack = require('webpack');
 var path = require('path');
 
 var entries = [
-  'webpack/hot/only-dev-server',
-  './src/app.jsx'
+  'webpack-hot-middleware/client',
+  './webpack/src/app.jsx'
 ];
 
 module.exports = {
   devtool: 'eval-source-map',
   entry: entries,
+  assets: {
+    stats: {
+      colors: true
+    }
+  },
   output: {
     path: path.join(__dirname, 'static'),
     filename: 'bundle.min.js'
@@ -34,6 +39,8 @@ module.exports = {
     }]
   },
   plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
   ]
 };

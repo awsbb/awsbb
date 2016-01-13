@@ -10,10 +10,10 @@ var lab = require('gulp-lab');
 
 var paths = {
   scss: [
-    './src/scss/app.scss'
+    './webpack/src/scss/app.scss'
   ],
   js: [
-    './src/**/*.js*',
+    './webpack/src/**/*.js*',
     './gulpfile.js',
     './index.js'
   ],

@@ -2,7 +2,7 @@
 
 var webpack = require('webpack');
 var path = require('path');
-var entries = path.resolve(__dirname, 'src/', 'app.jsx');
+var entries = path.resolve(__dirname, 'webpack/src/', 'app.jsx');
 // var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var CompressionPlugin = require('compression-webpack-plugin');
 var pkg = require('./package.json');
@@ -10,6 +10,11 @@ var pkg = require('./package.json');
 module.exports = {
   devtool: 'source-map',
   entry: entries,
+  assets: {
+    stats: {
+      colors: true
+    }
+  },
   output: {
     path: path.join(__dirname, 'static'),
     filename: 'bundle.min.js'
