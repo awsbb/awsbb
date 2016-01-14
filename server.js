@@ -1,7 +1,5 @@
 'use strict';
 
-require('babel-register');
-
 var Hapi = require('hapi');
 
 var WebpackPlugin = require('hapi-webpack-plugin');
@@ -51,6 +49,8 @@ server.register([{
   register: require('inert')
 }, {
   register: require('vision')
+}, {
+  register: require('./plugin/')
 }, {
   register: WebpackPlugin,
   options: './webpack.config.js'
