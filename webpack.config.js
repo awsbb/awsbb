@@ -1,14 +1,16 @@
 'use strict';
 
+var rucksack = require('rucksack-css');
 var webpack = require('webpack');
 var path = require('path');
 
 var entries = [
   'webpack-hot-middleware/client',
-  './webpack/src/app.jsx'
+  './app.jsx'
 ];
 
 module.exports = {
+  context: path.join(__dirname, './webpack'),
   devtool: 'eval-source-map',
   entry: entries,
   assets: {
@@ -27,23 +29,29 @@ module.exports = {
         'react-hot',
         'babel'
       ],
-      exclude: /(node_modules|static|dist)/,
-      include: /src/
+      exclude: /(node_modules)/
     }, {
       test: /\.js$/,
       loader: 'babel',
-      exclude: /(node_modules|static|dist)/,
-      include: /src/
+      exclude: /(node_modules)/
     }, {
       test: /\.css$/,
-      loader: 'style!css',
-      exclude: /(node_modules|static|dist)/,
-      include: /src/
+      loaders: [
+        'style',
+        'css',
+        'postcss'
+      ],
+      exclude: /(node_modules)/
     }]
   },
+  postcss: [
+    rucksack({
+      autoprefixer: true
+    })
+  ],
   plugins: [
+    new webpack.NoErrorsPlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoErrorsPlugin()
+    new webpack.HotModuleReplacementPlugin()
   ]
 };

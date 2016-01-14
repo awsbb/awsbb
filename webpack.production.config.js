@@ -1,12 +1,17 @@
 'use strict';
 
+var rucksack = require('rucksack-css');
 var webpack = require('webpack');
 var path = require('path');
-var entries = path.resolve(__dirname, 'webpack/src/', 'app.jsx');
 var CompressionPlugin = require('compression-webpack-plugin');
 var pkg = require('./package.json');
 
+var entries = [
+  './app.jsx'
+];
+
 module.exports = {
+  context: path.join(__dirname, './webpack'),
   devtool: 'source-map',
   entry: entries,
   assets: {
@@ -22,28 +27,26 @@ module.exports = {
     loaders: [{
       test: /\.jsx$/,
       loader: 'babel',
-      // query: {
-      //     cacheDirectory: true,
-      //     presets: ['es2015']
-      // },
-      exclude: /(node_modules|static|dist)/,
-      include: /src/
+      exclude: /(node_modules)/
     }, {
       test: /\.js$/,
       loader: 'babel',
-      // query: {
-      //     cacheDirectory: true,
-      //     presets: ['es2015']
-      // },
-      exclude: /(node_modules|static|dist)/,
-      include: /src/
+      exclude: /(node_modules)/
     }, {
       test: /\.css$/,
-      loader: 'style!css',
-      exclude: /(node_modules|static|dist)/,
-      include: /src/
+      loaders: [
+        'style',
+        'css',
+        'postcss'
+      ],
+      exclude: /(node_modules)/
     }]
   },
+  postcss: [
+    rucksack({
+      autoprefixer: true
+    })
+  ],
   plugins: [
     new webpack.NoErrorsPlugin(),
     new webpack.optimize.UglifyJsPlugin({
@@ -56,6 +59,7 @@ module.exports = {
       }
     }),
     new webpack.optimize.DedupePlugin(),
+    new webpack.HotModuleReplacementPlugin(),
     new webpack.BannerPlugin(pkg.name + ' v' + pkg.version + ' ' + new Date()),
     new CompressionPlugin()
   ]
