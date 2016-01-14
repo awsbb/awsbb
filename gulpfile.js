@@ -2,10 +2,6 @@
 
 var gulp = require('gulp-param')(require('gulp'), process.argv);
 var eslint = require('gulp-eslint');
-var sass = require('gulp-sass');
-var sourcemaps = require('gulp-sourcemaps');
-var concat = require('gulp-concat');
-var gzip = require('gulp-gzip');
 var lab = require('gulp-lab');
 
 var paths = {
@@ -36,29 +32,6 @@ gulp.task('lint-js', function () {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('sass', function () {
-  return gulp.src(paths.scss)
-    .pipe(sourcemaps.init())
-    .pipe(sass({
-      outputStyle: 'compressed'
-    }))
-    .pipe(concat('bundle.min.css'))
-    .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest('./static'));
-});
-
-gulp.task('sass:watch', function () {
-  return gulp.watch(paths.scss, [
-    'sass'
-  ]);
-});
-
-gulp.task('compress', function () {
-  return gulp.src(paths.compress)
-    .pipe(gzip())
-    .pipe(gulp.dest('./static'));
-});
-
 gulp.task('tests', ['lint-js'], function () {
   var options = {
     read: false
@@ -68,7 +41,5 @@ gulp.task('tests', ['lint-js'], function () {
 });
 
 gulp.task('default', [
-  'lint-js',
-  'sass',
-  'compress'
+  'lint-js'
 ]);

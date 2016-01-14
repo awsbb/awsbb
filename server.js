@@ -65,7 +65,9 @@ server.register([{
     handler: {
       directory: {
         path: 'static',
-        index: ['index.html']
+        index: [
+          'index.html'
+        ]
       }
     }
   });

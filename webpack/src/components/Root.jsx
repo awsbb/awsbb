@@ -3,7 +3,7 @@
 import React from 'react';
 import Header from './Header.jsx';
 import Footer from './Footer.jsx';
-import SiteStore from '../stores/SiteStore';
+import SiteStore from '../stores/SiteStore.js';
 import Actions from '../actions/Actions.js';
 
 export default class Root extends React.Component {

@@ -1,8 +1,8 @@
 'use strict';
 
-import Dispatcher from '../dispatcher/Dispatcher';
+import Dispatcher from '../dispatcher/Dispatcher.js';
 import EventEmitter from 'events';
-import Constants from '../constants/Constants';
+import Constants from '../constants/Constants.js';
 
 class SiteStore extends EventEmitter {
   constructor() {

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Button from './Button.jsx';
-import SiteStore from '../stores/SiteStore';
+import SiteStore from '../stores/SiteStore.js';
 
 export default class Splash extends React.Component {
   constructor(props, context) {

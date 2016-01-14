@@ -3,7 +3,6 @@
 var webpack = require('webpack');
 var path = require('path');
 var entries = path.resolve(__dirname, 'webpack/src/', 'app.jsx');
-// var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var CompressionPlugin = require('compression-webpack-plugin');
 var pkg = require('./package.json');
 

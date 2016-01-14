@@ -23,7 +23,10 @@ module.exports = {
   module: {
     loaders: [{
       test: /\.jsx$/,
-      loaders: ['react-hot', 'babel'],
+      loaders: [
+        'react-hot',
+        'babel'
+      ],
       exclude: /(node_modules|static|dist)/,
       include: /src/
     }, {

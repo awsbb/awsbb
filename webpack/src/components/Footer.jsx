@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import SiteStore from '../stores/SiteStore';
+import SiteStore from '../stores/SiteStore.js';
 
 export default class Footer extends React.Component {
   constructor(props, context) {
