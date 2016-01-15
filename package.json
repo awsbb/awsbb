@@ -2,10 +2,10 @@
   "name": "awsBB",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "build": "echo 'File Size (before): ' && ls -lah static/bundle.min.js | awk '{ print $5}' && NODE_ENV=production webpack -p --config webpack.production.config.js --progress --colors"
+    "start": "nodemon",
+    "build": "echo '[app.min.js] File Size (before): ' && ls -lah static/app.min.js | awk '{ print $5}' && echo '[vendor.min.js] File Size (before): ' && ls -lah static/vendor.min.js | awk '{ print $5}' && NODE_ENV=production webpack -p --config webpack.production.config.js --progress --colors"
   },
   "repository": {
     "type": "git",

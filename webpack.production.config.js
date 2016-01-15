@@ -24,7 +24,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'static'),
-    filename: 'bundle.min.js'
+    filename: 'app.min.js'
   },
   module: {
     loaders: [{
@@ -52,7 +52,7 @@ module.exports = {
   ],
   plugins: [
     new webpack.NoErrorsPlugin(),
-    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.min.js'),
+    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.min.js'),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
