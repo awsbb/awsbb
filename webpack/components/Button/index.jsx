@@ -1,7 +1,8 @@
 'use strict';
 
 import React from 'react';
-import SiteStore from '../stores/SiteStore.js';
+
+import './style.css';
 
 export default class Button extends React.Component {
   constructor(props, context) {
@@ -10,10 +11,8 @@ export default class Button extends React.Component {
   }
   stateChanged() {}
   componentWillMount() {
-    SiteStore.addChangeListener(this.stateChanged);
   }
   componentWillUnmount() {
-    SiteStore.removeChangeListener(this.stateChanged);
   }
   render() {
     return (

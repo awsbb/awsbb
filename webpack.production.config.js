@@ -6,18 +6,21 @@ var path = require('path');
 var CompressionPlugin = require('compression-webpack-plugin');
 var pkg = require('./package.json');
 
-var entries = [
-  './app.jsx'
-];
-
 module.exports = {
   context: path.join(__dirname, './webpack'),
   devtool: 'source-map',
-  entry: entries,
   assets: {
     stats: {
       colors: true
     }
+  },
+  entry: {
+    jsx: [
+      './app.jsx'
+    ],
+    vendor: [
+      'react'
+    ]
   },
   output: {
     path: path.join(__dirname, 'static'),
@@ -25,22 +28,22 @@ module.exports = {
   },
   module: {
     loaders: [{
-      test: /\.jsx$/,
-      loader: 'babel',
-      exclude: /(node_modules)/
-    }, {
-      test: /\.js$/,
-      loader: 'babel',
-      exclude: /(node_modules)/
+      test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
+      loaders: [
+        'babel'
+      ]
     }, {
       test: /\.css$/,
       loaders: [
         'style',
-        'css',
+        'css?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]',
         'postcss'
-      ],
-      exclude: /(node_modules)/
+      ]
     }]
+  },
+  resolve: {
+    extensions: ['', '.js', '.jsx']
   },
   postcss: [
     rucksack({
@@ -49,6 +52,7 @@ module.exports = {
   ],
   plugins: [
     new webpack.NoErrorsPlugin(),
+    new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.bundle.min.js'),
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
@@ -59,7 +63,6 @@ module.exports = {
       }
     }),
     new webpack.optimize.DedupePlugin(),
-    new webpack.HotModuleReplacementPlugin(),
     new webpack.BannerPlugin(pkg.name + ' v' + pkg.version + ' ' + new Date()),
     new CompressionPlugin()
   ]

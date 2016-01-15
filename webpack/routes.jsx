@@ -1,12 +1,12 @@
 'use strict';
 
 import React from 'react';
-import {Route, IndexRoute} from 'react-router';
-import Root from './components/Root.jsx';
-import Splash from './components/Splash.jsx';
+import { Route, IndexRoute } from 'react-router';
+import App from './containers/App';
+import Splash from './components/Splash';
 
-let routes = (
-  <Route path="/" component={Root}>
+const routes = (
+  <Route path="/" component={App}>
     <IndexRoute component={Splash}/>
   </Route>
 );

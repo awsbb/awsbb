@@ -1,8 +1,9 @@
 'use strict';
 
 import React from 'react';
-import Button from './Button.jsx';
-import SiteStore from '../stores/SiteStore.js';
+import Button from '../Button';
+
+import './style.css';
 
 export default class Splash extends React.Component {
   constructor(props, context) {
@@ -11,10 +12,8 @@ export default class Splash extends React.Component {
   }
   stateChanged() {}
   componentWillMount() {
-    SiteStore.addChangeListener(this.stateChanged);
   }
   componentWillUnmount() {
-    SiteStore.removeChangeListener(this.stateChanged);
   }
   render() {
     return (
