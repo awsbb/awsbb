@@ -16,7 +16,7 @@ module.exports = {
   },
   entry: {
     jsx: [
-      './app.jsx'
+      './application.jsx'
     ],
     vendor: [
       'react'
@@ -24,7 +24,7 @@ module.exports = {
   },
   output: {
     path: path.join(__dirname, 'static'),
-    filename: 'app.min.js'
+    filename: 'application.min.js'
   },
   module: {
     loaders: [{

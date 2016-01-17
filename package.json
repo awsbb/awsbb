@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon",
-    "build": "echo '[app.min.js] File Size (before): ' && ls -lah static/app.min.js | awk '{ print $5}' && echo '[vendor.min.js] File Size (before): ' && ls -lah static/vendor.min.js | awk '{ print $5}' && NODE_ENV=production webpack -p --config webpack.production.config.js --progress --colors"
+    "build": "echo '[app.min.js] File Size (before): ' && ls -lah static/application.min.js | awk '{ print $5}' && echo '[vendor.min.js] File Size (before): ' && ls -lah static/vendor.min.js | awk '{ print $5}' && NODE_ENV=production webpack -p --config webpack.production.config.js --progress --colors"
   },
   "repository": {
     "type": "git",
@@ -27,6 +27,7 @@
     "babel-preset-stage-0": "*",
     "babel-runtime": "*",
     "bluebird": "*",
+    "bootstrap": "*",
     "classnames": "*",
     "compression-webpack-plugin": "*",
     "css-loader": "*",
@@ -34,6 +35,7 @@
     "eslint-plugin-react": "*",
     "file-loader": "*",
     "flux": "*",
+    "font-awesome": "*",
     "gulp": "*",
     "gulp-eslint": "*",
     "gulp-lab": "*",

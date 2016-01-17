@@ -46,6 +46,8 @@ import Login from './views/Login';
 import Register from './views/Register';
 import About from './views/About';
 
+import './style.css';
+
 ReactDOM.render(
   <Provider store={store}>
     <div>
