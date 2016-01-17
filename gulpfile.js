@@ -5,20 +5,13 @@ var eslint = require('gulp-eslint');
 var lab = require('gulp-lab');
 
 var paths = {
-  scss: [
-    './webpack/src/scss/app.scss'
-  ],
   js: [
-    './webpack/src/**/*.js*',
+    './webpack/**/*.js*',
     './gulpfile.js',
     './index.js'
   ],
   tests: [
     './tests/**/*.js*'
-  ],
-  compress: [
-    './static/bundle.min.css',
-    './static/bundle.min.css.map'
   ]
 };
 paths.all = paths.js.concat(paths.tests);
