@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import Header from '../../components/Header';
-import Counter from  '../../components/Counter';
+import Counter from '../../components/Counter';
 import Main from '../Main';
 import Footer from '../../components/Footer';
 
@@ -35,7 +35,9 @@ class App extends React.Component {
     return (
       <div>
         <Header/>
-        <Counter counter={counter} actions={counterActions}/>
+        <div className="container">
+          <Counter counter={counter} actions={counterActions}/>
+        </div>
         <Main children={children}></Main>
         <Footer/>
       </div>

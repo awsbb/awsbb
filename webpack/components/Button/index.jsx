@@ -22,10 +22,12 @@ export default class Button extends React.Component {
 
   }
   render() {
+    const { children } = this.props;
     return (
       <button
         className={this.props.className || 'btn btn-default'}
         onClick={this.props.onClick}>
+        {children}
         {this.props.text}
       </button>
     );
