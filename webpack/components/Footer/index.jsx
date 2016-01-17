@@ -9,18 +9,32 @@ export default class Footer extends React.Component {
     super(props, context);
     this.stateChanged = this.stateChanged.bind(this);
   }
-  stateChanged() {}
+  stateChanged() {
+
+  }
   componentWillMount() {
+
+  }
+  componentDidMount() {
+
   }
   componentWillUnmount() {
+
   }
   render() {
     return (
       <section id="footer">
         <div className="container">
+          <hr/>
           <div className="row">
-            <div className="col-md-12">
-              FOOTER
+            <div className="col-sm-3">
+              FOOTER #1
+            </div>
+            <div className="col-sm-3">
+              FOOTER #2
+            </div>
+            <div className="col-sm-3">
+              FOOTER #3
             </div>
           </div>
         </div>

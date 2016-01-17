@@ -10,9 +10,12 @@ export default class Button extends React.Component {
     this.stateChanged = this.stateChanged.bind(this);
   }
   stateChanged() {
-    
+
   }
   componentWillMount() {
+
+  }
+  componentDidMount() {
 
   }
   componentWillUnmount() {

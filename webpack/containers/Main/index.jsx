@@ -2,13 +2,9 @@
 
 import React from 'react';
 
-import Header from '../../components/Header';
-import Main from '../Main';
-import Footer from '../../components/Footer';
-
 import './style.css';
 
-class App extends React.Component {
+class Main extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.stateChanged = this.stateChanged.bind(this);
@@ -28,13 +24,17 @@ class App extends React.Component {
   render() {
     const { children } = this.props;
     return (
-      <div>
-        <Header/>
-        <Main children={children}></Main>
-        <Footer/>
-      </div>
+      <section id="main">
+        <div className="container">
+          <div className="row">
+            <div className="col-md-12">
+              {children}
+            </div>
+          </div>
+        </div>
+      </section>
     );
   }
 }
 
-export default App;
+export default Main;
