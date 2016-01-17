@@ -1,6 +1,4 @@
 'use strict';
 
-export default {
-  INCREASE : 'INCREASE',
-  DECREASE : 'DECREASE'
-};
+export const INCREMENT_COUNTER = 'INCREMENT_COUNTER';
+export const DECREMENT_COUNTER = 'DECREMENT_COUNTER';

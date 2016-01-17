@@ -18,6 +18,7 @@
   },
   "homepage": "http://awsbb.github.io/awsbb",
   "devDependencies": {
+    "babel": "*",
     "babel-core": "*",
     "babel-eslint": "*",
     "babel-loader": "*",

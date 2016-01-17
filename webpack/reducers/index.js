@@ -1,7 +1,7 @@
 'use strict';
 
-const count = require('./count.js');
+import counter from './counter';
 
 export default {
-  count
+  counter
 };
