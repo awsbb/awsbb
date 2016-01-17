@@ -6,10 +6,11 @@ import DockMonitor from 'redux-devtools-dock-monitor';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
 import { Router, Route, IndexRoute } from 'react-router';
 import createHistory from 'history/lib/createHashHistory';
+import { Provider } from 'react-redux';
+import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 import { syncHistory, routeReducer } from 'redux-simple-router';
 
 import reducers from './reducers';
@@ -29,7 +30,10 @@ const DevTools = createDevTools(
 
 // Sync dispatched route actions to the history
 const reduxRouterMiddleware = syncHistory(history);
-const createStoreWithMiddleware = compose(applyMiddleware(middleware), DevTools.instrument())(createStore);
+const createStoreWithMiddleware = compose(applyMiddleware(
+  middleware,
+  thunkMiddleware
+), DevTools.instrument())(createStore);
 
 const store = createStoreWithMiddleware(reducer);
 

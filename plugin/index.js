@@ -1,11 +1,12 @@
 'use strict';
 
-var pkg = require('../package.json');
+const pkg = require('../package.json');
+const _ = require('underscore');
 
-exports.register = function (server, options, next) {
+exports.register = (server, options, next) => {
   server.path(__dirname);
 
-  server.getEvent = function (request) {
+  server.getEvent = (request) => {
     return {
       payload: request.payload,
       headers: request.headers,
@@ -15,18 +16,46 @@ exports.register = function (server, options, next) {
     };
   };
 
-  server.getContext = function (reply) {
+  server.getContext = (reply) => {
     return {
-      succeed: function (data) {
+      succeed: (data) => {
         reply(data);
       },
-      fail: function (data) {
+      fail: (data) => {
         reply(data).code(500);
       }
     };
   };
 
-  next();
+  // AJAX CALLS
+  server.route({
+    method: 'OPTIONS',
+    path: '/api/{param*}',
+    config: {
+      auth: false,
+      handler: function (request, reply) {
+        var requestHeaders = [];
+        if (request.headers['access-control-request-headers']) {
+          requestHeaders = request.headers['access-control-request-headers'].split(', ');
+        }
+        reply().type('text/plain')
+          .header('Access-Control-Allow-Headers', _.union(DefaultHeaders, requestHeaders).join(', '));
+      }
+    }
+  });
+
+  var router = require('./router.js');
+  router.mapRoutes(server)
+    .then(() => {
+      process.nextTick(function () {
+        next();
+      });
+    })
+    .catch((err) => {
+      process.nextTick(function () {
+        next(err);
+      });
+    });
 };
 
 exports.register.attributes = {

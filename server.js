@@ -1,10 +1,10 @@
 'use strict';
 
-var Hapi = require('hapi');
+require('babel-core/register');
 
-var WebpackPlugin = require('hapi-webpack-plugin');
-
-var server = new Hapi.Server({
+const Hapi = require('hapi');
+const WebpackPlugin = require('hapi-webpack-plugin');
+const server = new Hapi.Server({
   connections: {
     router: {
       isCaseSensitive: false,
@@ -54,11 +54,10 @@ server.register([{
 }, {
   register: WebpackPlugin,
   options: './webpack.config.js'
-}], function (err) {
+}], (err) => {
   if (err) {
     return console.error(err);
   }
-
   server.route({
     method: 'GET',
     path: '/{param*}',
@@ -71,8 +70,7 @@ server.register([{
       }
     }
   });
-
-  server.start(function () {
+  server.start(() => {
     console.log('Server running at:', server.info.uri);
   });
 });

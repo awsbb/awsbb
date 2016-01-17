@@ -64,6 +64,7 @@
     "redux-thunk": "*",
     "rucksack-css": "*",
     "style-loader": "*",
+    "underscore": "*",
     "vision": "*",
     "webpack": "*",
     "webpack-dev-server": "*"
