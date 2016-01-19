@@ -1,7 +1,8 @@
 'use strict';
 
 const pkg = require('../package.json');
-const _ = require('underscore');
+var _ = require('underscore');
+var DefaultHeaders = 'authorization, content-type, if-none-match'.split(', ');
 
 exports.register = (server, options, next) => {
   server.path(__dirname);
