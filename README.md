@@ -40,7 +40,7 @@ The routes you will see also are **not** REST compliant until a more finalized v
 ```
 git clone git@github.com:awsbb/awsbb.git
 npm i
-nodemon
+npm start
 ```
 
 If something doesn't run you may need somethings in your global packages.
