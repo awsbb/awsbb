@@ -1,14 +1,14 @@
 'use strict';
 
-const GETHandler = require('../aws/handlers/threads-get');
+const ThreadsGet = require('../aws/lambda/ThreadsGet');
 
 export function setup(server) {
   server.route({
     method: 'GET',
-    path: '/api/threads',
+    path: '/api/ThreadsGet',
     config: {
       handler: (request, reply) => {
-        GETHandler.myHandler(server.getEvent(request), server.getContext(reply));
+        ThreadsGet.handler(server.getEvent(request), server.getContext(reply));
       }
     }
   });

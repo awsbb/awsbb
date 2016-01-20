@@ -27,7 +27,7 @@ class Main extends React.Component {
       <section id="main">
         <div className="container">
           <div className="row">
-            <div className="col-md-12">
+            <div className="col-xs-12">
               {children}
             </div>
           </div>

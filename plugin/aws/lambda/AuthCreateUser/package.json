@@ -1,5 +1,5 @@
 {
-  "name": "replies-get",
+  "name": "auth-create-user",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,5 +7,12 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Ryan Wilson <syndicated.life@gmail.com> (http://syndicatedlife.com/)",
-  "license": "GPL-3.0"
+  "license": "GPL-3.0",
+  "config": {
+    "AWS": {
+      "REGION": "us-west-2",
+      "DDB_ENDPOINT": "http://127.0.0.1:8000",
+      "DDB_USERS_TABLE": "AuthUsers"
+    }
+  }
 }

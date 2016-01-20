@@ -1,0 +1,18 @@
+{
+  "name": "auth-lost-password",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ryan Wilson <syndicated.life@gmail.com> (http://syndicatedlife.com/)",
+  "license": "GPL-3.0",
+  "config": {
+    "AWS": {
+      "REGION": "us-west-2",
+      "DDB_ENDPOINT": "http://127.0.0.1:8000",
+      "DDB_USERS_TABLE": "AuthUsers"
+    }
+  }
+}

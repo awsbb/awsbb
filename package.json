@@ -18,6 +18,7 @@
   },
   "homepage": "http://awsbb.github.io/awsbb",
   "devDependencies": {
+    "aws-sdk": "*",
     "babel": "*",
     "babel-core": "*",
     "babel-eslint": "*",

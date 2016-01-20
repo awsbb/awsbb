@@ -32,12 +32,13 @@ class App extends React.Component {
   }
   render() {
     const { children, counter, counterActions } = this.props;
+    var counterStyle = {
+      display: 'none'
+    };
     return (
       <div>
         <Header/>
-        <div className="container">
-          <Counter counter={counter} actions={counterActions}/>
-        </div>
+        <Counter counter={counter} actions={counterActions} style={counterStyle}/>
         <Main children={children}></Main>
         <Footer/>
       </div>
