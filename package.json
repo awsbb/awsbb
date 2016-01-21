@@ -18,18 +18,19 @@
   },
   "homepage": "http://awsbb.github.io/awsbb",
   "devDependencies": {
+    "async": "*",
     "aws-sdk": "*",
     "babel": "*",
     "babel-core": "*",
     "babel-eslint": "*",
     "babel-loader": "*",
     "babel-plugin-transform-runtime": "*",
+    "babel-polyfill": "*",
     "babel-preset-es2015": "*",
     "babel-preset-react": "*",
     "babel-preset-stage-0": "*",
     "babel-runtime": "*",
     "bluebird": "*",
-    "bootstrap": "*",
     "classnames": "*",
     "compression-webpack-plugin": "*",
     "css-loader": "*",
@@ -53,6 +54,7 @@
     "prettydiff": "*",
     "react": "*",
     "react-addons-css-transition-group": "*",
+    "react-bootstrap": "*",
     "react-dom": "*",
     "react-hot-loader": "*",
     "react-redux": "*",
@@ -72,5 +74,26 @@
     "vision": "*",
     "webpack": "*",
     "webpack-dev-server": "*"
+  },
+  "config": {
+    "AWS": {
+      "REGION": "us-west-2",
+      "DDB_ENDPOINT": "http://127.0.0.1:8000",
+      "DDBTables": [{
+        "TableName": "AuthUsers",
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "KeySchema": [{
+          "AttributeName": "email",
+          "KeyType": "HASH"
+        }],
+        "AttributeDefinitions": [{
+          "AttributeName": "email",
+          "AttributeType": "S"
+        }]
+      }]
+    }
   }
 }

@@ -1,6 +1,7 @@
 'use strict';
 
 require('babel-core/register');
+require('babel-polyfill');
 
 const Hapi = require('hapi');
 const WebpackPlugin = require('hapi-webpack-plugin');

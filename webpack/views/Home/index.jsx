@@ -1,7 +1,7 @@
 'use strict';
 
 import React from 'react';
-import Button from '../../components/Button';
+import { Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
@@ -30,9 +30,11 @@ class Home extends React.Component {
       <section id="home">
         <h1>HOME</h1>
         <Button
-          className="btn btn-primary"
-          text="★　GO HOME　★"
-          onClick={() => push('/')}/>
+          bsClass="btn"
+          bsStyle="primary"
+          onClick={() => push('/')}>
+          ★　GO HOME　★
+        </Button>
       </section>
     );
   }
