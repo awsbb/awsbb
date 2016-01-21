@@ -30,14 +30,17 @@ The routes you will see also are **not** REST compliant until a more finalized v
 * Babel
 * Postcss
 * Rucksack
-* Bootstrap3
+* React Bootstrap
 * FontAwesome
 * ESLint
 * Lot's more stuffies...
 
 ### Installation
 
-```
+```shell
+# if you are using a local dynamodb you can do so with: (OSX)
+# brew install dynamodb-local
+# I'd recommand having it auto start but if not it will be available at http://127.0.0.1:8000
 git clone git@github.com:awsbb/awsbb.git
 npm i
 npm start
