@@ -2,7 +2,7 @@
 
 const pkg = require('../package.json');
 var _ = require('underscore');
-var DefaultHeaders = 'authorization, content-type, if-none-match'.split(', ');
+var DefaultHeaders = ['authorization', 'content-type', 'if-none-match'];
 
 exports.register = (server, options, next) => {
   server.path(__dirname);
@@ -44,6 +44,9 @@ exports.register = (server, options, next) => {
       }
     }
   });
+
+  // Let's use nodemailer/mailgun to start sending out emails from our localmachine only
+  global.SES = require('./mailer');
 
   var router = require('./router.js');
   router.mapRoutes(server)

@@ -35,14 +35,21 @@ The routes you will see also are **not** REST compliant until a more finalized v
 * ESLint
 * Lot's more stuffies...
 
+### Configuration
+
+By default a global.Config option is setup both locally and from the package.json of each lambda when deployed in production. I would recommend setting up a local-config.json in the root of this project and inputing your own values for testing.
+
+I've setup the system so that nodemailer and mailgun are used in place of SES for local development. You will need to setup a domain and key to utilize that. For your own just make the file and copy out the config data in the main package.json. :)
+
 ### Installation
 
 ```shell
-# if you are using a local dynamodb you can do so with: (OSX)
+# if you are using a local DynamoDB you can do so with: (OSX)
 # brew install dynamodb-local
 # I'd recommand having it auto start but if not it will be available at http://127.0.0.1:8000
 git clone git@github.com:awsbb/awsbb.git
 npm i
+node tables-create.js
 npm start
 ```
 

@@ -3,6 +3,14 @@
 require('babel-core/register');
 require('babel-polyfill');
 
+const pkg = require('./package.json');
+
+try {
+  global.Config = require('./local-config.json');
+} catch (e) {
+  global.Config = pkg.config;
+}
+
 const Hapi = require('hapi');
 const WebpackPlugin = require('hapi-webpack-plugin');
 const server = new Hapi.Server({
@@ -51,7 +59,7 @@ server.register([{
 }, {
   register: require('vision')
 }, {
-  register: require('./plugin/')
+  register: require('./plugin')
 }, {
   register: WebpackPlugin,
   options: './webpack.config.js'

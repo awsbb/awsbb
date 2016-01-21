@@ -6,3 +6,5 @@ reports/*
 .coverrun
 
 .idea/*
+
+local-config.json

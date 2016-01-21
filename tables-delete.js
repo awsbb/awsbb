@@ -3,11 +3,16 @@
 var async = require('async');
 var pkg = require('./package.json');
 
-global.Config = pkg.config;
+try {
+  global.Config = require('./local-config.json');
+} catch (e) {
+  global.Config = pkg.config;
+}
+
 
 var AWS = require('aws-sdk');
 
-var dynamodb = new AWS.DynamoDB({
+var DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
@@ -20,8 +25,10 @@ async.whilst(
   },
   function (cb) {
     var table = DDBTables.shift();
-    dynamodb.createTable(table, function (err) {
-      if (err && err.message === 'Cannot create preexisting table') {
+    DynamoDB.deleteTable({
+      TableName: table.TableName
+    }, function (err) {
+      if (err && err.message === 'Cannot do operations on a non-existent table') {
         return cb();
       }
       cb(err);
@@ -29,11 +36,11 @@ async.whilst(
   },
   function (err) {
     if (err) {
-      console.log('Table Creation Failed!');
+      console.log('Table Deletion Failed!');
       console.log(err);
       process.exit(1);
     }
-    console.log('Tables Created!');
+    console.log('Tables Deleted!');
     process.exit();
   }
 );

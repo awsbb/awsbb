@@ -63,6 +63,11 @@ module.exports = {
       }
     }),
     new webpack.optimize.DedupePlugin(),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'production')
+      }
+    }),
     new webpack.BannerPlugin(pkg.name + ' v' + pkg.version + ' ' + new Date()),
     new CompressionPlugin()
   ]

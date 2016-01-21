@@ -3,13 +3,16 @@
 var pkg = require('./package.json');
 
 var crypto = require('crypto');
-
+var format = require('string-format');
 var Promise = require('bluebird');
-global.Config = pkg.config;
-
 var AWS = require('aws-sdk');
 
-var dynamodb = new AWS.DynamoDB({
+if(process.env.NODE_ENV === 'production') {
+  global.Config = pkg.config;
+  global.SES = new AWS.SES();
+}
+
+var DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
@@ -53,8 +56,8 @@ function ensureUser(email, password, salt) {
         return reject(err);
       }
       token = token.toString('hex');
-      dynamodb.putItem({
-        TableName: Config.AWS.DDB_USERS_TABLE,
+      DynamoDB.putItem({
+        TableName: 'AuthUsers',
         Item: {
           email: {
             S: email
@@ -85,8 +88,33 @@ function ensureUser(email, password, salt) {
 
 function sendVerificationEmail(email, token) {
   return new Promise(function (resolve, reject) {
-    // TODO: Using nodemailer/mailgun or SES actually send the email
-    resolve();
+    var subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
+    var verificationLink = format('{}?email={}&verify={}', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
+    var template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{}</title></head><body>Please <a href="{}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{}">{}</a></body></html>';
+    var HTML = format(template, subject, verificationLink, verificationLink, verificationLink);
+    SES.sendEmail({
+      Source: Config.EMAIL_SOURCE,
+      Destination: {
+        ToAddresses: [
+          email
+        ]
+      },
+      Message: {
+        Subject: {
+          Data: subject
+        },
+        Body: {
+          Html: {
+            Data: HTML
+          }
+        }
+      }
+    }, function (err, info) {
+      if (err) {
+        return reject(err);
+      }
+      resolve(info);
+    });
   });
 }
 
@@ -103,8 +131,8 @@ exports.handler = function (event, context) {
         .then(function (token) {
           console.log(token);
           sendVerificationEmail(email, token)
-            .then(function (data) {
-              console.log(data);
+            .then(function (info) {
+              console.log(info);
               context.succeed({
                 success: true
               });

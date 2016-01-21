@@ -49,6 +49,8 @@
     "inert": "*",
     "lab": "*",
     "lodash": "*",
+    "nodemailer": "*",
+    "nodemailer-mailgun-transport": "*",
     "postcss-loader": "*",
     "postcss-modules": "*",
     "prettydiff": "*",
@@ -69,6 +71,7 @@
     "redux-simple-router": "*",
     "redux-thunk": "*",
     "rucksack-css": "*",
+    "string-format": "*",
     "style-loader": "*",
     "underscore": "*",
     "vision": "*",
@@ -76,8 +79,17 @@
     "webpack-dev-server": "*"
   },
   "config": {
+    "MG_API_KEY": "key-123412341234123412341234123412341234",
+    "MG_DOMAIN": "awsbb.com",
+    "DEVELOPER_PROVIDER_NAME": "awsbb.com",
+    "EXTERNAL_NAME": "awsBB",
+    "EMAIL_SOURCE": "administrator@awsbb.com",
+    "VERIFICATION_PAGE": "http://awsbb.com/#/verify",
+    "RESET_PAGE": "http://awsbb.com/#/reset",
     "AWS": {
+      "AWS_ACCOUNT_ID": "123412341234",
       "REGION": "us-west-2",
+      "BUCKET": "bucket",
       "DDB_ENDPOINT": "http://127.0.0.1:8000",
       "DDBTables": [{
         "TableName": "AuthUsers",
