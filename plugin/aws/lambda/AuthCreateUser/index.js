@@ -20,24 +20,33 @@ var DynamoDB = new AWS.DynamoDB({
 var length = 128;
 var iterations = 4096;
 
-function generateHash(password) {
-  return new Promise(function (resolve, reject) {
-    crypto.randomBytes(length, function (err, salt) {
-      if (err) {
-        return reject(err);
-      }
-      salt = salt.toString('base64');
+function computeHash(password, salt) {
+  if (salt) {
+    return new Promise(function (resolve, reject) {
       crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
         if (err) {
           return reject(err);
         }
-        resolve({
+        return resolve({
           salt: salt,
           hash: key.toString('base64')
         });
       });
     });
+  }
+  var randomBytes = new Promise(function (resolve, reject) {
+    crypto.randomBytes(length, function (err, salt) {
+      if (err) {
+        return reject(err);
+      }
+      salt = salt.toString('base64');
+      resolve(salt);
+    });
   });
+  return randomBytes
+    .then(function (salt) {
+      return computeHash(password, salt);
+    });
 }
 
 function ensureUser(email, password, salt) {
@@ -116,9 +125,9 @@ exports.handler = function (event, context) {
   var email = event.payload.email;
   var clearTextPassword = event.payload.password;
 
-  generateHash(clearTextPassword)
-    .then(function (result) {
-      console.log(arguments);
+  computeHash(clearTextPassword)
+    .then(function (computeHashResult) {
+      console.log(computeHashResult);
       ensureUser(email, result.hash, result.salt)
         .then(function (token) {
           console.log(token);

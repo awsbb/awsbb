@@ -19,32 +19,32 @@ var length = 128;
 var iterations = 4096;
 
 function computeHash(password, salt) {
-  return new Promise(function (resolve, reject) {
-    crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
-      if (err) {
-        return reject(err);
-      }
-      return resolve([salt, key.toString('base64')]);
+  if (salt) {
+    return new Promise(function (resolve, reject) {
+      crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve({
+          salt: salt,
+          hash: key.toString('base64')
+        });
+      });
     });
-  });
-}
-
-function generateHash(password, salt) {
-  return new Promise(function (resolve, reject) {
-    if (salt) {
-      computeHash(password, salt)
-        .then(resolve)
-        .catch(reject);
-    }
+  }
+  var randomBytes = new Promise(function (resolve, reject) {
     crypto.randomBytes(length, function (err, salt) {
       if (err) {
         return reject(err);
       }
-      computeHash(password, salt.toString('base64'))
-        .then(resolve)
-        .catch(reject);
+      salt = salt.toString('base64');
+      resolve(salt);
     });
   });
+  return randomBytes
+    .then(function (salt) {
+      return computeHash(password, salt);
+    });
 }
 
 exports.handler = function (event, context) {
