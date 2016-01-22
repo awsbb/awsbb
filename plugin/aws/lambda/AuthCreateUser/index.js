@@ -7,7 +7,7 @@ var format = require('string-format');
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
   global.SES = new AWS.SES();
 }
@@ -20,31 +20,22 @@ var DynamoDB = new AWS.DynamoDB({
 var length = 128;
 var iterations = 4096;
 
-function computeHash(password, salt) {
+function generateHash(password) {
   return new Promise(function (resolve, reject) {
-    crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
-      if (err) {
-        return reject(err);
-      }
-      return resolve([salt, key.toString('base64')]);
-    });
-  });
-}
-
-function generateHash(password, salt) {
-  return new Promise(function (resolve, reject) {
-    if (salt) {
-      computeHash(password, salt)
-        .then(resolve)
-        .catch(reject);
-    }
     crypto.randomBytes(length, function (err, salt) {
       if (err) {
         return reject(err);
       }
-      computeHash(password, salt.toString('base64'))
-        .then(resolve)
-        .catch(reject);
+      salt = salt.toString('base64');
+      crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
+        if (err) {
+          return reject(err);
+        }
+        resolve({
+          salt: salt,
+          hash: key.toString('base64')
+        });
+      });
     });
   });
 }
@@ -90,8 +81,8 @@ function sendVerificationEmail(email, token) {
   return new Promise(function (resolve, reject) {
     var subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
     var verificationLink = format('{}?email={}&verify={}', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
-    var template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{}</title></head><body>Please <a href="{}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{}">{}</a></body></html>';
-    var HTML = format(template, subject, verificationLink, verificationLink, verificationLink);
+    var template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
+    var HTML = format(template, subject, verificationLink);
     SES.sendEmail({
       Source: Config.EMAIL_SOURCE,
       Destination: {
@@ -126,8 +117,9 @@ exports.handler = function (event, context) {
   var clearTextPassword = event.payload.password;
 
   generateHash(clearTextPassword)
-    .spread(function (salt, hash) {
-      ensureUser(email, hash, salt)
+    .then(function (result) {
+      console.log(arguments);
+      ensureUser(email, result.hash, result.salt)
         .then(function (token) {
           console.log(token);
           sendVerificationEmail(email, token)

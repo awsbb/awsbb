@@ -78,14 +78,17 @@
     "webpack": "*",
     "webpack-dev-server": "*"
   },
+  "engines": {
+    "node": ">=5.0.0"
+  },
   "config": {
     "MG_API_KEY": "key-123412341234123412341234123412341234",
     "MG_DOMAIN": "awsbb.com",
     "DEVELOPER_PROVIDER_NAME": "awsbb.com",
     "EXTERNAL_NAME": "awsBB",
     "EMAIL_SOURCE": "administrator@awsbb.com",
-    "VERIFICATION_PAGE": "http://awsbb.com/#/verify",
-    "RESET_PAGE": "http://awsbb.com/#/reset",
+    "VERIFICATION_PAGE": "http://127.0.0.1:3000/#/verify",
+    "RESET_PAGE": "http://127.0.0.1:3000/#/reset",
     "AWS": {
       "AWS_ACCOUNT_ID": "123412341234",
       "REGION": "us-west-2",
