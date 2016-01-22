@@ -80,7 +80,7 @@ exports.handler = function (event, context) {
   console.log('Context:', context);
 
   var email = event.payload.email;
-  var clearTextPassword = event.payload.password;
+  var password = event.payload.password;
 
   getUser(email)
     .then(function(getUserResult){
@@ -95,7 +95,7 @@ exports.handler = function (event, context) {
           success: false
         });
       }
-      computeHash(clearTextPassword, getUserResult.salt)
+      computeHash(password, getUserResult.salt)
         .then(function(computeHashResult){
           console.log(computeHashResult);
           if(getUserResult.hash !== computeHashResult.hash) {

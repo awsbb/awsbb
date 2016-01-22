@@ -123,9 +123,9 @@ exports.handler = function (event, context) {
   console.log('Context:', context);
 
   var email = event.payload.email;
-  var clearTextPassword = event.payload.password;
+  var password = event.payload.password;
 
-  computeHash(clearTextPassword)
+  computeHash(password)
     .then(function (computeHashResult) {
       console.log(computeHashResult);
       ensureUser(email, result.hash, result.salt)
