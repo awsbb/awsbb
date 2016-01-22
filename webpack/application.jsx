@@ -2,45 +2,34 @@
 
 import 'babel-polyfill';
 
-import { createDevTools } from 'redux-devtools';
-import LogMonitor from 'redux-devtools-log-monitor';
-import DockMonitor from 'redux-devtools-dock-monitor';
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Router, Route, IndexRoute } from 'react-router';
 import createHistory from 'history/lib/createHashHistory';
 import { Provider } from 'react-redux';
 import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
-import thunkMiddleware from 'redux-thunk';
+import createLogger from 'redux-logger';
+import { persistStore, autoRehydrate } from 'redux-persist';
+import thunk from 'redux-thunk';
 import { syncHistory, routeReducer } from 'redux-simple-router';
 
 import reducers from './reducers';
 
 const history = createHistory();
+const logger = createLogger();
 const middleware = syncHistory(history);
 
 const reducer = combineReducers(Object.assign({}, reducers, {
   routing: routeReducer
 }));
 
-const DevTools = createDevTools(
-  <DockMonitor toggleVisibilityKey='ctrl-h' changePositionKey='ctrl-q' defaultIsVisible={false}>
-    <LogMonitor theme='tomorrow' />
-  </DockMonitor>
-);
-
-// Sync dispatched route actions to the history
-const reduxRouterMiddleware = syncHistory(history);
-const createStoreWithMiddleware = compose(applyMiddleware(
+const store = compose(autoRehydrate(), applyMiddleware(
   middleware,
-  thunkMiddleware
-), DevTools.instrument())(createStore);
+  thunk,
+  logger
+))(createStore)(reducer);
 
-const store = createStoreWithMiddleware(reducer);
-
-// Required for replaying actions from devtools to work
-reduxRouterMiddleware.listenForReplays(store);
+persistStore(store);
 
 import App from './containers/App';
 import Home from './views/Home';
@@ -61,7 +50,6 @@ ReactDOM.render(
           <Route path="about" component={About} />
         </Route>
       </Router>
-      <DevTools />
     </div>
   </Provider>,
   document.getElementById('app')

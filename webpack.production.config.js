@@ -51,6 +51,10 @@ module.exports = {
     })
   ],
   plugins: [
+    new webpack.ProvidePlugin({
+      Promise: 'es6-promise',
+      fetch: 'imports?this=>global!exports?global.fetch!whatwg-fetch'
+    }),
     new webpack.NoErrorsPlugin(),
     new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.min.js'),
     new webpack.optimize.UglifyJsPlugin({

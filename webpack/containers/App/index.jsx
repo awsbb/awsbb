@@ -1,15 +1,13 @@
 'use strict';
 
-import React from 'react';
-import { bindActionCreators } from 'redux';
+import React, { PropTypes } from 'react';
+// import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 import Header from '../../components/Header';
-import Counter from '../../components/Counter';
+import Message from '../../components/Message';
 import Main from '../Main';
 import Footer from '../../components/Footer';
-
-import * as CounterActions from '../../actions/counter';
 
 import './style.css';
 
@@ -31,14 +29,11 @@ class App extends React.Component {
 
   }
   render() {
-    const { children, counter, counterActions } = this.props;
-    var counterStyle = {
-      display: 'none'
-    };
+    const { children, isAuthenticated, errorMessage } = this.props;
     return (
       <div>
-        <Header/>
-        <Counter counter={counter} actions={counterActions} style={counterStyle}/>
+        <Header isAuthenticated={isAuthenticated}/>
+        <Message message={errorMessage}/>
         <Main children={children}></Main>
         <Footer/>
       </div>
@@ -46,16 +41,25 @@ class App extends React.Component {
   }
 }
 
+App.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  errorMessage: PropTypes.string
+};
+
 function mapStateToProps(state) {
+  const { authorize } = state;
+  const { isAuthenticated, errorMessage } = authorize;
   return {
-    counter: state.counter
+    isAuthenticated,
+    errorMessage
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    counterActions: bindActionCreators(CounterActions, dispatch)
-  };
-}
+// function mapDispatchToProps(dispatch) {
+//   return {
+//     actions: bindActionCreators(Actions, dispatch)
+//   };
+// }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+// export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

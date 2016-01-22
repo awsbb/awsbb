@@ -1,7 +1,11 @@
 'use strict';
 
-import counter from './counter';
+import login from './login.js';
+import logout from './logout.js';
+import authorize from './authorize.js';
 
 export default {
-  counter
+  login,
+  logout,
+  authorize
 };

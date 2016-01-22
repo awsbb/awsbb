@@ -36,6 +36,7 @@
     "css-loader": "*",
     "eslint": "*",
     "eslint-plugin-react": "*",
+    "exports-loader": "*",
     "file-loader": "*",
     "flux": "*",
     "font-awesome": "*",
@@ -46,6 +47,7 @@
     "hapi": "*",
     "hapi-webpack-plugin": "*",
     "history": "*",
+    "imports-loader": "*",
     "inert": "*",
     "lab": "*",
     "lodash": "*",
@@ -58,6 +60,7 @@
     "react-addons-css-transition-group": "*",
     "react-bootstrap": "*",
     "react-dom": "*",
+    "react-fontawesome": "*",
     "react-hot-loader": "*",
     "react-redux": "*",
     "react-router": "*",
@@ -68,6 +71,7 @@
     "redux-devtools-dock-monitor": "*",
     "redux-devtools-log-monitor": "*",
     "redux-logger": "*",
+    "redux-persist": "*",
     "redux-simple-router": "*",
     "redux-thunk": "*",
     "rucksack-css": "*",
@@ -76,7 +80,8 @@
     "underscore": "*",
     "vision": "*",
     "webpack": "*",
-    "webpack-dev-server": "*"
+    "webpack-dev-server": "*",
+    "whatwg-fetch": "*"
   },
   "engines": {
     "node": ">=5.0.0"
