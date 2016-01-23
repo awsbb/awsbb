@@ -1,15 +1,20 @@
 'use strict';
 
-require('babel-core/register');
 try {
+  require.resolve('babel-core/register');
+} catch (e) {
+  require('babel-core/register');
+}
+try {
+  require.resolve('babel-polyfill');
+} catch (e) {
   require('babel-polyfill');
-} catch (e) {}
+}
 
 import pkg from '../package.json';
 
 import Joi from 'joi';
 
-import crypto from 'crypto';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
 
@@ -17,42 +22,12 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
+import { computeHash } from '@awsbb/awsbb-hashing';
+
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
-
-const length = 128;
-const iterations = 4096;
-
-const computeHash = (password, salt) => {
-  if (salt) {
-    return new Promise((resolve, reject) => {
-      crypto.pbkdf2(password, salt, iterations, length, (err, key) => {
-        if (err) {
-          return reject(err);
-        }
-        return resolve({
-          salt: salt,
-          hash: key.toString('base64')
-        });
-      });
-    });
-  }
-  let randomBytes = new Promise((resolve, reject) => {
-    crypto.randomBytes(length, (err, salt) => {
-      if (err) {
-        return reject(err);
-      }
-      salt = salt.toString('base64');
-      resolve(salt);
-    });
-  });
-  return randomBytes
-    .then((salt) => {
-      return computeHash(password, salt);
-    });
-};
 
 const getUser = (email) => {
   return new Promise((resolve, reject) => {

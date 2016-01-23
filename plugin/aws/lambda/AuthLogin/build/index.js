@@ -16,10 +16,6 @@ var _moment = require('moment');
 
 var _moment2 = _interopRequireDefault(_moment);
 
-var _crypto = require('crypto');
-
-var _crypto2 = _interopRequireDefault(_crypto);
-
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
@@ -36,12 +32,22 @@ var _catboxRedis = require('catbox-redis');
 
 var _catboxRedis2 = _interopRequireDefault(_catboxRedis);
 
+var _awsbbHashing = require('@awsbb/awsbb-hashing');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-require('babel-core/register');
 try {
+  require.resolve('babel-core/register');
+} catch (e) {
+  require('babel-core/register');
+}
+try {
+  require.resolve('babel-polyfill');
+} catch (e) {
   require('babel-polyfill');
-} catch (e) {}
+}
+
+console.log(_awsbbHashing.computeHash);
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = _package2.default.config;
@@ -94,38 +100,6 @@ var DynamoDB = new _awsSdk2.default.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new _awsSdk2.default.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
-
-var length = 128;
-var iterations = 4096;
-
-var computeHash = function computeHash(password, salt) {
-  if (salt) {
-    return new _bluebird2.default(function (resolve, reject) {
-      _crypto2.default.pbkdf2(password, salt, iterations, length, function (err, key) {
-        if (err) {
-          return reject(err);
-        }
-        return resolve({
-          salt: salt,
-          hash: key.toString('base64')
-        });
-      });
-    });
-  }
-  var randomBytes = new _bluebird2.default(function (resolve, reject) {
-    _crypto2.default.randomBytes(length, function (err, salt) {
-      if (err) {
-        return reject(err);
-      }
-      salt = salt.toString('base64');
-      resolve(salt);
-    });
-  });
-
-  return randomBytes.then(function (salt) {
-    return computeHash(password, salt);
-  });
-};
 
 var getUser = function getUser(email) {
   return new _bluebird2.default(function (resolve, reject) {
@@ -214,7 +188,7 @@ exports.handler = function (event, context) {
       if (!getUserResult.verified) {
         return _bluebird2.default.reject(new Error('UserNotVerified'));
       }
-      return computeHash(password, getUserResult.salt).then(function (computeHashResult) {
+      return (0, _awsbbHashing.computeHash)(password, getUserResult.salt).then(function (computeHashResult) {
         console.log(computeHashResult);
         if (getUserResult.hash !== computeHashResult.hash) {
           return _bluebird2.default.reject(new Error('IncorrectPassword'));

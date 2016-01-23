@@ -1,9 +1,15 @@
 'use strict';
 
-require('babel-core/register');
 try {
+  require.resolve('babel-core/register');
+} catch (e) {
+  require('babel-core/register');
+}
+try {
+  require.resolve('babel-polyfill');
+} catch (e) {
   require('babel-polyfill');
-} catch (e) {}
+}
 
 import pkg from '../package.json';
 

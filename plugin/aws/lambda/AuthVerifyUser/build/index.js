@@ -18,10 +18,16 @@ var _awsSdk2 = _interopRequireDefault(_awsSdk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-require('babel-core/register');
 try {
+  require.resolve('babel-core/register');
+} catch (e) {
+  require('babel-core/register');
+}
+try {
+  require.resolve('babel-polyfill');
+} catch (e) {
   require('babel-polyfill');
-} catch (e) {}
+}
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = _package2.default.config;

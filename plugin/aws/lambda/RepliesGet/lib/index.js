@@ -1,9 +1,15 @@
 'use strict';
 
-require('babel-core/register');
 try {
+  require.resolve('babel-core/register');
+} catch (e) {
+  require('babel-core/register');
+}
+try {
+  require.resolve('babel-polyfill');
+} catch (e) {
   require('babel-polyfill');
-} catch (e) {}
+}
 
 import pkg from '../package.json';
 
@@ -23,7 +29,7 @@ const DynamoDB = new AWS.DynamoDB({
 exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
-  
+
   context.succeed([{
     title: 'One',
     message: 'This is a reply.'

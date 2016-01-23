@@ -1,9 +1,15 @@
 'use strict';
 
-require('babel-core/register');
 try {
+  require.resolve('babel-core/register');
+} catch (e) {
+  require('babel-core/register');
+}
+try {
+  require.resolve('babel-polyfill');
+} catch (e) {
   require('babel-polyfill');
-} catch (e) {}
+}
 
 import pkg from '../package.json';
 
@@ -25,7 +31,6 @@ const DynamoDB = new AWS.DynamoDB({
 });
 
 const length = 128;
-const iterations = 4096;
 
 const getUser = (email) => {
   return new Promise((resolve, reject) => {
