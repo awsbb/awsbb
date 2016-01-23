@@ -69,7 +69,7 @@ const getUser = (email) => {
         return reject(err);
       }
       if (data.Item) {
-        if(data.Item.lostToken) {
+        if (data.Item.lostToken) {
           let token = data.Item.lostToken.S;
           return resolve(token);
         }
@@ -144,49 +144,25 @@ exports.handler = (event, context) => {
   let lost = event.payload.lost;
   let password = event.payload.password;
 
-  validate(event.payload)
+  return validate(event.payload)
     .then(() => {
-      getUser(email)
-        .then((token) => {
-          console.log(token);
-          if (lost !== token) {
-            return context.fail({
-              success: false,
-              message: 'InvalidResetPasswordToken'
-            });
-          }
-          computeHash(password)
-            .then((computeHashResult) => {
-              updateUser(email, computeHashResult.hash, computeHashResult.salt)
-                .then((updateUserResult) => {
-                  console.log(updateUserResult);
-                  context.succeed({
-                    success: true
-                  });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  context.fail({
-                    success: false,
-                    message: err.message
-                  });
-                });
-            })
-            .catch((err) => {
-              console.log(err);
-              context.fail({
-                success: false,
-                message: err.message
-              });
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        });
+      return getUser(email);
+    })
+    .then((token) => {
+      console.log(token);
+      if (lost !== token) {
+        return Promise.reject(new Error('InvalidResetPasswordToken'));
+      }
+      return computeHash(password);
+    })
+    .then((computeHashResult) => {
+      return updateUser(email, computeHashResult.hash, computeHashResult.salt);
+    })
+    .then((updateUserResult) => {
+      console.log(updateUserResult);
+      context.succeed({
+        success: true
+      });
     })
     .catch((err) => {
       console.log(err);

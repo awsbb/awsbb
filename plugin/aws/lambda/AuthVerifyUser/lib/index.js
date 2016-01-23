@@ -106,44 +106,25 @@ exports.handler = (event, context) => {
   let email = event.payload.email;
   let verify = event.payload.verify;
 
-  validate(event.payload)
+  return validate(event.payload)
     .then(() => {
-      getUser(email)
-        .then((result) => {
-          console.log(result);
-          if (result.verified) {
-            return context.succeed({
-              success: true
-            });
-          }
-          if (verify !== result.token) {
-            return context.fail({
-              success: false,
-              message: 'InvalidVerifyUserToken'
-            });
-          }
-          updateUser(email)
-            .then((result) => {
-              console.log(result);
-              context.succeed({
-                success: true
-              });
-            })
-            .catch((err) => {
-              console.log(err);
-              context.fail({
-                success: false,
-                message: err.message
-              });
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        });
+      return getUser(email);
+    })
+    .then((result) => {
+      console.log(result);
+      if (result.verified) {
+        return Promise.resolve(result);
+      }
+      if (verify !== result.token) {
+        return Promise.reject(new Error('InvalidVerifyUserToken'));
+      }
+      return updateUser(email);
+    })
+    .then((result) => {
+      console.log(result);
+      context.succeed({
+        success: true
+      });
     })
     .catch((err) => {
       console.log(err);

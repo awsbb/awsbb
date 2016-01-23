@@ -155,8 +155,10 @@ exports.handler = function (event, context) {
   return validate(event.payload).then(function () {
     return getUser(email);
   }).then(function (email) {
+    console.log(email);
     return storeToken(email);
   }).then(function (token) {
+    console.log(token);
     return sendLostPasswordEmail(email, token);
   }).then(function (info) {
     console.log(info);

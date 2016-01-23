@@ -117,38 +117,21 @@ exports.handler = function (event, context) {
   var email = event.payload.email;
   var verify = event.payload.verify;
 
-  validate(event.payload).then(function () {
-    getUser(email).then(function (result) {
-      console.log(result);
-      if (result.verified) {
-        return context.succeed({
-          success: true
-        });
-      }
-      if (verify !== result.token) {
-        return context.fail({
-          success: false,
-          message: 'InvalidVerifyUserToken'
-        });
-      }
-      updateUser(email).then(function (result) {
-        console.log(result);
-        context.succeed({
-          success: true
-        });
-      }).catch(function (err) {
-        console.log(err);
-        context.fail({
-          success: false,
-          message: err.message
-        });
-      });
-    }).catch(function (err) {
-      console.log(err);
-      context.fail({
-        success: false,
-        message: err.message
-      });
+  return validate(event.payload).then(function () {
+    return getUser(email);
+  }).then(function (result) {
+    console.log(result);
+    if (result.verified) {
+      return _bluebird2.default.resolve(result);
+    }
+    if (verify !== result.token) {
+      return _bluebird2.default.reject(new Error('InvalidVerifyUserToken'));
+    }
+    return updateUser(email);
+  }).then(function (result) {
+    console.log(result);
+    context.succeed({
+      success: true
     });
   }).catch(function (err) {
     console.log(err);

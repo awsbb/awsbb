@@ -156,63 +156,30 @@ exports.handler = function (event, context) {
   var currentPassword = event.payload.currentPassword;
   var password = event.payload.password;
 
-  validate(event.payload).then(function () {
-    getUser(email).then(function (getUserResult) {
-      console.log(getUserResult);
-      if (!getUserResult.hash) {
-        return context.fail({
-          success: false,
-          message: 'UserHasNoHash'
-        });
+  return validate(event.payload).then(function () {
+    return getUser(email);
+  }).then(function (getUserResult) {
+    console.log(getUserResult);
+    if (!getUserResult.hash) {
+      return _bluebird2.default.reject(new Error('UserHasNoHash'));
+    }
+    if (!getUserResult.verified) {
+      return _bluebird2.default.reject(new Error('UserNotVerified'));
+    }
+    return computeHash(currentPassword, getUserResult.salt).then(function (computeCurrentHashResult) {
+      console.log(computeCurrentHashResult);
+      if (getUserResult.hash !== computeCurrentHashResult.hash) {
+        return _bluebird2.default.reject(new Error('IncorrectPassword'));
       }
-      if (!getUserResult.verified) {
-        return context.fail({
-          success: false,
-          message: 'UserNotVerified'
-        });
-      }
-      computeHash(currentPassword, getUserResult.salt).then(function (computeCurrentHashResult) {
-        console.log(computeCurrentHashResult);
-        if (getUserResult.hash !== computeCurrentHashResult.hash) {
-          return context.fail({
-            success: false,
-            message: 'IncorrectPassword'
-          });
-        }
-        computeHash(password).then(function (computeHashResult) {
-          console.log(computeHashResult);
-          updateUser(email, computeHashResult.hash, computeHashResult.salt).then(function (updateUserResult) {
-            console.log(updateUserResult);
-            context.succeed({
-              success: true
-            });
-          }).catch(function (err) {
-            console.log(err);
-            context.fail({
-              success: false,
-              message: err.message
-            });
-          });
-        }).catch(function (err) {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        });
-      }).catch(function (err) {
-        console.log(err);
-        context.fail({
-          success: false,
-          message: err.message
-        });
-      });
-    }).catch(function (err) {
-      console.log(err);
-      context.fail({
-        success: false,
-        message: err.message
-      });
+      return computeHash(password);
+    });
+  }).then(function (computeHashResult) {
+    console.log(computeHashResult);
+    return updateUser(email, computeHashResult.hash, computeHashResult.salt);
+  }).then(function (updateUserResult) {
+    console.log(updateUserResult);
+    context.succeed({
+      success: true
     });
   }).catch(function (err) {
     console.log(err);

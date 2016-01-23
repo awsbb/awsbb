@@ -142,9 +142,11 @@ exports.handler = (event, context) => {
       return getUser(email);
     })
     .then((email) => {
+      console.log(email);
       return storeToken(email);
     })
     .then((token) => {
+      console.log(token);
       return sendLostPasswordEmail(email, token);
     })
     .then((info) => {

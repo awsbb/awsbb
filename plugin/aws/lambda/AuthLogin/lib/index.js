@@ -9,13 +9,61 @@ import pkg from '../package.json';
 
 import Joi from 'joi';
 
+import jwt from 'jsonwebtoken';
+import moment from 'moment';
 import crypto from 'crypto';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
 
+import Catbox from 'catbox';
+import CatboxRedis from 'catbox-redis';
+
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
+
+// the redis cacheClient will connect and partition data in database 0
+const cacheClient = new Catbox.Client(CatboxRedis, {
+  partition: 'catbox-awsBB',
+  host: Config.AWS.EC_ENDPOINT.split(':')[0],
+  port: Config.AWS.EC_ENDPOINT.split(':')[1],
+  password: ''
+});
+
+const cache = {
+  get: (id) => {
+    return new Promise((resolve, reject) => {
+      cacheClient.get({
+        segment: 'logins',
+        id: id
+      }, (err, cached) => {
+        if (err) {
+          return reject(err);
+        }
+        if (cached && cached.item) {
+          return resolve(cached.item);
+        }
+        resolve();
+      });
+    });
+  },
+  set: (id, value) => {
+    return new Promise((resolve, reject) => {
+      cacheClient.set({
+        segment: 'logins',
+        id: id
+      }, {
+        value: value,
+        accessed: new Date(moment.utc().format())
+      }, 60 * 1000, (err) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
+    });
+  }
+};
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -83,6 +131,22 @@ const getUser = (email) => {
   });
 };
 
+const generateToken = (email) => {
+  return new Promise((resolve, reject) => {
+    var token = jwt.sign({
+      email: email,
+      application: 'awsBB'
+    }, Config.JWT_SECRET);
+    cache.set(email, token)
+      .then(() => {
+        resolve(token);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
+
 const joiEventSchema = Joi.object().keys({
   email: Joi.string().email(),
   password: Joi.string().min(6)
@@ -109,59 +173,52 @@ exports.handler = (event, context) => {
 
   let email = event.payload.email;
   let password = event.payload.password;
+  // let userToken = event.headers['X-awsBB-User-Token'];
 
-  validate(event.payload)
-    .then(() => {
-      getUser(email)
-        .then(function(getUserResult){
-          console.log(getUserResult);
-          if(!getUserResult.hash) {
-            return context.fail({
-              success: false,
-              message: 'UserHasNoHash'
-            });
-          }
-          if(!getUserResult.verified){
-            return context.fail({
-              success: false,
-              message: 'UserNotVerified'
-            });
-          }
-          computeHash(password, getUserResult.salt)
-            .then(function(computeHashResult){
-              console.log(computeHashResult);
-              if(getUserResult.hash !== computeHashResult.hash) {
-                return context.fail({
-                  success: false,
-                  message: 'IncorrectPassword'
-                });
-              }
-              // TODO: Create AuthBearer Token and store in caching system
-              context.succeed({
-                success: true
-              });
-            })
-            .catch(function(err) {
-              console.log(err);
-              context.fail({
-                success: false,
-                message: err.message
-              });
-            });
-        })
-        .catch(function(err){
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        });
-    })
-    .catch((err) => {
-      console.log(err);
-      context.fail({
+  cacheClient.start((err) => {
+    if (err) {
+      return context.fail({
         success: false,
         message: err.message
       });
-    });
+    }
+    return validate(event.payload)
+      .then(() => {
+        return getUser(email);
+      })
+      .then((getUserResult) => {
+        console.log(getUserResult);
+        if (!getUserResult.hash) {
+          return Promise.reject(new Error('UserHasNoHash'));
+        }
+        if (!getUserResult.verified) {
+          return Promise.reject(new Error('UserNotVerified'));
+        }
+        return computeHash(password, getUserResult.salt)
+          .then((computeHashResult) => {
+            console.log(computeHashResult);
+            if (getUserResult.hash !== computeHashResult.hash) {
+              return Promise.reject(new Error('IncorrectPassword'));
+            }
+            return generateToken(email);
+          });
+      })
+      .then((token) => {
+        console.log(token);
+        context.succeed({
+          success: true,
+          token: token
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        context.fail({
+          success: false,
+          message: err.message
+        });
+      })
+      .finally(() => {
+        cacheClient.stop();
+      });
+  });
 };

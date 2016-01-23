@@ -143,73 +143,36 @@ exports.handler = (event, context) => {
   let currentPassword = event.payload.currentPassword;
   let password = event.payload.password;
 
-  validate(event.payload)
+  return validate(event.payload)
     .then(() => {
-      getUser(email)
-        .then((getUserResult) => {
-          console.log(getUserResult);
-          if (!getUserResult.hash) {
-            return context.fail({
-              success: false,
-              message: 'UserHasNoHash'
-            });
+      return getUser(email);
+    })
+    .then((getUserResult) => {
+      console.log(getUserResult);
+      if (!getUserResult.hash) {
+        return Promise.reject(new Error('UserHasNoHash'));
+      }
+      if (!getUserResult.verified) {
+        return Promise.reject(new Error('UserNotVerified'));
+      }
+      return computeHash(currentPassword, getUserResult.salt)
+        .then((computeCurrentHashResult) => {
+          console.log(computeCurrentHashResult);
+          if (getUserResult.hash !== computeCurrentHashResult.hash) {
+            return Promise.reject(new Error('IncorrectPassword'));
           }
-          if (!getUserResult.verified) {
-            return context.fail({
-              success: false,
-              message: 'UserNotVerified'
-            });
-          }
-          computeHash(currentPassword, getUserResult.salt)
-            .then((computeCurrentHashResult) => {
-              console.log(computeCurrentHashResult);
-              if (getUserResult.hash !== computeCurrentHashResult.hash) {
-                return context.fail({
-                  success: false,
-                  message: 'IncorrectPassword'
-                });
-              }
-              computeHash(password)
-                .then((computeHashResult) => {
-                  console.log(computeHashResult);
-                  updateUser(email, computeHashResult.hash, computeHashResult.salt)
-                    .then((updateUserResult) => {
-                      console.log(updateUserResult);
-                      context.succeed({
-                        success: true
-                      });
-                    })
-                    .catch((err) => {
-                      console.log(err);
-                      context.fail({
-                        success: false,
-                        message: err.message
-                      });
-                    });
-                })
-                .catch((err) => {
-                  console.log(err);
-                  context.fail({
-                    success: false,
-                    message: err.message
-                  });
-                });
-            })
-            .catch((err) => {
-              console.log(err);
-              context.fail({
-                success: false,
-                message: err.message
-              });
-            });
-        })
-        .catch((err) => {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
+          return computeHash(password);
         });
+    })
+    .then((computeHashResult) => {
+      console.log(computeHashResult);
+      return updateUser(email, computeHashResult.hash, computeHashResult.salt);
+    })
+    .then((updateUserResult) => {
+      console.log(updateUserResult);
+      context.succeed({
+        success: true
+      });
     })
     .catch((err) => {
       console.log(err);

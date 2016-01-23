@@ -97,10 +97,12 @@
     "EMAIL_SOURCE": "administrator@awsbb.com",
     "VERIFICATION_PAGE": "http://127.0.0.1:3000/#/verify",
     "RESET_PAGE": "http://127.0.0.1:3000/#/reset",
+    "JWT_SECRET": "NOTSECRET!!!",
     "AWS": {
       "AWS_ACCOUNT_ID": "123412341234",
       "REGION": "us-west-2",
       "BUCKET": "bucket",
+      "EC_ENDPOINT": "127.0.0.1:6379",
       "DDB_ENDPOINT": "http://127.0.0.1:8000",
       "DDBTables": [{
         "TableName": "awsBB_Users",

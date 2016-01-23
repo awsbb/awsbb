@@ -157,41 +157,20 @@ exports.handler = function (event, context) {
   var lost = event.payload.lost;
   var password = event.payload.password;
 
-  validate(event.payload).then(function () {
-    getUser(email).then(function (token) {
-      console.log(token);
-      if (lost !== token) {
-        return context.fail({
-          success: false,
-          message: 'InvalidResetPasswordToken'
-        });
-      }
-      computeHash(password).then(function (computeHashResult) {
-        updateUser(email, computeHashResult.hash, computeHashResult.salt).then(function (updateUserResult) {
-          console.log(updateUserResult);
-          context.succeed({
-            success: true
-          });
-        }).catch(function (err) {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        });
-      }).catch(function (err) {
-        console.log(err);
-        context.fail({
-          success: false,
-          message: err.message
-        });
-      });
-    }).catch(function (err) {
-      console.log(err);
-      context.fail({
-        success: false,
-        message: err.message
-      });
+  return validate(event.payload).then(function () {
+    return getUser(email);
+  }).then(function (token) {
+    console.log(token);
+    if (lost !== token) {
+      return _bluebird2.default.reject(new Error('InvalidResetPasswordToken'));
+    }
+    return computeHash(password);
+  }).then(function (computeHashResult) {
+    return updateUser(email, computeHashResult.hash, computeHashResult.salt);
+  }).then(function (updateUserResult) {
+    console.log(updateUserResult);
+    context.succeed({
+      success: true
     });
   }).catch(function (err) {
     console.log(err);
