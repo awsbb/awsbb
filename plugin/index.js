@@ -34,7 +34,7 @@ exports.register = (server, options, next) => {
     path: '/api/{param*}',
     config: {
       auth: false,
-      handler: function (request, reply) {
+      handler: (request, reply) => {
         var requestHeaders = [];
         if (request.headers['access-control-request-headers']) {
           requestHeaders = request.headers['access-control-request-headers'].split(', ');
@@ -51,12 +51,12 @@ exports.register = (server, options, next) => {
   var router = require('./router.js');
   router.mapRoutes(server)
     .then(() => {
-      process.nextTick(function () {
+      process.nextTick(() => {
         next();
       });
     })
     .catch((err) => {
-      process.nextTick(function () {
+      process.nextTick(() => {
         next(err);
       });
     });
