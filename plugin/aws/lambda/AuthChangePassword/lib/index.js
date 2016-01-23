@@ -25,7 +25,7 @@ const DynamoDB = new AWS.DynamoDB({
 const length = 128;
 const iterations = 4096;
 
-function computeHash(password, salt) {
+const computeHash = (password, salt) => {
   if (salt) {
     return new Promise((resolve, reject) => {
       crypto.pbkdf2(password, salt, iterations, length, (err, key) => {
@@ -52,9 +52,9 @@ function computeHash(password, salt) {
     .then((salt) => {
       return computeHash(password, salt);
     });
-}
+};
 
-function getUser(email) {
+const getUser = (email) => {
   return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
@@ -80,9 +80,9 @@ function getUser(email) {
       reject(new Error('UserNotFound'));
     });
   });
-}
+};
 
-function updateUser(email, hash, salt) {
+const updateUser = (email, hash, salt) => {
   return new Promise((resolve, reject) => {
     DynamoDB.updateItem({
       TableName: 'awsBB_Users',
@@ -112,7 +112,7 @@ function updateUser(email, hash, salt) {
       resolve(data);
     });
   });
-}
+};
 
 const joiEventSchema = Joi.object().keys({
   email: Joi.string().email(),
@@ -124,16 +124,16 @@ const joiOptions = {
   abortEarly: false
 };
 
-function validate(event) {
+const validate = (event) => {
   return new Promise((resolve, reject) => {
-    Joi.validate(event, joiEventSchema, joiOptions, err => {
+    Joi.validate(event, joiEventSchema, joiOptions, (err) => {
       if (err) {
         return reject(err);
       }
       resolve();
     });
   });
-}
+};
 
 exports.handler = (event, context) => {
   console.log('Event:', event);
@@ -160,7 +160,7 @@ exports.handler = (event, context) => {
             });
           }
           computeHash(currentPassword, getUserResult.salt)
-            .then(computeCurrentHashResult => {
+            .then((computeCurrentHashResult) => {
               console.log(computeCurrentHashResult);
               if (getUserResult.hash !== computeCurrentHashResult.hash) {
                 return context.fail({
@@ -169,16 +169,16 @@ exports.handler = (event, context) => {
                 });
               }
               computeHash(password)
-                .then(computeHashResult => {
+                .then((computeHashResult) => {
                   console.log(computeHashResult);
                   updateUser(email, computeHashResult.hash, computeHashResult.salt)
-                    .then(updateUserResult => {
+                    .then((updateUserResult) => {
                       console.log(updateUserResult);
                       context.succeed({
                         success: true
                       });
                     })
-                    .catch(err => {
+                    .catch((err) => {
                       console.log(err);
                       context.fail({
                         success: false,
@@ -186,7 +186,7 @@ exports.handler = (event, context) => {
                       });
                     });
                 })
-                .catch(err => {
+                .catch((err) => {
                   console.log(err);
                   context.fail({
                     success: false,
@@ -194,7 +194,7 @@ exports.handler = (event, context) => {
                   });
                 });
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err);
               context.fail({
                 success: false,
@@ -202,7 +202,7 @@ exports.handler = (event, context) => {
               });
             });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err);
           context.fail({
             success: false,
@@ -210,7 +210,7 @@ exports.handler = (event, context) => {
           });
         });
     })
-    .catch(err => {
+    .catch((err) => {
       console.log(err);
       context.fail({
         success: false,

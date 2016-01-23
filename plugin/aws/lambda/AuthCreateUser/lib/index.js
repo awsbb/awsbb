@@ -5,14 +5,14 @@ try {
   require('babel-polyfill');
 } catch (e) {}
 
-const pkg = require('../package.json');
+import pkg from '../package.json';
 
-const Joi = require('joi');
+import Joi from 'joi';
 
-const crypto = require('crypto');
-const format = require('string-format');
-const Promise = require('bluebird');
-const AWS = require('aws-sdk');
+import crypto from 'crypto';
+import format from 'string-format';
+import Promise from 'bluebird';
+import AWS from 'aws-sdk';
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
