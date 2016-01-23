@@ -5,32 +5,32 @@ try {
   require('babel-polyfill');
 } catch (e) {}
 
-var pkg = require('../package.json');
+const pkg = require('./package.json');
 
-var Joi = require('joi');
+const Joi = require('joi');
 
-var crypto = require('crypto');
-var format = require('string-format');
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
+const crypto = require('crypto');
+const format = require('string-format');
+const Promise = require('bluebird');
+const AWS = require('aws-sdk');
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
   global.SES = new AWS.SES();
 }
 
-var DynamoDB = new AWS.DynamoDB({
+let DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-var length = 128;
-var iterations = 4096;
+let length = 128;
+let iterations = 4096;
 
-function computeHash(password, salt) {
+const computeHash = (password, salt) => {
   if (salt) {
-    return new Promise(function (resolve, reject) {
-      crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
+    return new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, iterations, length, (err, key) => {
         if (err) {
           return reject(err);
         }
@@ -41,8 +41,8 @@ function computeHash(password, salt) {
       });
     });
   }
-  var randomBytes = new Promise(function (resolve, reject) {
-    crypto.randomBytes(length, function (err, salt) {
+  let randomBytes = new Promise((resolve, reject) => {
+    crypto.randomBytes(length, (err, salt) => {
       if (err) {
         return reject(err);
       }
@@ -50,15 +50,16 @@ function computeHash(password, salt) {
       resolve(salt);
     });
   });
+
   return randomBytes
-    .then(function (salt) {
+    .then((salt) => {
       return computeHash(password, salt);
     });
-}
+};
 
-function ensureUser(email, password, salt) {
-  return new Promise(function (resolve, reject) {
-    crypto.randomBytes(length, function (err, token) {
+const ensureUser = (email, password, salt) => {
+  return new Promise((resolve, reject) => {
+    crypto.randomBytes(length, (err, token) => {
       if (err) {
         return reject(err);
       }
@@ -83,7 +84,7 @@ function ensureUser(email, password, salt) {
           }
         },
         ConditionExpression: 'attribute_not_exists (email)'
-      }, function (err) {
+      }, (err) => {
         if (err) {
           return reject(err);
         }
@@ -91,14 +92,15 @@ function ensureUser(email, password, salt) {
       });
     });
   });
-}
+};
 
-function sendVerificationEmail(email, token) {
-  return new Promise(function (resolve, reject) {
-    var subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
-    var verificationLink = format('{}?email={}&verify={}', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
-    var template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
-    var HTML = format(template, subject, verificationLink);
+const sendVerificationEmail = (email, token) => {
+  return new Promise((resolve, reject) => {
+    let subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
+    let verificationLink = format('{}?email={}&verify={}', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
+    let template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
+    let HTML = format(template, subject, verificationLink);
+
     SES.sendEmail({
       Source: Config.EMAIL_SOURCE,
       Destination: {
@@ -116,28 +118,28 @@ function sendVerificationEmail(email, token) {
           }
         }
       }
-    }, function (err, info) {
+    }, (err, info) => {
       if (err) {
         return reject(err);
       }
       resolve(info);
     });
   });
-}
+};
 
-var joiEventSchema = Joi.object().keys({
+const joiEventSchema = Joi.object().keys({
   email: Joi.string().email(),
   password: Joi.string().min(6),
   confirmation: Joi.string().min(6)
 });
 
-var joiOptions = {
+const joiOptions = {
   abortEarly: false
 };
 
-function validate(event) {
-  return new Promise(function (resolve, reject) {
-    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+const validate = (event) => {
+  return new Promise((resolve, reject) => {
+    Joi.validate(event, joiEventSchema, joiOptions, (err) => {
       if (err) {
         return reject(err);
       }
@@ -147,56 +149,32 @@ function validate(event) {
       reject(new Error('PasswordConfirmationNotEqual'));
     });
   });
-}
+};
 
-exports.handler = function (event, context) {
+exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  validate(event.payload)
-    .then(function () {
-      var email = event.payload.email;
-      var password = event.payload.password;
-      var confirmation = event.payload.confirmation;
-      computeHash(password)
-        .then(function (computeHashResult) {
-          console.log(computeHashResult);
-          ensureUser(email, computeHashResult.hash, computeHashResult.salt)
-            .then(function (token) {
-              console.log(token);
-              sendVerificationEmail(email, token)
-                .then(function (info) {
-                  console.log(info);
-                  context.succeed({
-                    success: true
-                  });
-                })
-                .catch(function (err) {
-                  console.log(err);
-                  context.fail({
-                    success: false,
-                    message: err.message
-                  });
-                });
-            })
-            .catch(function (err) {
-              console.log(err);
-              context.fail({
-                success: false,
-                message: err.message
-              });
-            });
-        })
-        .catch(function (err) {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        });
+  return validate(event.payload)
+    .then(() => {
+      let password = event.payload.password;
+      return computeHash(password);
     })
-    .catch(function (err) {
-      console.log(err);
+    .then((hash) => {
+      console.log(hash);
+
+      return ensureUser(event.payload.email);
+    })
+    .then((token) => {
+      return sendVerificationEmail(event.payload.email, token);
+    })
+    .then((info) => {
+      console.log(info);
+      context.succeed({
+        success: true
+      });
+    })
+    .catch((err) => {
       context.fail({
         success: false,
         message: err.message
