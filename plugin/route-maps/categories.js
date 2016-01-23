@@ -1,6 +1,6 @@
 'use strict';
 
-const CategoriesGet = require('../aws/lambda/CategoriesGet');
+import CategoriesGet from '../aws/lambda/CategoriesGet';
 
 export function setup(server) {
   server.route({

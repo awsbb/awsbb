@@ -62,6 +62,7 @@ var computeHash = function computeHash(password, salt) {
       resolve(salt);
     });
   });
+
   return randomBytes.then(function (salt) {
     return computeHash(password, salt);
   });
@@ -95,41 +96,8 @@ var getUser = function getUser(email) {
   });
 };
 
-var updateUser = function updateUser(email, hash, salt) {
-  return new _bluebird2.default(function (resolve, reject) {
-    DynamoDB.updateItem({
-      TableName: 'awsBB_Users',
-      Key: {
-        email: {
-          S: email
-        }
-      },
-      AttributeUpdates: {
-        passwordHash: {
-          Action: 'PUT',
-          Value: {
-            S: hash
-          }
-        },
-        passwordSalt: {
-          Action: 'PUT',
-          Value: {
-            S: salt
-          }
-        }
-      }
-    }, function (err, data) {
-      if (err) {
-        return reject(err);
-      }
-      resolve(data);
-    });
-  });
-};
-
 var joiEventSchema = _joi2.default.object().keys({
   email: _joi2.default.string().email(),
-  currentPassword: _joi2.default.string().min(6),
   password: _joi2.default.string().min(6)
 });
 
@@ -153,7 +121,6 @@ exports.handler = function (event, context) {
   console.log('Context:', context);
 
   var email = event.payload.email;
-  var currentPassword = event.payload.currentPassword;
   var password = event.payload.password;
 
   validate(event.payload).then(function () {
@@ -171,34 +138,17 @@ exports.handler = function (event, context) {
           message: 'UserNotVerified'
         });
       }
-      computeHash(currentPassword, getUserResult.salt).then(function (computeCurrentHashResult) {
-        console.log(computeCurrentHashResult);
-        if (getUserResult.hash !== computeCurrentHashResult.hash) {
+      computeHash(password, getUserResult.salt).then(function (computeHashResult) {
+        console.log(computeHashResult);
+        if (getUserResult.hash !== computeHashResult.hash) {
           return context.fail({
             success: false,
             message: 'IncorrectPassword'
           });
         }
-        computeHash(password).then(function (computeHashResult) {
-          console.log(computeHashResult);
-          updateUser(email, computeHashResult.hash, computeHashResult.salt).then(function (updateUserResult) {
-            console.log(updateUserResult);
-            context.succeed({
-              success: true
-            });
-          }).catch(function (err) {
-            console.log(err);
-            context.fail({
-              success: false,
-              message: err.message
-            });
-          });
-        }).catch(function (err) {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
+        // TODO: Create AuthBearer Token and store in caching system
+        context.succeed({
+          success: true
         });
       }).catch(function (err) {
         console.log(err);

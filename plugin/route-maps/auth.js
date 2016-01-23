@@ -1,11 +1,11 @@
 'use strict';
 
-const AuthChangePassword = require('../aws/lambda/AuthChangePassword');
-const AuthCreateUser = require('../aws/lambda/AuthCreateUser');
-const AuthLogin = require('../aws/lambda/AuthLogin');
-const AuthLostPassword = require('../aws/lambda/AuthLostPassword');
-const AuthResetPassword = require('../aws/lambda/AuthResetPassword');
-const AuthVerifyUser = require('../aws/lambda/AuthVerifyUser');
+import AuthChangePassword from '../aws/lambda/AuthChangePassword';
+import AuthCreateUser from '../aws/lambda/AuthCreateUser';
+import AuthLogin from '../aws/lambda/AuthLogin';
+import AuthLostPassword from '../aws/lambda/AuthLostPassword';
+import AuthResetPassword from '../aws/lambda/AuthResetPassword';
+import AuthVerifyUser from '../aws/lambda/AuthVerifyUser';
 
 export function setup(server) {
   server.route({

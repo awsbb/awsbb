@@ -5,24 +5,25 @@ try {
   require('babel-polyfill');
 } catch (e) {}
 
-const pkg = require('../package.json');
+import pkg from '../package.json';
 
-const crypto = require('crypto');
-const Promise = require('bluebird');
-const AWS = require('aws-sdk');
+import crypto from 'crypto';
+import Promise from 'bluebird';
+import AWS from 'aws-sdk';
 
 if(process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-var DynamoDB = new AWS.DynamoDB({
+const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-exports.handler = function (event, context) {
+exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
+  
   context.succeed([{
     title: 'One',
     message: 'This is a reply.'

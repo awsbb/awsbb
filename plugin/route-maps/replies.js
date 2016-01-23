@@ -1,6 +1,6 @@
 'use strict';
 
-const RepliesGet = require('../aws/lambda/RepliesGet');
+import RepliesGet from '../aws/lambda/RepliesGet';
 
 export function setup(server) {
   server.route({

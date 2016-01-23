@@ -139,11 +139,12 @@ exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
 
+  let email = event.payload.email;
+  let currentPassword = event.payload.currentPassword;
+  let password = event.payload.password;
+
   validate(event.payload)
     .then(() => {
-      let email = event.payload.email;
-      let currentPassword = event.payload.currentPassword;
-      let password = event.payload.password;
       getUser(email)
         .then((getUserResult) => {
           console.log(getUserResult);

@@ -5,30 +5,30 @@ try {
   require('babel-polyfill');
 } catch (e) {}
 
-var pkg = require('../package.json');
+import pkg from '../package.json';
 
-var Joi = require('joi');
+import Joi from 'joi';
 
-var crypto = require('crypto');
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
+import crypto from 'crypto';
+import Promise from 'bluebird';
+import AWS from 'aws-sdk';
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-var DynamoDB = new AWS.DynamoDB({
+const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-var length = 128;
-var iterations = 4096;
+const length = 128;
+const iterations = 4096;
 
-function computeHash(password, salt) {
+const computeHash = (password, salt) => {
   if (salt) {
-    return new Promise(function (resolve, reject) {
-      crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
+    return new Promise((resolve, reject) => {
+      crypto.pbkdf2(password, salt, iterations, length, (err, key) => {
         if (err) {
           return reject(err);
         }
@@ -39,8 +39,8 @@ function computeHash(password, salt) {
       });
     });
   }
-  var randomBytes = new Promise(function (resolve, reject) {
-    crypto.randomBytes(length, function (err, salt) {
+  let randomBytes = new Promise((resolve, reject) => {
+    crypto.randomBytes(length, (err, salt) => {
       if (err) {
         return reject(err);
       }
@@ -48,14 +48,15 @@ function computeHash(password, salt) {
       resolve(salt);
     });
   });
+
   return randomBytes
-    .then(function (salt) {
+    .then((salt) => {
       return computeHash(password, salt);
     });
-}
+};
 
-function getUser(email) {
-  return new Promise(function (resolve, reject) {
+const getUser = (email) => {
+  return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
       Key: {
@@ -63,14 +64,14 @@ function getUser(email) {
           S: email
         }
       }
-    }, function (err, data) {
+    }, (err, data) => {
       if (err) {
         return reject(err);
       }
       if (data.Item) {
-        var hash = data.Item.passwordHash.S;
-        var salt = data.Item.passwordSalt.S;
-        var verified = data.Item.verified.BOOL;
+        let hash = data.Item.passwordHash.S;
+        let salt = data.Item.passwordSalt.S;
+        let verified = data.Item.verified.BOOL;
         return resolve({
           hash: hash,
           salt: salt,
@@ -80,36 +81,37 @@ function getUser(email) {
       reject(new Error('UserNotFound'));
     });
   });
-}
+};
 
-var joiEventSchema = Joi.object().keys({
+const joiEventSchema = Joi.object().keys({
   email: Joi.string().email(),
   password: Joi.string().min(6)
 });
 
-var joiOptions = {
+const joiOptions = {
   abortEarly: false
 };
 
-function validate(event) {
-  return new Promise(function (resolve, reject) {
-    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+const validate = (event) => {
+  return new Promise((resolve, reject) => {
+    Joi.validate(event, joiEventSchema, joiOptions, (err) => {
       if (err) {
         return reject(err);
       }
       resolve();
     });
   });
-}
+};
 
-exports.handler = function (event, context) {
+exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
 
+  let email = event.payload.email;
+  let password = event.payload.password;
+
   validate(event.payload)
-    .then(function () {
-      var email = event.payload.email;
-      var password = event.payload.password;
+    .then(() => {
       getUser(email)
         .then(function(getUserResult){
           console.log(getUserResult);
@@ -155,7 +157,7 @@ exports.handler = function (event, context) {
           });
         });
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.log(err);
       context.fail({
         success: false,

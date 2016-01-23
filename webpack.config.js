@@ -9,7 +9,13 @@ module.exports = {
   devtool: 'eval-source-map',
   assets: {
     stats: {
-      colors: true
+      assets: true,
+      colors: true,
+      version: true,
+      hash: true,
+      timings: true,
+      chunks: false,
+      chunkModules: false
     }
   },
   entry: {

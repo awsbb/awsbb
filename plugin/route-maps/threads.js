@@ -1,6 +1,6 @@
 'use strict';
 
-const ThreadsGet = require('../aws/lambda/ThreadsGet');
+import ThreadsGet from '../aws/lambda/ThreadsGet';
 
 export function setup(server) {
   server.route({

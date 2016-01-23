@@ -5,24 +5,24 @@ try {
   require('babel-polyfill');
 } catch (e) {}
 
-var pkg = require('../package.json');
+import pkg from '../package.json';
 
-var Joi = require('joi');
+import Joi from 'joi';
 
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
+import Promise from 'bluebird';
+import AWS from 'aws-sdk';
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-var DynamoDB = new AWS.DynamoDB({
+const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-function getUser(email) {
-  return new Promise(function (resolve, reject) {
+const getUser = (email) => {
+  return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
       Key: {
@@ -30,13 +30,13 @@ function getUser(email) {
           S: email
         }
       }
-    }, function (err, data) {
+    }, (err, data) => {
       if (err) {
         return reject(err);
       }
       if (data.Item) {
-        var verified = data.Item.verified.BOOL;
-        var token = null;
+        let verified = data.Item.verified.BOOL;
+        let token = null;
         if (!verified) {
           token = data.Item.verifyToken.S;
         }
@@ -48,10 +48,10 @@ function getUser(email) {
       reject(new Error('UserNotFound'));
     });
   });
-}
+};
 
-function updateUser(email) {
-  return new Promise(function (resolve, reject) {
+const updateUser = (email) => {
+  return new Promise((resolve, reject) => {
     DynamoDB.updateItem({
       TableName: 'awsBB_Users',
       Key: {
@@ -70,45 +70,46 @@ function updateUser(email) {
           Action: 'DELETE'
         }
       }
-    }, function (err, data) {
+    }, (err, data) => {
       if (err) {
         return reject(err);
       }
       resolve(data);
     });
   });
-}
+};
 
-var joiEventSchema = Joi.object().keys({
+const joiEventSchema = Joi.object().keys({
   email: Joi.string().email(),
   verify: Joi.string().hex().min(2)
 });
 
-var joiOptions = {
+const joiOptions = {
   abortEarly: false
 };
 
-function validate(event) {
-  return new Promise(function (resolve, reject) {
-    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+const validate = (event) => {
+  return new Promise((resolve, reject) => {
+    Joi.validate(event, joiEventSchema, joiOptions, (err) => {
       if (err) {
         return reject(err);
       }
       resolve();
     });
   });
-}
+};
 
-exports.handler = function (event, context) {
+exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
 
+  let email = event.payload.email;
+  let verify = event.payload.verify;
+
   validate(event.payload)
-    .then(function () {
-      var email = event.payload.email;
-      var verify = event.payload.verify;
+    .then(() => {
       getUser(email)
-        .then(function (result) {
+        .then((result) => {
           console.log(result);
           if (result.verified) {
             return context.succeed({
@@ -122,13 +123,13 @@ exports.handler = function (event, context) {
             });
           }
           updateUser(email)
-            .then(function (result) {
+            .then((result) => {
               console.log(result);
               context.succeed({
                 success: true
               });
             })
-            .catch(function (err) {
+            .catch((err) => {
               console.log(err);
               context.fail({
                 success: false,
@@ -136,7 +137,7 @@ exports.handler = function (event, context) {
               });
             });
         })
-        .catch(function (err) {
+        .catch((err) => {
           console.log(err);
           context.fail({
             success: false,
@@ -144,7 +145,7 @@ exports.handler = function (event, context) {
           });
         });
     })
-    .catch(function (err) {
+    .catch((err) => {
       console.log(err);
       context.fail({
         success: false,

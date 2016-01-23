@@ -1,7 +1,7 @@
 'use strict';
 
-const nodemailer = require('nodemailer');
-const mg = require('nodemailer-mailgun-transport');
+import nodemailer from 'nodemailer';
+import mg from 'nodemailer-mailgun-transport';
 
 const auth = {
   auth: {

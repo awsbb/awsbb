@@ -62,6 +62,7 @@ var computeHash = function computeHash(password, salt) {
       resolve(salt);
     });
   });
+
   return randomBytes.then(function (salt) {
     return computeHash(password, salt);
   });
@@ -81,14 +82,11 @@ var getUser = function getUser(email) {
         return reject(err);
       }
       if (data.Item) {
-        var hash = data.Item.passwordHash.S;
-        var salt = data.Item.passwordSalt.S;
-        var verified = data.Item.verified.BOOL;
-        return resolve({
-          hash: hash,
-          salt: salt,
-          verified: verified
-        });
+        if (data.Item.lostToken) {
+          var token = data.Item.lostToken.S;
+          return resolve(token);
+        }
+        return reject(new Error('UserHasNoLostToken'));
       }
       reject(new Error('UserNotFound'));
     });
@@ -116,11 +114,14 @@ var updateUser = function updateUser(email, hash, salt) {
           Value: {
             S: salt
           }
+        },
+        lostToken: {
+          Action: 'DELETE'
         }
       }
     }, function (err, data) {
       if (err) {
-        return reject(err);
+        return reject(err, data);
       }
       resolve(data);
     });
@@ -129,7 +130,7 @@ var updateUser = function updateUser(email, hash, salt) {
 
 var joiEventSchema = _joi2.default.object().keys({
   email: _joi2.default.string().email(),
-  currentPassword: _joi2.default.string().min(6),
+  lost: _joi2.default.string().hex().min(2),
   password: _joi2.default.string().min(6)
 });
 
@@ -153,45 +154,23 @@ exports.handler = function (event, context) {
   console.log('Context:', context);
 
   var email = event.payload.email;
-  var currentPassword = event.payload.currentPassword;
+  var lost = event.payload.lost;
   var password = event.payload.password;
 
   validate(event.payload).then(function () {
-    getUser(email).then(function (getUserResult) {
-      console.log(getUserResult);
-      if (!getUserResult.hash) {
+    getUser(email).then(function (token) {
+      console.log(token);
+      if (lost !== token) {
         return context.fail({
           success: false,
-          message: 'UserHasNoHash'
+          message: 'InvalidResetPasswordToken'
         });
       }
-      if (!getUserResult.verified) {
-        return context.fail({
-          success: false,
-          message: 'UserNotVerified'
-        });
-      }
-      computeHash(currentPassword, getUserResult.salt).then(function (computeCurrentHashResult) {
-        console.log(computeCurrentHashResult);
-        if (getUserResult.hash !== computeCurrentHashResult.hash) {
-          return context.fail({
-            success: false,
-            message: 'IncorrectPassword'
-          });
-        }
-        computeHash(password).then(function (computeHashResult) {
-          console.log(computeHashResult);
-          updateUser(email, computeHashResult.hash, computeHashResult.salt).then(function (updateUserResult) {
-            console.log(updateUserResult);
-            context.succeed({
-              success: true
-            });
-          }).catch(function (err) {
-            console.log(err);
-            context.fail({
-              success: false,
-              message: err.message
-            });
+      computeHash(password).then(function (computeHashResult) {
+        updateUser(email, computeHashResult.hash, computeHashResult.salt).then(function (updateUserResult) {
+          console.log(updateUserResult);
+          context.succeed({
+            success: true
           });
         }).catch(function (err) {
           console.log(err);

@@ -8,10 +8,6 @@ var _joi = require('joi');
 
 var _joi2 = _interopRequireDefault(_joi);
 
-var _crypto = require('crypto');
-
-var _crypto2 = _interopRequireDefault(_crypto);
-
 var _bluebird = require('bluebird');
 
 var _bluebird2 = _interopRequireDefault(_bluebird);
@@ -36,37 +32,6 @@ var DynamoDB = new _awsSdk2.default.DynamoDB({
   endpoint: new _awsSdk2.default.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-var length = 128;
-var iterations = 4096;
-
-var computeHash = function computeHash(password, salt) {
-  if (salt) {
-    return new _bluebird2.default(function (resolve, reject) {
-      _crypto2.default.pbkdf2(password, salt, iterations, length, function (err, key) {
-        if (err) {
-          return reject(err);
-        }
-        return resolve({
-          salt: salt,
-          hash: key.toString('base64')
-        });
-      });
-    });
-  }
-  var randomBytes = new _bluebird2.default(function (resolve, reject) {
-    _crypto2.default.randomBytes(length, function (err, salt) {
-      if (err) {
-        return reject(err);
-      }
-      salt = salt.toString('base64');
-      resolve(salt);
-    });
-  });
-  return randomBytes.then(function (salt) {
-    return computeHash(password, salt);
-  });
-};
-
 var getUser = function getUser(email) {
   return new _bluebird2.default(function (resolve, reject) {
     DynamoDB.getItem({
@@ -81,13 +46,14 @@ var getUser = function getUser(email) {
         return reject(err);
       }
       if (data.Item) {
-        var hash = data.Item.passwordHash.S;
-        var salt = data.Item.passwordSalt.S;
         var verified = data.Item.verified.BOOL;
+        var token = null;
+        if (!verified) {
+          token = data.Item.verifyToken.S;
+        }
         return resolve({
-          hash: hash,
-          salt: salt,
-          verified: verified
+          verified: verified,
+          token: token
         });
       }
       reject(new Error('UserNotFound'));
@@ -95,7 +61,7 @@ var getUser = function getUser(email) {
   });
 };
 
-var updateUser = function updateUser(email, hash, salt) {
+var updateUser = function updateUser(email) {
   return new _bluebird2.default(function (resolve, reject) {
     DynamoDB.updateItem({
       TableName: 'awsBB_Users',
@@ -105,17 +71,14 @@ var updateUser = function updateUser(email, hash, salt) {
         }
       },
       AttributeUpdates: {
-        passwordHash: {
+        verified: {
           Action: 'PUT',
           Value: {
-            S: hash
+            BOOL: true
           }
         },
-        passwordSalt: {
-          Action: 'PUT',
-          Value: {
-            S: salt
-          }
+        verifyToken: {
+          Action: 'DELETE'
         }
       }
     }, function (err, data) {
@@ -129,8 +92,7 @@ var updateUser = function updateUser(email, hash, salt) {
 
 var joiEventSchema = _joi2.default.object().keys({
   email: _joi2.default.string().email(),
-  currentPassword: _joi2.default.string().min(6),
-  password: _joi2.default.string().min(6)
+  verify: _joi2.default.string().hex().min(2)
 });
 
 var joiOptions = {
@@ -153,52 +115,26 @@ exports.handler = function (event, context) {
   console.log('Context:', context);
 
   var email = event.payload.email;
-  var currentPassword = event.payload.currentPassword;
-  var password = event.payload.password;
+  var verify = event.payload.verify;
 
   validate(event.payload).then(function () {
-    getUser(email).then(function (getUserResult) {
-      console.log(getUserResult);
-      if (!getUserResult.hash) {
-        return context.fail({
-          success: false,
-          message: 'UserHasNoHash'
+    getUser(email).then(function (result) {
+      console.log(result);
+      if (result.verified) {
+        return context.succeed({
+          success: true
         });
       }
-      if (!getUserResult.verified) {
+      if (verify !== result.token) {
         return context.fail({
           success: false,
-          message: 'UserNotVerified'
+          message: 'InvalidVerifyUserToken'
         });
       }
-      computeHash(currentPassword, getUserResult.salt).then(function (computeCurrentHashResult) {
-        console.log(computeCurrentHashResult);
-        if (getUserResult.hash !== computeCurrentHashResult.hash) {
-          return context.fail({
-            success: false,
-            message: 'IncorrectPassword'
-          });
-        }
-        computeHash(password).then(function (computeHashResult) {
-          console.log(computeHashResult);
-          updateUser(email, computeHashResult.hash, computeHashResult.salt).then(function (updateUserResult) {
-            console.log(updateUserResult);
-            context.succeed({
-              success: true
-            });
-          }).catch(function (err) {
-            console.log(err);
-            context.fail({
-              success: false,
-              message: err.message
-            });
-          });
-        }).catch(function (err) {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
+      updateUser(email).then(function (result) {
+        console.log(result);
+        context.succeed({
+          success: true
         });
       }).catch(function (err) {
         console.log(err);

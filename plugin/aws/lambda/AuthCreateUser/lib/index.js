@@ -155,18 +155,20 @@ exports.handler = (event, context) => {
   console.log('Event:', event);
   console.log('Context:', context);
 
+  let email = event.payload.email;
+  let password = event.payload.password;
+
   return validate(event.payload)
     .then(() => {
-      let password = event.payload.password;
       return computeHash(password);
     })
-    .then((hash) => {
-      console.log(hash);
-      return ensureUser(event.payload.email);
+    .then((computeHashResult) => {
+      console.log(computeHashResult);
+      return ensureUser(email, computeHashResult.hash, computeHashResult.salt);
     })
     .then((token) => {
       console.log(token);
-      return sendVerificationEmail(event.payload.email, token);
+      return sendVerificationEmail(email, token);
     })
     .then((info) => {
       console.log(info);

@@ -1,7 +1,7 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 export function mapRoutes(server) {
   return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ export function mapRoutes(server) {
       if (err) {
         return reject(err);
       }
-      files.map(file => {
+      files.map((file) => {
         var routeMaps = require('./route-maps/' + file);
         routeMaps.setup(server);
       });

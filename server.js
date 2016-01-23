@@ -13,6 +13,7 @@ try {
 
 const Hapi = require('hapi');
 const WebpackPlugin = require('hapi-webpack-plugin');
+
 const server = new Hapi.Server({
   connections: {
     router: {
