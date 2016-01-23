@@ -162,10 +162,10 @@ exports.handler = (event, context) => {
     })
     .then((hash) => {
       console.log(hash);
-
       return ensureUser(event.payload.email);
     })
     .then((token) => {
+      console.log(token);
       return sendVerificationEmail(event.payload.email, token);
     })
     .then((info) => {
