@@ -5,7 +5,7 @@ try {
   require('babel-polyfill');
 } catch (e) {}
 
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 const Joi = require('joi');
 
