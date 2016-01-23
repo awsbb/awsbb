@@ -21,6 +21,7 @@
     "async": "*",
     "aws-sdk": "*",
     "babel": "*",
+    "babel-cli": "*",
     "babel-core": "*",
     "babel-eslint": "*",
     "babel-loader": "*",
