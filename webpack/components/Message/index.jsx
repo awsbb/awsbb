@@ -2,6 +2,8 @@
 
 import React, { PropTypes } from 'react';
 import { Alert } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { routeActions } from 'redux-simple-router';
 
 import './style.css';
 
@@ -57,4 +59,6 @@ Message.propTypes = {
   bsStyle: PropTypes.string
 };
 
-export default Message;
+export default connect(null, {
+  push: routeActions.push
+})(Message);

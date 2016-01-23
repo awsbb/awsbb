@@ -58,9 +58,6 @@ class Header extends React.Component {
   }
 }
 
-export default connect(
-  null,
-  {
-    push: routeActions.push
-  }
-)(Header);
+export default connect(null, {
+  push: routeActions.push
+})(Header);

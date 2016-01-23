@@ -1,10 +1,12 @@
 'use strict';
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { routeActions } from 'redux-simple-router';
 
 import './style.css';
 
-export default class Footer extends React.Component {
+class Footer extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.stateChanged = this.stateChanged.bind(this);
@@ -57,3 +59,7 @@ export default class Footer extends React.Component {
     );
   }
 }
+
+export default connect(null, {
+  push: routeActions.push
+})(Footer);
