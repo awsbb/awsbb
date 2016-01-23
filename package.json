@@ -54,6 +54,7 @@
     "lodash": "*",
     "nodemailer": "*",
     "nodemailer-mailgun-transport": "*",
+    "nodemon": "*",
     "postcss-loader": "*",
     "postcss-modules": "*",
     "prettydiff": "*",
