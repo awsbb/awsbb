@@ -2,6 +2,8 @@
 
 var pkg = require('./package.json');
 
+var Joi = require('joi');
+
 var crypto = require('crypto');
 var format = require('string-format');
 var Promise = require('bluebird');
@@ -57,7 +59,7 @@ function ensureUser(email, password, salt) {
       }
       token = token.toString('hex');
       DynamoDB.putItem({
-        TableName: 'AuthUsers',
+        TableName: 'awsBB_Users',
         Item: {
           email: {
             S: email
@@ -118,44 +120,81 @@ function sendVerificationEmail(email, token) {
   });
 }
 
+var joiEventSchema = Joi.object().keys({
+  email: Joi.string().email(),
+  password: Joi.string().min(6),
+  confirmation: Joi.string().min(6)
+});
+
+var joiOptions = {
+  abortEarly: false
+};
+
+function validate(event) {
+  return new Promise(function (resolve, reject) {
+    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+      if (err) {
+        return reject(err);
+      }
+      if (event.password === event.confirmation) {
+        return resolve();
+      }
+      reject(new Error('PasswordConfirmationNotEqual'));
+    });
+  });
+}
+
 exports.handler = function (event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  var email = event.payload.email;
-  var password = event.payload.password;
-
-  computeHash(password)
-    .then(function (computeHashResult) {
-      console.log(computeHashResult);
-      ensureUser(email, result.hash, result.salt)
-        .then(function (token) {
-          console.log(token);
-          sendVerificationEmail(email, token)
-            .then(function (info) {
-              console.log(info);
-              context.succeed({
-                success: true
-              });
+  validate(event.payload)
+    .then(function () {
+      var email = event.payload.email;
+      var password = event.payload.password;
+      var confirmation = event.payload.confirmation;
+      computeHash(password)
+        .then(function (computeHashResult) {
+          console.log(computeHashResult);
+          ensureUser(email, computeHashResult.hash, computeHashResult.salt)
+            .then(function (token) {
+              console.log(token);
+              sendVerificationEmail(email, token)
+                .then(function (info) {
+                  console.log(info);
+                  context.succeed({
+                    success: true
+                  });
+                })
+                .catch(function (err) {
+                  console.log(err);
+                  context.fail({
+                    success: false,
+                    message: err.message
+                  });
+                });
             })
             .catch(function (err) {
               console.log(err);
               context.fail({
-                success: false
+                success: false,
+                message: err.message
               });
             });
         })
         .catch(function (err) {
           console.log(err);
           context.fail({
-            success: false
+            success: false,
+            message: err.message
           });
         });
     })
     .catch(function (err) {
       console.log(err);
       context.fail({
-        success: false
+        success: false,
+        message: err.message
       });
     });
 };

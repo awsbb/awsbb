@@ -40,9 +40,6 @@ class Home extends React.Component {
   }
 }
 
-export default connect(
-  null,
-  {
-    push: routeActions.push
-  }
-)(Home);
+export default connect(null, {
+  push: routeActions.push
+})(Home);

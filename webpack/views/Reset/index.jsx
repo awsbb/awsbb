@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
@@ -10,7 +10,7 @@ import { Validators } from '../../common';
 
 import './style.css';
 
-class Register extends React.Component {
+class Reset extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.stateChanged = this.stateChanged.bind(this);
@@ -34,26 +34,11 @@ class Register extends React.Component {
 
   }
   render() {
-    const { push } = this.props;
-    let envelope = <FontAwesome name="envelope" fixedWidth/>;
+    const { push, location } = this.props;
     let lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="register">
         <form className="form-horizontal">
-          <Input
-            type="email"
-            value={this.state.email}
-            placeholder="Enter email"
-            label="Email Address:"
-            help="Validation is based on a simple regex."
-            bsStyle={this.resolveStyleFromState('email')}
-            hasFeedback
-            name="email"
-            ref="email"
-            labelClassName="col-xs-2"
-            onChange={this.handleOnChange}
-            addonBefore={envelope}
-            wrapperClassName="col-xs-10"/>
           <Input
             type="password"
             value={this.state.password}
@@ -88,7 +73,7 @@ class Register extends React.Component {
                 bsStyle="success"
                 onClick={this.handleSubmit}
                 disabled={this.canSubmit()}>
-                ★　REGISTER　★
+                ★　RESET　★
               </Button>
             </div>
           </div>
@@ -117,19 +102,23 @@ class Register extends React.Component {
     }
   }
   handleSubmit() {
-    let email = this.refs.email.getValue();
+    let email = location.query.email;
+    let token = location.query.lost;
     let password = this.refs.password.getValue();
     let confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
+    console.log('token:', token);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
   }
   canSubmit() {
+    const { location } = this.props;
     try {
-      let email = this.refs.email.getValue();
+      let email = location.query.email;
+      let token = location.query.lost;
       let password = this.refs.password.getValue();
       let confirmation = this.refs.confirmation.getValue();
-      let validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation);
+      let validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation) && token;
       return !validState;
     } catch (e) {
       return true;
@@ -139,4 +128,4 @@ class Register extends React.Component {
 
 export default connect(null, {
   push: routeActions.push
-})(Register);
+})(Reset);

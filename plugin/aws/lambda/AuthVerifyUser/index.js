@@ -2,6 +2,8 @@
 
 var pkg = require('./package.json');
 
+var Joi = require('joi');
+
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
@@ -17,7 +19,7 @@ var DynamoDB = new AWS.DynamoDB({
 function getUser(email) {
   return new Promise(function (resolve, reject) {
     DynamoDB.getItem({
-      TableName: 'AuthUsers',
+      TableName: 'awsBB_Users',
       Key: {
         email: {
           S: email
@@ -38,7 +40,7 @@ function getUser(email) {
           token: token
         });
       }
-      return reject(new Error('UserNotFound'));
+      reject(new Error('UserNotFound'));
     });
   });
 }
@@ -46,7 +48,7 @@ function getUser(email) {
 function updateUser(email) {
   return new Promise(function (resolve, reject) {
     DynamoDB.updateItem({
-      TableName: 'AuthUsers',
+      TableName: 'awsBB_Users',
       Key: {
         email: {
           S: email
@@ -72,44 +74,76 @@ function updateUser(email) {
   });
 }
 
+var joiEventSchema = Joi.object().keys({
+  email: Joi.string().email(),
+  verify: Joi.string().hex().min(2)
+});
+
+var joiOptions = {
+  abortEarly: false
+};
+
+function validate(event) {
+  return new Promise(function (resolve, reject) {
+    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
 exports.handler = function (event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  var email = event.payload.email;
-  var verify = event.payload.verify;
-
-  getUser(email)
-    .then(function (result) {
-      console.log(result);
-      if (result.verified) {
-        return context.succeed({
-          success: true
-        });
-      }
-      if (verify !== result.token) {
-        return context.fail({
-          success: false
-        });
-      }
-      updateUser(email)
+  validate(event.payload)
+    .then(function () {
+      var email = event.payload.email;
+      var verify = event.payload.verify;
+      getUser(email)
         .then(function (result) {
           console.log(result);
-          context.succeed({
-            success: true
-          });
+          if (result.verified) {
+            return context.succeed({
+              success: true
+            });
+          }
+          if (verify !== result.token) {
+            return context.fail({
+              success: false,
+              message: 'InvalidVerifyUserToken'
+            });
+          }
+          updateUser(email)
+            .then(function (result) {
+              console.log(result);
+              context.succeed({
+                success: true
+              });
+            })
+            .catch(function (err) {
+              console.log(err);
+              context.fail({
+                success: false,
+                message: err.message
+              });
+            });
         })
         .catch(function (err) {
           console.log(err);
           context.fail({
-            success: false
+            success: false,
+            message: err.message
           });
         });
     })
     .catch(function (err) {
       console.log(err);
       context.fail({
-        success: false
+        success: false,
+        message: err.message
       });
     });
 };

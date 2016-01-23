@@ -2,6 +2,8 @@
 
 var pkg = require('./package.json');
 
+var Joi = require('joi');
+
 var crypto = require('crypto');
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
@@ -50,7 +52,7 @@ function computeHash(password, salt) {
 function getUser(email) {
   return new Promise(function (resolve, reject) {
     DynamoDB.getItem({
-      TableName: 'AuthUsers',
+      TableName: 'awsBB_Users',
       Key: {
         email: {
           S: email
@@ -70,7 +72,27 @@ function getUser(email) {
           verified: verified
         });
       }
-      return reject(new Error('UserNotFound'));
+      reject(new Error('UserNotFound'));
+    });
+  });
+}
+
+var joiEventSchema = Joi.object().keys({
+  email: Joi.string().email(),
+  password: Joi.string().min(6)
+});
+
+var joiOptions = {
+  abortEarly: false
+};
+
+function validate(event) {
+  return new Promise(function (resolve, reject) {
+    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
     });
   });
 }
@@ -79,46 +101,60 @@ exports.handler = function (event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  var email = event.payload.email;
-  var password = event.payload.password;
-
-  getUser(email)
-    .then(function(getUserResult){
-      console.log(getUserResult);
-      if(!getUserResult.hash) {
-        return context.fail({
-          success: false
-        });
-      }
-      if(!getUserResult.verified){
-        return context.fail({
-          success: false
-        });
-      }
-      computeHash(password, getUserResult.salt)
-        .then(function(computeHashResult){
-          console.log(computeHashResult);
-          if(getUserResult.hash !== computeHashResult.hash) {
+  validate(event.payload)
+    .then(function () {
+      var email = event.payload.email;
+      var password = event.payload.password;
+      getUser(email)
+        .then(function(getUserResult){
+          console.log(getUserResult);
+          if(!getUserResult.hash) {
             return context.fail({
-              success: false
+              success: false,
+              message: 'UserHasNoHash'
             });
           }
-          // TODO: Create AuthBearer Token and store in caching system
-          context.succeed({
-            success: true
-          });
+          if(!getUserResult.verified){
+            return context.fail({
+              success: false,
+              message: 'UserNotVerified'
+            });
+          }
+          computeHash(password, getUserResult.salt)
+            .then(function(computeHashResult){
+              console.log(computeHashResult);
+              if(getUserResult.hash !== computeHashResult.hash) {
+                return context.fail({
+                  success: false,
+                  message: 'IncorrectPassword'
+                });
+              }
+              // TODO: Create AuthBearer Token and store in caching system
+              context.succeed({
+                success: true
+              });
+            })
+            .catch(function(err) {
+              console.log(err);
+              context.fail({
+                success: false,
+                message: err.message
+              });
+            });
         })
-        .catch(function(err) {
+        .catch(function(err){
           console.log(err);
           context.fail({
-            success: false
+            success: false,
+            message: err.message
           });
         });
     })
-    .catch(function(err){
+    .catch(function (err) {
       console.log(err);
       context.fail({
-        success: false
+        success: false,
+        message: err.message
       });
     });
 };

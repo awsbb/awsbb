@@ -40,9 +40,6 @@ class About extends React.Component {
   }
 }
 
-export default connect(
-  null,
-  {
-    push: routeActions.push
-  }
-)(About);
+export default connect(null, {
+  push: routeActions.push
+})(About);

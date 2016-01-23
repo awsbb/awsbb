@@ -2,12 +2,16 @@
 
 var pkg = require('./package.json');
 
+var Joi = require('joi');
+
 var crypto = require('crypto');
+var format = require('string-format');
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
+  global.SES = new AWS.SES();
 }
 
 var DynamoDB = new AWS.DynamoDB({
@@ -18,39 +22,157 @@ var DynamoDB = new AWS.DynamoDB({
 var length = 128;
 var iterations = 4096;
 
-function computeHash(password, salt) {
-  if (salt) {
-    return new Promise(function (resolve, reject) {
-      crypto.pbkdf2(password, salt, iterations, length, function (err, key) {
-        if (err) {
-          return reject(err);
+function getUser(email) {
+  return new Promise(function (resolve, reject) {
+    DynamoDB.getItem({
+      TableName: 'awsBB_Users',
+      Key: {
+        email: {
+          S: email
         }
-        return resolve({
-          salt: salt,
-          hash: key.toString('base64')
-        });
-      });
-    });
-  }
-  var randomBytes = new Promise(function (resolve, reject) {
-    crypto.randomBytes(length, function (err, salt) {
+      }
+    }, function (err, data) {
       if (err) {
         return reject(err);
       }
-      salt = salt.toString('base64');
-      resolve(salt);
+      if (data.Item) {
+        return resolve(email);
+      }
+      reject(new Error('UserNotFound'));
     });
   });
-  return randomBytes
-    .then(function (salt) {
-      return computeHash(password, salt);
+}
+
+function storeToken(email) {
+  return new Promise(function (resolve, reject) {
+    crypto.randomBytes(length, function (err, token) {
+      if (err) {
+        return reject(err);
+      }
+      token = token.toString('hex');
+      DynamoDB.updateItem({
+        TableName: 'awsBB_Users',
+        Key: {
+          email: {
+            S: email
+          }
+        },
+        AttributeUpdates: {
+          lostToken: {
+            Action: 'PUT',
+            Value: {
+              S: token
+            }
+          }
+        }
+      }, function (err) {
+        if (err) {
+          return reject(err);
+        }
+        resolve(token);
+      });
     });
+  });
+}
+
+function sendLostPasswordEmail(email, token) {
+  return new Promise(function (resolve, reject) {
+    var subject = format('Password Lost For [{}]', Config.EXTERNAL_NAME);
+    var lostPasswordLink = format('{}?email={}&lost={}', Config.RESET_PAGE, encodeURIComponent(email), token);
+    var template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to reset your password</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
+    var HTML = format(template, subject, lostPasswordLink);
+    SES.sendEmail({
+      Source: Config.EMAIL_SOURCE,
+      Destination: {
+        ToAddresses: [
+          email
+        ]
+      },
+      Message: {
+        Subject: {
+          Data: subject
+        },
+        Body: {
+          Html: {
+            Data: HTML
+          }
+        }
+      }
+    }, function (err, info) {
+      if (err) {
+        return reject(err);
+      }
+      resolve(info);
+    });
+  });
+}
+
+var joiEventSchema = Joi.object().keys({
+  email: Joi.string().email()
+});
+
+var joiOptions = {
+  abortEarly: false
+};
+
+function validate(event) {
+  return new Promise(function (resolve, reject) {
+    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
 }
 
 exports.handler = function (event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
-  context.succeed({
-    success: true
-  });
+
+  validate(event.payload)
+    .then(function () {
+      var email = event.payload.email;
+      getUser(email)
+        .then(function (email) {
+          storeToken(email)
+            .then(function (token) {
+              sendLostPasswordEmail(email, token)
+                .then(function (info) {
+                  console.log(info);
+                  context.succeed({
+                    success: true
+                  });
+                })
+                .catch(function (err) {
+                  console.log(err);
+                  context.fail({
+                    success: false,
+                    message: err.message
+                  });
+                });
+            })
+            .catch(function (err) {
+              console.log(err);
+              context.fail({
+                success: false,
+                message: err.message
+              });
+            });
+        })
+        .catch(function (err) {
+          console.log(err);
+          context.fail({
+            success: false,
+            message: err.message
+          });
+        });
+    })
+    .catch(function (err) {
+      console.log(err);
+      context.fail({
+        success: false,
+        message: err.message
+      });
+    });
 };

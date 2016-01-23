@@ -14,9 +14,9 @@ const nodemailerMailgun = nodemailer.createTransport(mg(auth));
 
 export function sendEmail(options, callback) {
   var MGOptions = {
-    from: 'Administrator 👥 [awsBB] <administrator@awsbb.com>',
+    from: options.Source,
     to: options.Destination.ToAddresses[0],
-    subject: options.Message.Subject,
+    subject: options.Message.Subject.Data,
     html: options.Message.Body.Html.Data
   };
   nodemailerMailgun.sendMail(MGOptions, function (err, info) {

@@ -49,6 +49,7 @@
     "history": "*",
     "imports-loader": "*",
     "inert": "*",
+    "joi": "*",
     "lab": "*",
     "lodash": "*",
     "nodemailer": "*",
@@ -100,7 +101,7 @@
       "BUCKET": "bucket",
       "DDB_ENDPOINT": "http://127.0.0.1:8000",
       "DDBTables": [{
-        "TableName": "AuthUsers",
+        "TableName": "awsBB_Users",
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5

@@ -2,6 +2,8 @@
 
 var pkg = require('./package.json');
 
+var Joi = require('joi');
+
 var crypto = require('crypto');
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
@@ -50,7 +52,7 @@ function computeHash(password, salt) {
 function getUser(email) {
   return new Promise(function (resolve, reject) {
     DynamoDB.getItem({
-      TableName: 'AuthUsers',
+      TableName: 'awsBB_Users',
       Key: {
         email: {
           S: email
@@ -70,7 +72,7 @@ function getUser(email) {
           verified: verified
         });
       }
-      return reject(new Error('UserNotFound'));
+      reject(new Error('UserNotFound'));
     });
   });
 }
@@ -78,7 +80,7 @@ function getUser(email) {
 function updateUser(email, hash, salt) {
   return new Promise(function (resolve, reject) {
     DynamoDB.updateItem({
-      TableName: 'AuthUsers',
+      TableName: 'awsBB_Users',
       Key: {
         email: {
           S: email
@@ -107,70 +109,107 @@ function updateUser(email, hash, salt) {
   });
 }
 
+var joiEventSchema = Joi.object().keys({
+  email: Joi.string().email(),
+  currentPassword: Joi.string().min(6),
+  password: Joi.string().min(6)
+});
+
+var joiOptions = {
+  abortEarly: false
+};
+
+function validate(event) {
+  return new Promise(function (resolve, reject) {
+    Joi.validate(event, joiEventSchema, joiOptions, function (err) {
+      if (err) {
+        return reject(err);
+      }
+      resolve();
+    });
+  });
+}
+
 exports.handler = function (event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  var email = event.payload.email;
-  var currentPassword = event.payload.currentPassword;
-  var password = event.payload.password;
-
-  getUser(email)
-    .then(function (getUserResult) {
-      console.log(getUserResult);
-      if (!getUserResult.hash) {
-        return context.fail({
-          success: false
-        });
-      }
-      if (!getUserResult.verified) {
-        return context.fail({
-          success: false
-        });
-      }
-      computeHash(currentPassword, getUserResult.salt)
-        .then(function (computeCurrentHashResult) {
-          console.log(computeCurrentHashResult);
-          if (getUserResult.hash !== computeCurrentHashResult.hash) {
+  validate(event.payload)
+    .then(function () {
+      var email = event.payload.email;
+      var currentPassword = event.payload.currentPassword;
+      var password = event.payload.password;
+      getUser(email)
+        .then(function (getUserResult) {
+          console.log(getUserResult);
+          if (!getUserResult.hash) {
             return context.fail({
-              success: false
+              success: false,
+              message: 'UserHasNoHash'
             });
           }
-          computeHash(password)
-            .then(function (computeHashResult) {
-              console.log(computeHashResult);
-              updateUser(email, computeHashResult.hash, computeHashResult.salt)
-                .then(function (updateUserResult) {
-                  console.log(updateUserResult);
-                  context.succeed({
-                    success: true
-                  });
+          if (!getUserResult.verified) {
+            return context.fail({
+              success: false,
+              message: 'UserNotVerified'
+            });
+          }
+          computeHash(currentPassword, getUserResult.salt)
+            .then(function (computeCurrentHashResult) {
+              console.log(computeCurrentHashResult);
+              if (getUserResult.hash !== computeCurrentHashResult.hash) {
+                return context.fail({
+                  success: false,
+                  message: 'IncorrectPassword'
+                });
+              }
+              computeHash(password)
+                .then(function (computeHashResult) {
+                  console.log(computeHashResult);
+                  updateUser(email, computeHashResult.hash, computeHashResult.salt)
+                    .then(function (updateUserResult) {
+                      console.log(updateUserResult);
+                      context.succeed({
+                        success: true
+                      });
+                    })
+                    .catch(function (err) {
+                      console.log(err);
+                      context.fail({
+                        success: false,
+                        message: err.message
+                      });
+                    });
                 })
                 .catch(function (err) {
                   console.log(err);
                   context.fail({
-                    success: false
+                    success: false,
+                    message: err.message
                   });
                 });
             })
             .catch(function (err) {
               console.log(err);
               context.fail({
-                success: false
+                success: false,
+                message: err.message
               });
             });
         })
         .catch(function (err) {
           console.log(err);
           context.fail({
-            success: false
+            success: false,
+            message: err.message
           });
         });
     })
     .catch(function (err) {
       console.log(err);
       context.fail({
-        success: false
+        success: false,
+        message: err.message
       });
     });
 };

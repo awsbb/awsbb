@@ -36,6 +36,8 @@ import Home from './views/Home';
 import Login from './views/Login';
 import Register from './views/Register';
 import About from './views/About';
+import LostPassword from './views/LostPassword';
+import Reset from './views/Reset';
 
 import './style.css';
 
@@ -48,6 +50,8 @@ ReactDOM.render(
           <Route path="login" component={Login} />
           <Route path="register" component={Register} />
           <Route path="about" component={About} />
+          <Route path="lostPassword" component={LostPassword} />
+          <Route path="reset" component={Reset} />
         </Route>
       </Router>
     </div>
