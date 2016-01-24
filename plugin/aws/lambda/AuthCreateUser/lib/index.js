@@ -32,6 +32,8 @@ const DynamoDB = new AWS.DynamoDB({
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
+const length = 128;
+
 const ensureUser = (email, password, salt) => {
   return new Promise((resolve, reject) => {
     crypto.randomBytes(length, (err, token) => {

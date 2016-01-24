@@ -1,25 +1,28 @@
 'use strict';
 
-import { DataActions } from '../actions';
+import { AccountActions } from '../actions';
 
-export default function data(state = {
+export default function authorize(state = {
   isFetching: false
 }, action) {
   switch (action.type) {
-    case DataActions.DATA_REQUEST:
+    case AccountActions.CREATE_USER_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
-        config: action.config
+        isAuthenticated: false,
+        user: action.credentials
       });
-    case DataActions.DATA_SUCCESS:
+    case AccountActions.CREATE_USER_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
-        data: action.data,
+        isAuthenticated: true,
+        user: action.user,
         message: ''
       });
-    case DataActions.DATA_FAILURE:
+    case AccountActions.CREATE_USER_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
+        isAuthenticated: false,
         message: action.message
       });
     default:

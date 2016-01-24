@@ -5,7 +5,6 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import Header from '../../components/Header';
-import Message from '../../components/Message';
 import Footer from '../../components/Footer';
 
 import './style.css';
@@ -28,11 +27,10 @@ class App extends React.Component {
 
   }
   render() {
-    const { children, isAuthenticated, message, dispatch } = this.props;
+    const { children, isAuthenticated, dispatch } = this.props;
     return (
       <div>
         <Header isAuthenticated={isAuthenticated}/>
-        <Message message={message}/>
         <section id="main">
           <div className="container">
             <div className="row">
@@ -49,16 +47,14 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  message: PropTypes.string
+  isAuthenticated: PropTypes.bool.isRequired
 };
 
 function mapStateToProps(state) {
   const { authorize } = state;
-  const { isAuthenticated, message } = authorize;
+  const { isAuthenticated } = authorize;
   return {
-    isAuthenticated,
-    message
+    isAuthenticated
   };
 }
 

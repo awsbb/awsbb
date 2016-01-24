@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
+import { AccountActions } from '../../actions';
+
 import { Validators } from '../../common';
 
 import './style.css';
@@ -17,6 +19,7 @@ class Register extends React.Component {
     this.stateChanged = this.stateChanged.bind(this);
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   stateChanged() {
 
@@ -125,12 +128,20 @@ class Register extends React.Component {
     }
   }
   handleSubmit() {
+    const { push, accountActions } = this.props;
     let email = this.refs.email.getValue();
     let password = this.refs.password.getValue();
     let confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
+    accountActions.createUser({
+      email,
+      password,
+      confirmation
+    })
+    .then(() => push('/thanks?type=CreateUser'))
+    .catch(() => {});
   }
   canSubmit() {
     try {
@@ -157,7 +168,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    accountActions: bindActionCreators(AccountActions, dispatch)
   };
 }
 

@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
-import * as Actions from '../../actions';
+import { AuthorizeActions } from '../../actions';
 
 import './style.css';
 
@@ -69,8 +69,8 @@ class Header extends React.Component {
     );
   }
   handleLogout() {
-    const { push, actions } = this.props;
-    actions.logout()
+    const { push, authorizeActions } = this.props;
+    authorizeActions.logout()
       .then(() => {
         push('/');
       });
@@ -90,7 +90,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     push: bindActionCreators(routeActions.push, dispatch),
-    actions: bindActionCreators(Actions, dispatch)
+    authorizeActions: bindActionCreators(AuthorizeActions, dispatch)
   };
 }
 
