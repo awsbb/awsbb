@@ -7,12 +7,15 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
+import * as Actions from '../../actions';
+
 import './style.css';
 
 class Header extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.stateChanged = this.stateChanged.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
   }
   stateChanged() {
 
@@ -38,7 +41,7 @@ class Header extends React.Component {
     </Nav>;
     if(isAuthenticated) {
       UserNaviation = <Nav pullRight>
-        <NavItem onClick={() => push('/logout')}>
+        <NavItem onClick={() => {this.handleLogout();}}>
             <i className="fa fa-fw fa-sign-out"></i> Logout
           </NavItem>
       </Nav>;
@@ -65,6 +68,13 @@ class Header extends React.Component {
       </Navbar>
     );
   }
+  handleLogout() {
+    const { push, actions } = this.props;
+    actions.logout()
+      .then(() => {
+        push('/');
+      });
+  }
 }
 
 Header.propTypes = {};
@@ -79,7 +89,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

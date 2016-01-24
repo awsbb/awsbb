@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import * as LoginActions from '../../actions/login.js';
+import * as Actions from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -117,16 +117,17 @@ class Login extends React.Component {
     }
   }
   handleSubmit() {
-    const { push, loginActions } = this.props;
+    const { push, actions } = this.props;
     let email = this.refs.email.getValue();
     let password = this.refs.password.getValue();
     console.log('email:', email);
     console.log('password:', password);
-    loginActions.login({
+    actions.login({
       email: email,
       password: password
     })
-    .then(() => push('/'));
+    .then(() => push('/'))
+    .catch(() => {});
   }
   canSubmit() {
     try {
@@ -153,7 +154,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     push: bindActionCreators(routeActions.push, dispatch),
-    loginActions: bindActionCreators(LoginActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

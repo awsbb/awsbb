@@ -35,7 +35,7 @@ class Register extends React.Component {
 
   }
   render() {
-    const { push } = this.props;
+    const { push, isAuthenticated } = this.props;
     if(isAuthenticated) {
       return (
         <section id="register">

@@ -13,7 +13,6 @@ import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
 import { syncHistory, routeReducer } from 'redux-simple-router';
 
-import api from './middleware/api.js';
 import reducers from './reducers';
 
 const history = createHistory();
@@ -27,12 +26,11 @@ const reducer = combineReducers(Object.assign({}, reducers, {
 const store = compose(autoRehydrate(), applyMiddleware(
   middleware,
   thunk,
-  api,
   logger
 ))(createStore)(reducer);
 
 persistStore(store, {
-  blacklist: ['authorize']
+  blacklist: ['authorize', 'data']
 });
 
 // CONTAINER

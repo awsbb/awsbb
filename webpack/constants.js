@@ -8,3 +8,7 @@ export const LOGIN_FAILURE = 'LOGIN_FAILURE';
 export const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 export const LOGOUT_FAILURE = 'LOGOUT_FAILURE';
+// DATA
+export const DATA_REQUEST = 'DATA_REQUEST';
+export const DATA_SUCCESS = 'DATA_SUCCESS';
+export const DATA_FAILURE = 'DATA_FAILURE';
