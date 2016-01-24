@@ -27,7 +27,22 @@ class Header extends React.Component {
 
   }
   render() {
-    const { push } = this.props;
+    const { push, isAuthenticated } = this.props;
+    var UserNaviation = <Nav pullRight>
+      <NavItem onClick={() => push('/login')}>
+        <i className="fa fa-fw fa-sign-in"></i> Login
+      </NavItem>
+      <NavItem onClick={() => push('/register')}>
+        <i className="fa fa-fw fa-key"></i> Register
+      </NavItem>
+    </Nav>;
+    if(isAuthenticated) {
+      UserNaviation = <Nav pullRight>
+        <NavItem onClick={() => push('/logout')}>
+            <i className="fa fa-fw fa-sign-out"></i> Logout
+          </NavItem>
+      </Nav>;
+    }
     return (
       <Navbar staticTop={true}>
         <Navbar.Header>
@@ -45,14 +60,7 @@ class Header extends React.Component {
               <i className="fa fa-fw fa-flag"></i> About
             </NavItem>
           </Nav>
-          <Nav pullRight>
-            <NavItem onClick={() => push('/login')}>
-              <i className="fa fa-fw fa-sign-in"></i> Login
-            </NavItem>
-            <NavItem onClick={() => push('/register')}>
-              <i className="fa fa-fw fa-key"></i> Register
-            </NavItem>
-          </Nav>
+          {UserNaviation}
         </Navbar.Collapse>
       </Navbar>
     );
@@ -62,7 +70,11 @@ class Header extends React.Component {
 Header.propTypes = {};
 
 function mapStateToProps(state) {
-  return {};
+  const { authorize } = state;
+  const { isAuthenticated } = authorize;
+  return {
+    isAuthenticated
+  };
 }
 
 function mapDispatchToProps(dispatch) {
