@@ -16,6 +16,7 @@ export default function authorize(state = {
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: true,
+        user: action.user,
         message: ''
       });
     case AuthorizeActions.LOGIN_FAILURE:
@@ -33,6 +34,7 @@ export default function authorize(state = {
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: false,
+        user: null,
         message: ''
       });
     default:

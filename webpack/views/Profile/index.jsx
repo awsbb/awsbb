@@ -26,16 +26,23 @@ class Profile extends React.Component {
 
   }
   render() {
-    const { push } = this.props;
+    const { push, isAuthenticated, user } = this.props;
+    if(isAuthenticated) {
+      return (
+        <section id="profile">
+          <h1>PROFILE</h1>
+          <Button
+            bsClass="btn"
+            bsStyle="primary"
+            onClick={() => push('/')}>
+            ★　GO HOME　★
+          </Button>
+        </section>
+      );
+    }
     return (
       <section id="profile">
-        <h1>PROFILE</h1>
-        <Button
-          bsClass="btn"
-          bsStyle="primary"
-          onClick={() => push('/')}>
-          ★　GO HOME　★
-        </Button>
+        You can't view this page unless you are logged in.
       </section>
     );
   }
@@ -44,7 +51,12 @@ class Profile extends React.Component {
 Profile.propTypes = {};
 
 function mapStateToProps(state) {
-  return {};
+  const { authorize } = state;
+  const { isAuthenticated, user } = authorize;
+  return {
+    isAuthenticated,
+    user
+  };
 }
 
 function mapDispatchToProps(dispatch) {

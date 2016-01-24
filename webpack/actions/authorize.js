@@ -18,11 +18,14 @@ export function loginRequest() {
   };
 };
 
-export function loginSuccess() {
+export function loginSuccess(credentials) {
   return {
     type: LOGIN_SUCCESS,
     isFetching: false,
-    isAuthenticated: true
+    isAuthenticated: true,
+    user: {
+      email: credentials.email
+    }
   };
 };
 
@@ -64,7 +67,7 @@ export function login(credentials) {
     return Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
         localStorage.setItem('token', data.token);
-        dispatch(loginSuccess());
+        dispatch(loginSuccess(credentials));
         return Promise.resolve(data);
       })
       .catch((err) => {

@@ -30,7 +30,7 @@ const store = compose(autoRehydrate(), applyMiddleware(
 ))(createStore)(reducer);
 
 persistStore(store, {
-  blacklist: ['authorize', 'data']
+  blacklist: ['data']
 });
 
 // CONTAINER
