@@ -10,14 +10,12 @@ export default function authorize(state = {
     case AuthorizeActions.LOGIN_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
-        isAuthenticated: false,
-        user: action.credentials
+        isAuthenticated: false
       });
     case AuthorizeActions.LOGIN_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: true,
-        user: action.user,
         message: ''
       });
     case AuthorizeActions.LOGIN_FAILURE:
@@ -29,13 +27,13 @@ export default function authorize(state = {
     case AuthorizeActions.LOGOUT_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
-        isAuthenticated: true,
-        message: ''
+        isAuthenticated: true
       });
     case AuthorizeActions.LOGOUT_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
-        isAuthenticated: false
+        isAuthenticated: false,
+        message: ''
       });
     default:
       return state;

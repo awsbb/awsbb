@@ -45,6 +45,7 @@ import Profile from './views/Profile';
 import Register from './views/Register';
 import Reset from './views/Reset';
 import Thanks from './views/Thanks';
+import Verify from './views/Verify';
 
 import './style.css';
 
@@ -61,6 +62,7 @@ ReactDOM.render(
           <Route path="register" component={Register} />
           <Route path="reset" component={Reset} />
           <Route path="thanks" component={Thanks} />
+          <Route path="verify" component={Verify} />
         </Route>
       </Router>
     </div>

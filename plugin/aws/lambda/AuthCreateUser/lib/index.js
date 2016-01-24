@@ -74,7 +74,7 @@ const ensureUser = (email, password, salt) => {
 const sendVerificationEmail = (email, token) => {
   return new Promise((resolve, reject) => {
     let subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
-    let verificationLink = format('{}?email={}&verify={}', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
+    let verificationLink = format('{}?email={}&verify={}&type=user', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
     let template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
     let HTML = format(template, subject, verificationLink);
 

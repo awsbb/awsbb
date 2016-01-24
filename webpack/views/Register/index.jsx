@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { AccountActions } from '../../actions';
+import { DataActions } from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -128,14 +128,14 @@ class Register extends React.Component {
     }
   }
   handleSubmit() {
-    const { push, accountActions } = this.props;
+    const { push, dataActions } = this.props;
     let email = this.refs.email.getValue();
     let password = this.refs.password.getValue();
     let confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    accountActions.createUser({
+    dataActions.postData('http://127.0.0.1:3000/api/AuthCreateUser', {
       email,
       password,
       confirmation
@@ -169,7 +169,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     push: bindActionCreators(routeActions.push, dispatch),
-    accountActions: bindActionCreators(AccountActions, dispatch)
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

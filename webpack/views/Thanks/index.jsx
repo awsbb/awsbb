@@ -46,6 +46,30 @@ class Thanks extends React.Component {
             {button}
           </section>
         );
+      case 'LostPassword':
+        return (
+          <section id="thanks">
+            <p>
+              We've sent you a reset link! Check your email.
+            </p>
+            <p>
+              A reset link as been sent to the email you provided. If you don't get it please check your spam folder.
+            </p>
+            {button}
+          </section>
+        );
+      case 'ResetPassword':
+        return (
+          <section id="thanks">
+            <p>
+              Completed!
+            </p>
+            <p>
+              Congratulations, your password has been reset :)
+            </p>
+            {button}
+          </section>
+        );
       default:
         return (
           <section id="thanks">

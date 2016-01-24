@@ -10,21 +10,19 @@ export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 
 import { Rover } from '../common';
 
-export function loginRequest(credentials) {
+export function loginRequest() {
   return {
     type: LOGIN_REQUEST,
     isFetching: true,
-    isAuthenticated: false,
-    credentials
+    isAuthenticated: false
   };
 };
 
-export function loginSuccess(user) {
+export function loginSuccess() {
   return {
     type: LOGIN_SUCCESS,
     isFetching: false,
-    isAuthenticated: true,
-    token: user.token
+    isAuthenticated: true
   };
 };
 
@@ -33,7 +31,7 @@ export function loginFailure(message) {
     type: LOGIN_FAILURE,
     isFetching: false,
     isAuthenticated: false,
-    message
+    message: message
   };
 };
 
@@ -62,11 +60,11 @@ export function login(credentials) {
     body: JSON.stringify(credentials)
   };
   return (dispatch) => {
-    dispatch(loginRequest(credentials));
+    dispatch(loginRequest());
     return Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
         localStorage.setItem('token', data.token);
-        dispatch(loginSuccess(data));
+        dispatch(loginSuccess());
         return Promise.resolve(data);
       })
       .catch((err) => {

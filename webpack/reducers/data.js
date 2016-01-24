@@ -8,13 +8,11 @@ export default function data(state = {
   switch (action.type) {
     case DataActions.DATA_REQUEST:
       return Object.assign({}, state, {
-        isFetching: true,
-        config: action.config
+        isFetching: true
       });
     case DataActions.DATA_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
-        data: action.data,
         message: ''
       });
     case DataActions.DATA_FAILURE:

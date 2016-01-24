@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
+import { DataActions } from '../../actions';
+
 import { Validators } from '../../common';
 
 import './style.css';
@@ -17,6 +19,7 @@ class Reset extends React.Component {
     this.stateChanged = this.stateChanged.bind(this);
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   stateChanged() {
 
@@ -103,14 +106,23 @@ class Reset extends React.Component {
     }
   }
   handleSubmit() {
+    const { push, location, dataActions } = this.props;
     let email = location.query.email;
-    let token = location.query.lost;
+    let lost = location.query.lost;
     let password = this.refs.password.getValue();
     let confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
-    console.log('token:', token);
+    console.log('lost:', lost);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
+    dataActions.postData('http://127.0.0.1:3000/api/AuthResetPassword', {
+      email,
+      lost,
+      password,
+      confirmation
+    })
+    .then(() => push('/thanks?type=ResetPassword'))
+    .catch(() => {});
   }
   canSubmit() {
     const { location } = this.props;
@@ -135,7 +147,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

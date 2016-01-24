@@ -8,6 +8,8 @@ import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
+import { DataActions } from '../../actions';
+
 import { Validators } from '../../common';
 
 import './style.css';
@@ -18,6 +20,7 @@ class LostPassword extends React.Component {
     this.stateChanged = this.stateChanged.bind(this);
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
   stateChanged() {
 
@@ -88,8 +91,13 @@ class LostPassword extends React.Component {
     }
   }
   handleSubmit() {
+    const { push, dataActions } = this.props;
     let email = this.refs.email.getValue();
-    console.log('email:', email);
+    dataActions.postData('http://127.0.0.1:3000/api/AuthLostPassword', {
+      email
+    })
+    .then(() => push('/thanks?type=LostPassword'))
+    .catch(() => {});
   }
   canSubmit() {
     try {
@@ -110,7 +118,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

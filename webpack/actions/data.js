@@ -14,23 +14,21 @@ const configuration = {
 
 import { Rover } from '../common';
 
-export function dataRequest(config) {
+export function dataRequest() {
   return {
     type: DATA_REQUEST,
-    isFetching: true,
-    config
+    isFetching: true
   };
 };
 
-export function dataSuccess(data) {
+export function dataSuccess() {
   return {
     type: DATA_SUCCESS,
-    isFetching: false,
-    data
+    isFetching: false
   };
 };
 
-export function dataFailure(message) {
+export function dataFailure() {
   return {
     type: DATA_FAILURE,
     isFetching: false,
@@ -38,16 +36,49 @@ export function dataFailure(message) {
   };
 };
 
-export function ajax(url, config = configuration, authenticated = false) {
+// export function getData(url, query = {}, authenticated = false) {
+//   let config = {
+//     ...configuration
+//   };
+//   if (authenticated) {
+//     let token = localStorage.getItem('token');
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+//   let queryString = Object.keys(query).map((key) => {
+//     return key + '=' + query[key];
+//   }).join('&');
+//   if(queryString) {
+//     url += '?' + queryString;
+//   }
+//   return (dispatch) => {
+//     dispatch(dataRequest());
+//     return Rover.rover(url, config)
+//       .then((data) => {
+//         dispatch(dataSuccess());
+//         return Promise.resolve(data);
+//       })
+//       .catch((err) => {
+//         dispatch(dataFailure(err.message));
+//         return Promise.reject(err);
+//       });
+//   };
+// };
+
+export function postData(url, data, authenticated = false) {
+  let config = {
+    ...configuration,
+    method: 'POST',
+    body: JSON.stringify(data)
+  };
   if (authenticated) {
     let token = localStorage.getItem('token');
     config.headers.Authorization = `Bearer ${token}`;
   }
   return (dispatch) => {
-    dispatch(dataRequest(config));
+    dispatch(dataRequest());
     return Rover.rover(url, config)
       .then((data) => {
-        dispatch(dataSuccess(data));
+        dispatch(dataSuccess());
         return Promise.resolve(data);
       })
       .catch((err) => {
@@ -56,3 +87,50 @@ export function ajax(url, config = configuration, authenticated = false) {
       });
   };
 };
+
+// export function updateData(url, data, authenticated = false) {
+//   let config = {
+//     ...configuration,
+//     method: 'PATCH',
+//     body: JSON.stringify(data)
+//   };
+//   if (authenticated) {
+//     let token = localStorage.getItem('token');
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+//   return (dispatch) => {
+//     dispatch(dataRequest());
+//     return Rover.rover(url, config)
+//       .then((data) => {
+//         dispatch(dataSuccess());
+//         return Promise.resolve(data);
+//       })
+//       .catch((err) => {
+//         dispatch(dataFailure(err.message));
+//         return Promise.reject(err);
+//       });
+//   };
+// };
+
+// export function deleteData(url, authenticated = false) {
+//   let config = {
+//     ...configuration,
+//     method: 'DELETE'
+//   };
+//   if (authenticated) {
+//     let token = localStorage.getItem('token');
+//     config.headers.Authorization = `Bearer ${token}`;
+//   }
+//   return (dispatch) => {
+//     dispatch(dataRequest());
+//     return Rover.rover(url, config)
+//       .then((data) => {
+//         dispatch(dataSuccess());
+//         return Promise.resolve(data);
+//       })
+//       .catch((err) => {
+//         dispatch(dataFailure(err.message));
+//         return Promise.reject(err);
+//       });
+//   };
+// };

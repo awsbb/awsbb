@@ -92,7 +92,8 @@ const updateUser = (email, hash, salt) => {
 const joiEventSchema = Joi.object().keys({
   email: Joi.string().email(),
   currentPassword: Joi.string().min(6),
-  password: Joi.string().min(6)
+  password: Joi.string().min(6),
+  confirmation: Joi.string().min(6)
 });
 
 const joiOptions = {
@@ -105,7 +106,10 @@ const validate = (event) => {
       if (err) {
         return reject(err);
       }
-      resolve();
+      if (event.password === event.confirmation) {
+        return resolve();
+      }
+      reject(new Error('PasswordConfirmationNotEqual'));
     });
   });
 };
