@@ -13,6 +13,7 @@ import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
 import { syncHistory, routeReducer } from 'redux-simple-router';
 
+import api from './middleware/api.js';
 import reducers from './reducers';
 
 const history = createHistory();
@@ -26,17 +27,24 @@ const reducer = combineReducers(Object.assign({}, reducers, {
 const store = compose(autoRehydrate(), applyMiddleware(
   middleware,
   thunk,
+  api,
   logger
 ))(createStore)(reducer);
 
-persistStore(store);
+persistStore(store, {
+  blacklist: ['authorize']
+});
 
+// CONTAINER
 import App from './containers/App';
+// INDEX
 import Home from './views/Home';
-import Login from './views/Login';
-import Register from './views/Register';
+// ROUTES
 import About from './views/About';
+import Login from './views/Login';
 import LostPassword from './views/LostPassword';
+import Profile from './views/Profile';
+import Register from './views/Register';
 import Reset from './views/Reset';
 
 import './style.css';
@@ -47,10 +55,11 @@ ReactDOM.render(
       <Router history={history}>
         <Route path="/" component={App}>
           <IndexRoute component={Home} />
-          <Route path="login" component={Login} />
-          <Route path="register" component={Register} />
           <Route path="about" component={About} />
+          <Route path="login" component={Login} />
           <Route path="lostPassword" component={LostPassword} />
+          <Route path="profile" component={Profile} />
+          <Route path="register" component={Register} />
           <Route path="reset" component={Reset} />
         </Route>
       </Router>

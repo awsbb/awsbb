@@ -8,7 +8,7 @@ import { routeActions } from 'redux-simple-router';
 
 import './style.css';
 
-class Home extends React.Component {
+class Profile extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.stateChanged = this.stateChanged.bind(this);
@@ -28,8 +28,8 @@ class Home extends React.Component {
   render() {
     const { push } = this.props;
     return (
-      <section id="home">
-        <h1>HOME</h1>
+      <section id="profile">
+        <h1>PROFILE</h1>
         <Button
           bsClass="btn"
           bsStyle="primary"
@@ -41,7 +41,7 @@ class Home extends React.Component {
   }
 }
 
-Home.propTypes = {};
+Profile.propTypes = {};
 
 function mapStateToProps(state) {
   return {};
@@ -53,4 +53,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

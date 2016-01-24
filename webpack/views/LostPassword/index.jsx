@@ -1,7 +1,8 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
@@ -101,6 +102,16 @@ class LostPassword extends React.Component {
   }
 }
 
-export default connect(null, {
-  push: routeActions.push
-})(LostPassword);
+LostPassword.propTypes = {};
+
+function mapStateToProps(state) {
+  return {};
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    push: bindActionCreators(routeActions.push, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LostPassword);

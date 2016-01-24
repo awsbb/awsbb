@@ -2,6 +2,7 @@
 
 import React, { PropTypes } from 'react';
 import { Alert } from 'react-bootstrap';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
@@ -59,6 +60,14 @@ Message.propTypes = {
   bsStyle: PropTypes.string
 };
 
-export default connect(null, {
-  push: routeActions.push
-})(Message);
+function mapStateToProps(state) {
+  return {};
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    push: bindActionCreators(routeActions.push, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Message);

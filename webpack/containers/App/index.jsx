@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 
 import Header from '../../components/Header';
 import Message from '../../components/Message';
-import Main from '../Main';
 import Footer from '../../components/Footer';
 
 import './style.css';
@@ -29,12 +28,20 @@ class App extends React.Component {
 
   }
   render() {
-    const { children, isAuthenticated, errorMessage } = this.props;
+    const { children, isAuthenticated, message, dispatch } = this.props;
     return (
       <div>
         <Header isAuthenticated={isAuthenticated}/>
-        <Message message={errorMessage}/>
-        <Main children={children}></Main>
+        <Message message={message}/>
+        <section id="main">
+          <div className="container">
+            <div className="row">
+              <div className="col-xs-12">
+                {children}
+              </div>
+            </div>
+          </div>
+        </section>
         <Footer/>
       </div>
     );
@@ -43,23 +50,20 @@ class App extends React.Component {
 
 App.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
-  errorMessage: PropTypes.string
+  message: PropTypes.string
 };
 
 function mapStateToProps(state) {
   const { authorize } = state;
-  const { isAuthenticated, errorMessage } = authorize;
+  const { isAuthenticated, message } = authorize;
   return {
     isAuthenticated,
-    errorMessage
+    message
   };
 }
 
-// function mapDispatchToProps(dispatch) {
-//   return {
-//     actions: bindActionCreators(Actions, dispatch)
-//   };
-// }
+function mapDispatchToProps(dispatch) {
+  return {};
+}
 
-// export default connect(mapStateToProps, mapDispatchToProps)(App);
-export default connect(mapStateToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

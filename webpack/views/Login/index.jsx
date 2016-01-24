@@ -1,11 +1,14 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
+
+import * as LoginActions from '../../actions/login.js';
 
 import { Validators } from '../../common';
 
@@ -35,9 +38,16 @@ class Login extends React.Component {
 
   }
   render() {
-    const { push } = this.props;
+    const { push, isAuthenticated } = this.props;
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
     let lock = <FontAwesome name="lock" fixedWidth/>;
+    if(isAuthenticated) {
+      return (
+        <section id="login">
+          You are already logged in.
+        </section>
+      );
+    }
     return (
       <section id="login">
         <form className="form-horizontal">
@@ -107,10 +117,16 @@ class Login extends React.Component {
     }
   }
   handleSubmit() {
+    const { push, loginActions } = this.props;
     let email = this.refs.email.getValue();
     let password = this.refs.password.getValue();
     console.log('email:', email);
     console.log('password:', password);
+    loginActions.login({
+      email: email,
+      password: password
+    })
+    .then(() => push('/'));
   }
   canSubmit() {
     try {
@@ -124,6 +140,21 @@ class Login extends React.Component {
   }
 }
 
-export default connect(null, {
-  push: routeActions.push
-})(Login);
+Login.propTypes = {};
+
+function mapStateToProps(state) {
+  const { authorize } = state;
+  const { isAuthenticated } = authorize;
+  return {
+    isAuthenticated
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    push: bindActionCreators(routeActions.push, dispatch),
+    loginActions: bindActionCreators(LoginActions, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

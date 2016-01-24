@@ -1,8 +1,9 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
@@ -58,6 +59,16 @@ class Header extends React.Component {
   }
 }
 
-export default connect(null, {
-  push: routeActions.push
-})(Header);
+Header.propTypes = {};
+
+function mapStateToProps(state) {
+  return {};
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    push: bindActionCreators(routeActions.push, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);

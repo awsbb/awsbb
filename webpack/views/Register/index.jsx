@@ -1,7 +1,8 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
@@ -137,6 +138,16 @@ class Register extends React.Component {
   }
 }
 
-export default connect(null, {
-  push: routeActions.push
-})(Register);
+Register.propTypes = {};
+
+function mapStateToProps(state) {
+  return {};
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    push: bindActionCreators(routeActions.push, dispatch)
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
