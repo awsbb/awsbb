@@ -52,7 +52,18 @@ export function logout() {
   };
 };
 
-export function fetch(url, config = {}) {
+const configuration = {
+  method: 'GET',
+  headers: {
+    'Content-Type': 'application/json; charset=utf-8'
+  }
+};
+
+export function fetch(url, config = configuration, authenticated = false) {
+  if (authenticated) {
+    let token = localStorage.getItem('token');
+    config.headers.Authorization = `Bearer ${token}`;
+  }
   return (dispatch) => {
     dispatch(dispatchers.dataRequest(config));
     return rover(url, config)
