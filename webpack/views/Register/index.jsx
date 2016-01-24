@@ -36,6 +36,13 @@ class Register extends React.Component {
   }
   render() {
     const { push } = this.props;
+    if(isAuthenticated) {
+      return (
+        <section id="register">
+          You are already logged in.
+        </section>
+      );
+    }
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
     let lock = <FontAwesome name="lock" fixedWidth/>;
     return (
@@ -141,7 +148,11 @@ class Register extends React.Component {
 Register.propTypes = {};
 
 function mapStateToProps(state) {
-  return {};
+  const { authorize } = state;
+  const { isAuthenticated } = authorize;
+  return {
+    isAuthenticated
+  };
 }
 
 function mapDispatchToProps(dispatch) {
