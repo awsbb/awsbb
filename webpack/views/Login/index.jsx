@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -17,13 +17,9 @@ import './style.css';
 class Login extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  stateChanged() {
-
   }
   componentWillMount() {
     this.setState({
@@ -31,14 +27,8 @@ class Login extends React.Component {
       password: ''
     });
   }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
-  }
   render() {
-    const { push, isAuthenticated } = this.props;
+    const { isAuthenticated } = this.props;
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
     let lock = <FontAwesome name="lock" fixedWidth/>;
     if(isAuthenticated) {

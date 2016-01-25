@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -16,13 +16,9 @@ import './style.css';
 class Reset extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  stateChanged() {
-
   }
   componentWillMount() {
     this.setState({
@@ -31,14 +27,7 @@ class Reset extends React.Component {
       confirmation: ''
     });
   }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
-  }
   render() {
-    const { push, location } = this.props;
     let lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="register">

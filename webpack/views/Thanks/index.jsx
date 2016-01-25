@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -11,19 +11,6 @@ import './style.css';
 class Thanks extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
-  }
-  stateChanged() {
-
-  }
-  componentWillMount() {
-
-  }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
   }
   render() {
     const { push, location } = this.props;

@@ -1,9 +1,9 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
-// import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import Loader from '../../components/Loader';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 
@@ -12,24 +12,12 @@ import './style.css';
 class App extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
-  }
-  stateChanged() {
-
-  }
-  componentWillMount() {
-
-  }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
   }
   render() {
-    const { children, isAuthenticated, dispatch } = this.props;
+    const { children, isAuthenticated, isFetching } = this.props;
     return (
       <div>
+        <Loader isFetching={isFetching}/>
         <Header isAuthenticated={isAuthenticated}/>
         <section id="main">
           <div className="container">
@@ -52,9 +40,10 @@ App.propTypes = {
 
 function mapStateToProps(state) {
   const { authorize } = state;
-  const { isAuthenticated } = authorize;
+  const { isAuthenticated, isFetching } = authorize;
   return {
-    isAuthenticated
+    isAuthenticated,
+    isFetching
   };
 }
 

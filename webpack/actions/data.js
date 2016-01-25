@@ -50,18 +50,18 @@ export function dataFailure() {
 //   if(queryString) {
 //     url += '?' + queryString;
 //   }
-//   return (dispatch) => {
+//   return (dispatch) => new Promise((resolve, reject) => {
 //     dispatch(dataRequest());
 //     return Rover.rover(url, config)
 //       .then((data) => {
 //         dispatch(dataSuccess());
-//         return Promise.resolve(data);
+//         return resolve(data);
 //       })
 //       .catch((err) => {
 //         dispatch(dataFailure(err.message));
-//         return Promise.reject(err);
+//         return reject(err);
 //       });
-//   };
+//   });
 // };
 
 export function postData(url, data, authenticated = false) {
@@ -74,18 +74,18 @@ export function postData(url, data, authenticated = false) {
     let token = localStorage.getItem('token');
     config.headers.Authorization = `Bearer ${token}`;
   }
-  return (dispatch) => {
+  return (dispatch) => new Promise((resolve, reject) => {
     dispatch(dataRequest());
     return Rover.rover(url, config)
       .then((data) => {
         dispatch(dataSuccess());
-        return Promise.resolve(data);
+        return resolve(data);
       })
       .catch((err) => {
         dispatch(dataFailure(err.message));
-        return Promise.reject(err);
+        return reject(err);
       });
-  };
+  });
 };
 
 // export function updateData(url, data, authenticated = false) {
@@ -98,18 +98,18 @@ export function postData(url, data, authenticated = false) {
 //     let token = localStorage.getItem('token');
 //     config.headers.Authorization = `Bearer ${token}`;
 //   }
-//   return (dispatch) => {
+//   return (dispatch) => new Promise((resolve, reject) => {
 //     dispatch(dataRequest());
 //     return Rover.rover(url, config)
 //       .then((data) => {
 //         dispatch(dataSuccess());
-//         return Promise.resolve(data);
+//         return resolve(data);
 //       })
 //       .catch((err) => {
 //         dispatch(dataFailure(err.message));
-//         return Promise.reject(err);
+//         return reject(err);
 //       });
-//   };
+//   });
 // };
 
 // export function deleteData(url, authenticated = false) {
@@ -121,16 +121,16 @@ export function postData(url, data, authenticated = false) {
 //     let token = localStorage.getItem('token');
 //     config.headers.Authorization = `Bearer ${token}`;
 //   }
-//   return (dispatch) => {
+//   return (dispatch) => new Promise((resolve, reject) => {
 //     dispatch(dataRequest());
 //     return Rover.rover(url, config)
 //       .then((data) => {
 //         dispatch(dataSuccess());
-//         return Promise.resolve(data);
+//         return resolve(data);
 //       })
 //       .catch((err) => {
 //         dispatch(dataFailure(err.message));
-//         return Promise.reject(err);
+//         return reject(err);
 //       });
-//   };
+//   });
 // };

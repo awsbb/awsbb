@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Link } from 'react-router';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -14,20 +14,7 @@ import './style.css';
 class Header extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
-  }
-  stateChanged() {
-
-  }
-  componentWillMount() {
-
-  }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
   }
   render() {
     const { push, isAuthenticated } = this.props;

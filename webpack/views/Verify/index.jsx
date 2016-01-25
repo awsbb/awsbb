@@ -1,7 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
-import { Button } from 'react-bootstrap';
+import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
@@ -13,13 +12,6 @@ import './style.css';
 class Verify extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
-  }
-  stateChanged() {
-
-  }
-  componentWillMount() {
-
   }
   componentDidMount() {
     const { push, dataActions, location } = this.props;
@@ -34,11 +26,7 @@ class Verify extends React.Component {
       .catch(() => {});
     }, 1000);
   }
-  componentWillUnmount() {
-
-  }
   render() {
-    const { push } = this.props;
     return (
       <section id="verify">
         <p>

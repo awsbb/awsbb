@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -11,22 +11,10 @@ import './style.css';
 class Profile extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
-  }
-  stateChanged() {
-
-  }
-  componentWillMount() {
-
-  }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
   }
   render() {
     const { push, isAuthenticated, user } = this.props;
+    console.log(user);
     if(isAuthenticated) {
       return (
         <section id="profile">

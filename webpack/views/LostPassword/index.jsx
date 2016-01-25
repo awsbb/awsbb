@@ -1,10 +1,9 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
@@ -17,13 +16,9 @@ import './style.css';
 class LostPassword extends React.Component {
   constructor(props, context) {
     super(props, context);
-    this.stateChanged = this.stateChanged.bind(this);
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  stateChanged() {
-
   }
   componentWillMount() {
     this.setState({
@@ -31,16 +26,8 @@ class LostPassword extends React.Component {
       password: ''
     });
   }
-  componentDidMount() {
-
-  }
-  componentWillUnmount() {
-
-  }
   render() {
-    const { push } = this.props;
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
-    let lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="login">
         <form className="form-horizontal">

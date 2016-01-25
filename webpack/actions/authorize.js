@@ -62,19 +62,19 @@ export function login(credentials) {
     },
     body: JSON.stringify(credentials)
   };
-  return (dispatch) => {
+  return (dispatch) => new Promise((resolve, reject) => {
     dispatch(loginRequest());
     return Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
         localStorage.setItem('token', data.token);
         dispatch(loginSuccess(credentials));
-        return Promise.resolve(data);
+        return resolve(data);
       })
       .catch((err) => {
         dispatch(loginFailure(err.message));
-        return Promise.reject(err);
+        return reject(err);
       });
-  };
+  });
 };
 
 export function logout() {
