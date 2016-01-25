@@ -4,7 +4,8 @@ import { AuthorizeActions } from '../actions';
 
 export default function authorize(state = {
   isFetching: false,
-  isAuthenticated: localStorage.getItem('token') ? true : false
+  isAuthenticated: localStorage.getItem('token') ? true : false,
+  user: localStorage.getItem('user') || null
 }, action) {
   switch (action.type) {
     case AuthorizeActions.LOGIN_REQUEST:

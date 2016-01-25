@@ -31,46 +31,48 @@ class Reset extends React.Component {
     let lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="register">
-        <form className="form-horizontal">
-          <Input
-            type="password"
-            value={this.state.password}
-            placeholder="Password"
-            label="Password:"
-            help="Validation is based on string length."
-            bsStyle={this.resolveStyleFromState('password')}
-            hasFeedback
-            name="password"
-            ref="password"
-            labelClassName="col-xs-2"
-            onChange={this.handleOnChange}
-            addonBefore={lock}
-            wrapperClassName="col-xs-10"/>
-          <Input
-            type="password"
-            value={this.state.confirmation}
-            placeholder="Confirmation"
-            label="Confirmation:"
-            help="Validation is based on matching the first entry."
-            bsStyle={this.resolveStyleFromState('confirmation')}
-            hasFeedback
-            name="confirmation"
-            ref="confirmation"
-            labelClassName="col-xs-2"
-            onChange={this.handleOnChange}
-            addonBefore={lock}
-            wrapperClassName="col-xs-10"/>
-          <div className="form-group">
-            <div className="col-xs-offset-2 col-xs-10">
-              <Button
-                bsStyle="success"
-                onClick={this.handleSubmit}
-                disabled={this.canSubmit()}>
-                ★　RESET　★
-              </Button>
+        <div className="container">
+          <form className="form-horizontal">
+            <Input
+              type="password"
+              value={this.state.password}
+              placeholder="Password"
+              label="Password:"
+              help="Validation is based on string length."
+              bsStyle={this.resolveStyleFromState('password')}
+              hasFeedback
+              name="password"
+              ref="password"
+              labelClassName="col-xs-2"
+              onChange={this.handleOnChange}
+              addonBefore={lock}
+              wrapperClassName="col-xs-10"/>
+            <Input
+              type="password"
+              value={this.state.confirmation}
+              placeholder="Confirmation"
+              label="Confirmation:"
+              help="Validation is based on matching the first entry."
+              bsStyle={this.resolveStyleFromState('confirmation')}
+              hasFeedback
+              name="confirmation"
+              ref="confirmation"
+              labelClassName="col-xs-2"
+              onChange={this.handleOnChange}
+              addonBefore={lock}
+              wrapperClassName="col-xs-10"/>
+            <div className="form-group">
+              <div className="col-xs-offset-2 col-xs-10">
+                <Button
+                  bsStyle="success"
+                  onClick={this.handleSubmit}
+                  disabled={this.canSubmit()}>
+                  ★　RESET　★
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </section>
     );
   }

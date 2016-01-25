@@ -20,13 +20,7 @@ class App extends React.Component {
         <Loader isFetching={isFetching}/>
         <Header isAuthenticated={isAuthenticated}/>
         <section id="main">
-          <div className="container">
-            <div className="row">
-              <div className="col-xs-12">
-                {children}
-              </div>
-            </div>
-          </div>
+          {children}
         </section>
         <Footer/>
       </div>

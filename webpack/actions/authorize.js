@@ -66,8 +66,12 @@ export function login(credentials) {
     dispatch(loginRequest());
     return Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
+        let user = {
+          email: credentials.email
+        };
         localStorage.setItem('token', data.token);
-        dispatch(loginSuccess(credentials));
+        localStorage.setItem('user', user);
+        dispatch(loginSuccess(user));
         return resolve(data);
       })
       .catch((err) => {

@@ -30,32 +30,34 @@ class LostPassword extends React.Component {
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
     return (
       <section id="login">
-        <form className="form-horizontal">
-          <Input
-            type="email"
-            value={this.state.email}
-            placeholder="Enter email"
-            label="Email Address:"
-            help="Validation is based on a simple regex."
-            bsStyle={this.resolveStyleFromState('email')}
-            hasFeedback
-            name="email"
-            ref="email"
-            labelClassName="col-xs-2"
-            onChange={this.handleOnChange}
-            addonBefore={envelope}
-            wrapperClassName="col-xs-10"/>
-          <div className="form-group">
-            <div className="col-xs-offset-2 col-xs-10">
-              <Button
-                bsStyle="success"
-                onClick={this.handleSubmit}
-                disabled={this.canSubmit()}>
-                ★　SEND E-MAIL　★
-              </Button>
+        <div className="container">
+          <form className="form-horizontal">
+            <Input
+              type="email"
+              value={this.state.email}
+              placeholder="Enter email"
+              label="Email Address:"
+              help="Validation is based on a simple regex."
+              bsStyle={this.resolveStyleFromState('email')}
+              hasFeedback
+              name="email"
+              ref="email"
+              labelClassName="col-xs-2"
+              onChange={this.handleOnChange}
+              addonBefore={envelope}
+              wrapperClassName="col-xs-10"/>
+            <div className="form-group">
+              <div className="col-xs-offset-2 col-xs-10">
+                <Button
+                  bsStyle="success"
+                  onClick={this.handleSubmit}
+                  disabled={this.canSubmit()}>
+                  ★　SEND E-MAIL　★
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </section>
     );
   }

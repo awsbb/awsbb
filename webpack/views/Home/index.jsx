@@ -16,13 +16,15 @@ class Home extends React.Component {
     const { push } = this.props;
     return (
       <section id="home">
-        <h1>HOME</h1>
-        <Button
-          bsClass="btn"
-          bsStyle="primary"
-          onClick={() => push('/')}>
-          ★　GO HOME　★
-        </Button>
+        <div className="container">
+          <h1>HOME</h1>
+          <Button
+            bsClass="btn"
+            bsStyle="primary"
+            onClick={() => push('/')}>
+            ★　GO HOME　★
+          </Button>
+        </div>
       </section>
     );
   }

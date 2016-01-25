@@ -5,8 +5,9 @@ import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
+import classNames from 'classnames';
 
-import './style.css';
+import style from './style.css';
 
 class Profile extends React.Component {
   constructor(props, context) {
@@ -14,17 +15,27 @@ class Profile extends React.Component {
   }
   render() {
     const { push, isAuthenticated, user } = this.props;
-    console.log(user);
+    console.log(this.props);
+    let className = classNames({
+      jumbotron: true,
+      'text-center': true,
+      [style['profile-jumbotron']]: true
+    });
     if(isAuthenticated) {
       return (
         <section id="profile">
-          <h1>PROFILE</h1>
-          <Button
-            bsClass="btn"
-            bsStyle="primary"
-            onClick={() => push('/')}>
-            ★　GO HOME　★
-          </Button>
+          <div className={className}>
+            <h3>{user.email}</h3>
+          </div>
+          <div className="container">
+            <h1>PROFILE</h1>
+            <Button
+              bsClass="btn"
+              bsStyle="primary"
+              onClick={() => push('/')}>
+              ★　GO HOME　★
+            </Button>
+          </div>
         </section>
       );
     }

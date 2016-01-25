@@ -20,56 +20,56 @@ class Thanks extends React.Component {
       onClick={() => push('/')}>
       ★　GO HOME　★
     </Button>;
-    switch(location.query.type) {
-      case 'CreateUser':
-        return (
-          <section id="thanks">
-            <p>
-              Thanks for registering! Check your email.
-            </p>
-            <p>
-              A verification message has been sent and must be completed before you can login.
-            </p>
-            {button}
-          </section>
-        );
-      case 'LostPassword':
-        return (
-          <section id="thanks">
-            <p>
-              We've sent you a reset link! Check your email.
-            </p>
-            <p>
-              A reset link as been sent to the email you provided. If you don't get it please check your spam folder.
-            </p>
-            {button}
-          </section>
-        );
-      case 'ResetPassword':
-        return (
-          <section id="thanks">
-            <p>
-              Completed!
-            </p>
-            <p>
-              Congratulations, your password has been reset :)
-            </p>
-            {button}
-          </section>
-        );
-      default:
-        return (
-          <section id="thanks">
-            <p>
-              Everyone should be thanked for something at least.
-            </p>
-            <p>
-              So... in the name of happiness and all things fuzzy; Thanks!
-            </p>
-            {button}
-          </section>
-        );
-    }
+    return (
+      <section id="thanks">
+        <div className="container">
+          {(function () {
+            switch(location.query.type) {
+              case 'CreateUser':
+                return <div>
+                  <p>
+                    Thanks for registering! Check your email.
+                  </p>
+                  <p>
+                    A verification message has been sent and must be completed before you can login.
+                  </p>
+                  {button}
+                </div>;
+              case 'LostPassword':
+                return <div>
+                  <p>
+                    We've sent you a reset link! Check your email.
+                  </p>
+                  <p>
+                    A reset link as been sent to the email you provided. If you don't get it please check your spam folder.
+                  </p>
+                  {button}
+                </div>;
+              case 'ResetPassword':
+                return <div>
+                  <p>
+                    Completed!
+                  </p>
+                  <p>
+                    Congratulations, your password has been reset :)
+                  </p>
+                  {button}
+                </div>;
+              default:
+                return <div>
+                  <p>
+                    Everyone should be thanked for something at least.
+                  </p>
+                  <p>
+                    So... in the name of happiness and all things fuzzy; Thanks!
+                  </p>
+                  {button}
+                </div>;
+            }
+          })()}
+        </div>
+      </section>
+    );
   }
 }
 

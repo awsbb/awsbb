@@ -40,51 +40,53 @@ class Login extends React.Component {
     }
     return (
       <section id="login">
-        <form className="form-horizontal">
-          <Input
-            type="email"
-            value={this.state.email}
-            placeholder="Enter email"
-            label="Email Address:"
-            help="Validation is based on a simple regex."
-            bsStyle={this.resolveStyleFromState('email')}
-            hasFeedback
-            name="email"
-            ref="email"
-            labelClassName="col-xs-2"
-            onChange={this.handleOnChange}
-            addonBefore={envelope}
-            wrapperClassName="col-xs-10"/>
-          <Input
-            type="password"
-            value={this.state.password}
-            placeholder="Password"
-            label="Password:"
-            help="Validation is based on string length."
-            bsStyle={this.resolveStyleFromState('password')}
-            hasFeedback
-            name="password"
-            ref="password"
-            labelClassName="col-xs-2"
-            onChange={this.handleOnChange}
-            addonBefore={lock}
-            wrapperClassName="col-xs-10"/>
-          <div className="form-group">
-            <div className="col-xs-offset-2 col-xs-10">
-              <Link to="/lostPassword">Click here to recover your password.</Link>
+        <div className="container">
+          <form className="form-horizontal">
+            <Input
+              type="email"
+              value={this.state.email}
+              placeholder="Enter email"
+              label="Email Address:"
+              help="Validation is based on a simple regex."
+              bsStyle={this.resolveStyleFromState('email')}
+              hasFeedback
+              name="email"
+              ref="email"
+              labelClassName="col-xs-2"
+              onChange={this.handleOnChange}
+              addonBefore={envelope}
+              wrapperClassName="col-xs-10"/>
+            <Input
+              type="password"
+              value={this.state.password}
+              placeholder="Password"
+              label="Password:"
+              help="Validation is based on string length."
+              bsStyle={this.resolveStyleFromState('password')}
+              hasFeedback
+              name="password"
+              ref="password"
+              labelClassName="col-xs-2"
+              onChange={this.handleOnChange}
+              addonBefore={lock}
+              wrapperClassName="col-xs-10"/>
+            <div className="form-group">
+              <div className="col-xs-offset-2 col-xs-10">
+                <Link to="/lostPassword">Click here to recover your password.</Link>
+              </div>
             </div>
-          </div>
-          <div className="form-group">
-            <div className="col-xs-offset-2 col-xs-10">
-              <Button
-                bsStyle="success"
-                onClick={this.handleSubmit}
-                disabled={this.canSubmit()}>
-                ★　LOGIN　★
-              </Button>
+            <div className="form-group">
+              <div className="col-xs-offset-2 col-xs-10">
+                <Button
+                  bsStyle="success"
+                  onClick={this.handleSubmit}
+                  disabled={this.canSubmit()}>
+                  ★　LOGIN　★
+                </Button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </section>
     );
   }

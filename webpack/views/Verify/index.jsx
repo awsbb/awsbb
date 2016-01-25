@@ -15,9 +15,9 @@ class Verify extends React.Component {
   }
   componentDidMount() {
     const { push, dataActions, location } = this.props;
+    let email = location.query.email;
+    let verify = location.query.verify;
     setTimeout(() => {
-      let email = location.query.email;
-      let verify = location.query.verify;
       dataActions.postData('http://127.0.0.1:3000/api/AuthVerifyUser', {
         email,
         verify
@@ -29,9 +29,11 @@ class Verify extends React.Component {
   render() {
     return (
       <section id="verify">
-        <p>
-          Verifying your token...
-        </p>
+        <div className="container">
+          <p>
+            Verifying your token...
+          </p>
+        </div>
       </section>
     );
   }
