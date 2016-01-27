@@ -28,8 +28,8 @@ class Header extends React.Component {
     </Nav>;
     if(isAuthenticated) {
       UserNaviation = <Nav pullRight>
-        <NavItem onClick={() => push('/profile')}>
-          <i className="fa fa-fw fa-user"></i> Profile
+        <NavItem onClick={() => push('/user')}>
+          <i className="fa fa-fw fa-user"></i> Account
         </NavItem>
         <NavItem onClick={() => {this.handleLogout();}}>
           <i className="fa fa-fw fa-sign-out"></i> Logout

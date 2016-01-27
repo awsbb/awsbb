@@ -1,16 +1,5 @@
 'use strict';
 
-try {
-  require.resolve('babel-register');
-} catch (e) {
-  require('babel-register');
-}
-try {
-  require.resolve('babel-polyfill');
-} catch (e) {
-  require('babel-polyfill');
-}
-
 import moment from 'moment';
 import Promise from 'bluebird';
 

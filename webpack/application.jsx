@@ -33,19 +33,22 @@ persistStore(store, {
   blacklist: ['data']
 });
 
-// CONTAINER
+// CONTAINERS
 import App from './containers/App';
-// INDEX
-import Home from './views/Home';
-// ROUTES
-import About from './views/About';
-import Login from './views/Login';
-import LostPassword from './views/LostPassword';
-import Profile from './views/Profile';
-import Register from './views/Register';
-import Reset from './views/Reset';
-import Thanks from './views/Thanks';
-import Verify from './views/Verify';
+import User from './containers/User';
+// INDEXES
+import AppHome from './views/Home';
+import UserHome from './views/User/Home';
+// APP ROUTES
+import AppAbout from './views/About';
+import AppLogin from './views/Login';
+import AppLostPassword from './views/LostPassword';
+import AppRegister from './views/Register';
+import AppReset from './views/Reset';
+import AppThanks from './views/Thanks';
+import AppVerify from './views/Verify';
+// USER ROUTES
+import UserChangePassword from './views/User/ChangePassword';
 
 import './style.css';
 
@@ -54,15 +57,18 @@ ReactDOM.render(
     <div>
       <Router history={history}>
         <Route path="/" component={App}>
-          <IndexRoute component={Home} />
-          <Route path="about" component={About} />
-          <Route path="login" component={Login} />
-          <Route path="lostPassword" component={LostPassword} />
-          <Route path="profile" component={Profile} />
-          <Route path="register" component={Register} />
-          <Route path="reset" component={Reset} />
-          <Route path="thanks" component={Thanks} />
-          <Route path="verify" component={Verify} />
+          <IndexRoute component={AppHome} />
+          <Route path="about" component={AppAbout} />
+          <Route path="login" component={AppLogin} />
+          <Route path="lostPassword" component={AppLostPassword} />
+          <Route path="register" component={AppRegister} />
+          <Route path="reset" component={AppReset} />
+          <Route path="thanks" component={AppThanks} />
+          <Route path="verify" component={AppVerify} />
+        </Route>
+        <Route path="/user" component={User}>
+          <IndexRoute component={UserHome} />
+          <Route path="changePassword" component={UserChangePassword} />
         </Route>
       </Router>
     </div>

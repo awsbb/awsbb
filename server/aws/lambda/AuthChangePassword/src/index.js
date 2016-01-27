@@ -1,12 +1,5 @@
 'use strict';
 
-try {
-  require('babel-register');
-} catch (e) {}
-try {
-  require('babel-polyfill');
-} catch (e) {}
-
 import pkg from '../package.json';
 
 import Joi from 'joi';
@@ -18,7 +11,7 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-import { computeHas } from '@awsbb/awsbb-hashing';
+import { computeHash } from '@awsbb/awsbb-hashing';
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,

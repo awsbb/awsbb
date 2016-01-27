@@ -28,11 +28,11 @@ export function dataSuccess() {
   };
 };
 
-export function dataFailure() {
+export function dataFailure(message) {
   return {
     type: DATA_FAILURE,
     isFetching: false,
-    message
+    message: message
   };
 };
 
@@ -88,29 +88,30 @@ export function postData(url, data, authenticated = false) {
   });
 };
 
-// export function updateData(url, data, authenticated = false) {
-//   let config = {
-//     ...configuration,
-//     method: 'PATCH',
-//     body: JSON.stringify(data)
-//   };
-//   if (authenticated) {
-//     let token = localStorage.getItem('token');
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
-//   return (dispatch) => new Promise((resolve, reject) => {
-//     dispatch(dataRequest());
-//     return Rover.rover(url, config)
-//       .then((data) => {
-//         dispatch(dataSuccess());
-//         return resolve(data);
-//       })
-//       .catch((err) => {
-//         dispatch(dataFailure(err.message));
-//         return reject(err);
-//       });
-//   });
-// };
+export function updateData(url, data, authenticated = false) {
+  let config = {
+    ...configuration,
+    method: 'PATCH',
+    body: JSON.stringify(data)
+  };
+  if (authenticated) {
+    let token = localStorage.getItem('token');
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return (dispatch) => new Promise((resolve, reject) => {
+    dispatch(dataRequest());
+    return Rover.rover(url, config)
+      .then((data) => {
+        dispatch(dataSuccess());
+        return resolve(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(dataFailure(err.message));
+        return reject(err);
+      });
+  });
+};
 
 // export function deleteData(url, authenticated = false) {
 //   let config = {

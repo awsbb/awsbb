@@ -35,6 +35,13 @@ class Thanks extends React.Component {
                   </p>
                   {button}
                 </div>;
+              case 'ChangePassword':
+                return <div>
+                  <p>
+                    Thanks for changing your password. Please login again using your new password.
+                  </p>
+                  {button}
+                </div>;
               case 'LostPassword':
                 return <div>
                   <p>

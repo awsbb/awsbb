@@ -1,12 +1,5 @@
 'use strict';
 
-try {
-  require('babel-register');
-} catch (e) {}
-try {
-  require('babel-polyfill');
-} catch (e) {}
-
 import pkg from '../package.json';
 
 import Joi from 'joi';
