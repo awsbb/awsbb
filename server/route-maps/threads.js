@@ -1,6 +1,6 @@
 'use strict';
 
-import * ForumThreadsGet from '../aws/lambda/ForumThreadsGet';
+import * as ForumThreadsGet from '../aws/lambda/ForumThreadsGet';
 
 export function setup(server) {
   server.route({

@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-import { computeHash } from '@awsbb/awsbb-hashing';
+import { computeHas } from '@awsbb/awsbb-hashing';
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -110,7 +110,7 @@ const validate = (event) => {
   });
 };
 
-export function handler (event, context) {
+export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 

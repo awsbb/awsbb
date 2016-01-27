@@ -132,7 +132,7 @@ const validate = (event) => {
   });
 };
 
-export function handler (event, context) {
+export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 

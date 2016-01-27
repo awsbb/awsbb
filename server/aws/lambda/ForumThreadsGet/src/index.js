@@ -13,7 +13,7 @@ import crypto from 'crypto';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
 
-if(process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
@@ -22,7 +22,7 @@ const DynamoDB = new AWS.DynamoDB({
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-export function handler (event, context) {
+export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 

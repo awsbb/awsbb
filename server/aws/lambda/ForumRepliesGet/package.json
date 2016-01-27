@@ -1,5 +1,5 @@
 {
-  "name": "replies-get",
+  "name": "forum-replies-get",
   "version": "1.0.0",
   "description": "",
   "main": "lib/index.js",
