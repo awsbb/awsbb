@@ -1,5 +1,5 @@
 .coverData/*
-*.logs
+*.logs?
 configuration/env.json
 debug/*
 lib/*

@@ -1,11 +1,11 @@
 'use strict';
 
-import * as AuthChangePassword from '../aws/lambda/AuthChangePassword';
-import * as AuthCreateUser from '../aws/lambda/AuthCreateUser';
-import * as AuthLogin from '../aws/lambda/AuthLogin';
-import * as AuthLostPassword from '../aws/lambda/AuthLostPassword';
-import * as AuthResetPassword from '../aws/lambda/AuthResetPassword';
-import * as AuthVerifyUser from '../aws/lambda/AuthVerifyUser';
+import { handler as authChangePassword } from '../aws/lambda/AuthChangePassword';
+import { handler as authCreateUser } from '../aws/lambda/AuthCreateUser';
+import { handler as authLogin } from '../aws/lambda/AuthLogin';
+import { handler as authLostPassword } from '../aws/lambda/AuthLostPassword';
+import { handler as authResetPassword } from '../aws/lambda/AuthResetPassword';
+import { handler as authVerifyUser } from '../aws/lambda/AuthVerifyUser';
 
 export function setup(server) {
   server.route({
@@ -13,7 +13,7 @@ export function setup(server) {
     path: '/api/AuthChangePassword',
     config: {
       handler: (request, reply) => {
-        AuthChangePassword.handler(server.getEvent(request), server.getContext(reply));
+        authChangePassword(server.getEvent(request), server.getContext(reply));
       }
     }
   });
@@ -22,7 +22,7 @@ export function setup(server) {
     path: '/api/AuthCreateUser',
     config: {
       handler: (request, reply) => {
-        AuthCreateUser.handler(server.getEvent(request), server.getContext(reply));
+        authCreateUser(server.getEvent(request), server.getContext(reply));
       }
     }
   });
@@ -31,7 +31,7 @@ export function setup(server) {
     path: '/api/AuthLogin',
     config: {
       handler: (request, reply) => {
-        AuthLogin.handler(server.getEvent(request), server.getContext(reply));
+        authLogin(server.getEvent(request), server.getContext(reply));
       }
     }
   });
@@ -40,7 +40,7 @@ export function setup(server) {
     path: '/api/AuthLostPassword',
     config: {
       handler: (request, reply) => {
-        AuthLostPassword.handler(server.getEvent(request), server.getContext(reply));
+        authLostPassword(server.getEvent(request), server.getContext(reply));
       }
     }
   });
@@ -49,7 +49,7 @@ export function setup(server) {
     path: '/api/AuthResetPassword',
     config: {
       handler: (request, reply) => {
-        AuthResetPassword.handler(server.getEvent(request), server.getContext(reply));
+        authResetPassword(server.getEvent(request), server.getContext(reply));
       }
     }
   });
@@ -58,7 +58,7 @@ export function setup(server) {
     path: '/api/AuthVerifyUser',
     config: {
       handler: (request, reply) => {
-        AuthVerifyUser.handler(server.getEvent(request), server.getContext(reply));
+        authVerifyUser(server.getEvent(request), server.getContext(reply));
       }
     }
   });

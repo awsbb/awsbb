@@ -2,13 +2,8 @@
 
 const cacheKeys = Object.keys(require.cache);
 
-const registered = cacheKeys.filter((key) => {
-  return key.includes('/babel-register/');
-}).length ? true : false;
-
-const polyfilled = cacheKeys.filter((key) => {
-  return key.includes('/babel-polyfill/');
-}).length ? true : false;
+const registered = cacheKeys.filter((key) => key.includes('/babel-register/')).length ? true : false;
+const polyfilled = cacheKeys.filter((key) => key.includes('/babel-polyfill/')).length ? true : false;
 
 if(!registered) {
   require('babel-register');
