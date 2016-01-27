@@ -2,7 +2,7 @@
   "name": "awsBB",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "postinstall": "sh ./init.sh",
     "start": "nodemon",
@@ -12,7 +12,9 @@
     "type": "git",
     "url": "git+https://github.com/awsbb/awsbb.git"
   },
-  "author": "Ryan Wilson <syndicated.life@gmail.com> (http://syndicatedlife.com/)",
+  "authors": [
+    "Ryan Wilson <syndicated.life@gmail.com> (http://syndicatedlife.com/)"
+  ],
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/awsbb/awsbb/issues"
@@ -31,6 +33,7 @@
     "babel-preset-es2015": "*",
     "babel-preset-react": "*",
     "babel-preset-stage-0": "*",
+    "babel-register": "*",
     "babel-runtime": "*",
     "bluebird": "*",
     "catbox": "*",

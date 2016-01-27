@@ -6,7 +6,7 @@ Serverless AWS based forum software (In-Progress)
 
 * ./webpack
 	* Client source.
-* ./static
+* ./distribution
 	* Compiled distribution to be hosted on a S3 bucket.
 * ./plugin
 	* General store for server side local development.

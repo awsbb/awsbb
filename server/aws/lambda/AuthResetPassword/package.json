@@ -1,0 +1,41 @@
+{
+  "name": "auth-reset-password",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "jsnext:main": "src/index.js",
+  "scripts": {
+    "clean": "rm -rf lib || true",
+    "build": "npm run clean && babel --optimal runtime -d lib src"
+  },
+  "author": "Ryan Wilson <syndicated.life@gmail.com> (http://syndicatedlife.com/)",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "babel": "*",
+    "babel-cli": "*",
+    "babel-core": "*",
+    "babel-eslint": "*",
+    "babel-loader": "*",
+    "babel-plugin-transform-runtime": "*",
+    "babel-polyfill": "*",
+    "babel-preset-es2015": "*",
+    "babel-preset-react": "*",
+    "babel-preset-stage-0": "*",
+    "babel-register": "*",
+    "babel-runtime": "*",
+    "bluebird": "*",
+    "eslint": "*",
+    "gulp": "*",
+    "gulp-eslint": "*",
+    "gulp-lab": "*",
+    "gulp-param": "*",
+    "joi": "*",
+    "lab": "*",
+    "nodemailer": "*",
+    "nodemailer-mailgun-transport": "*",
+    "nodemon": "*",
+    "string-format": "*",
+    "underscore": "*"
+  },
+  "config": {}
+}

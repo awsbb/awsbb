@@ -26,7 +26,7 @@ const reducer = combineReducers(Object.assign({}, reducers, {
 const store = compose(autoRehydrate(), applyMiddleware(
   middleware,
   thunk,
-  // logger
+  logger
 ))(createStore)(reducer);
 
 persistStore(store, {

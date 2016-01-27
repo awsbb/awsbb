@@ -6,8 +6,8 @@ if [ ! -d "node_modules" ]; then
   npm i
 fi
 
-lambdaFunctions=(./plugin/aws/lambda/*);
-customNPMModules=(./plugin/aws/npm/@awsbb/*);
+lambdaFunctions=(./server/aws/lambda/*);
+customNPMModules=(./server/aws/npm/@awsbb/*);
 
 for directory in "${lambdaFunctions[@]}"; do
   cd $directory

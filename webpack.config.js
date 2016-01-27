@@ -28,7 +28,7 @@ module.exports = {
     ]
   },
   output: {
-    path: path.join(__dirname, './static'),
+    path: path.join(__dirname, 'distribution'),
     filename: 'application.min.js'
   },
   module: {
