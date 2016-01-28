@@ -23,7 +23,7 @@ export default class Cache {
         if (err) {
           return reject(err);
         }
-        return resolve();
+        resolve();
       });
     });
   }
@@ -47,7 +47,8 @@ export default class Cache {
             return resolve();
           }
           reject(new Error('UserNotAuthorized'));
-        });
+        })
+        .catch((err) => reject(err));
     });
   }
   get(segment, id) {

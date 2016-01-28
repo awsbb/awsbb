@@ -119,9 +119,7 @@ export function handler(event, context) {
       return cache.authorizeUser(event.headers)
         .then(() => {
           return validate(event.payload)
-            .then(() => {
-              return getUser(email);
-            })
+            .then(() => getUser(email))
             .then(({ salt, hash, verified }) => {
               if (!hash) {
                 return Promise.reject(new Error('UserHasNoHash'));
@@ -138,13 +136,13 @@ export function handler(event, context) {
                   return computeHash(password);
                 });
             })
-            .then(({ salt, hash }) => updateUser(email, hash, salt))
-            .then(() => {
-              context.succeed({
-                success: true
-              });
-            });
+            .then(({ salt, hash }) => updateUser(email, hash, salt));
         });
+    })
+    .then(() => {
+      context.succeed({
+        success: true
+      });
     })
     .catch((err) => {
       console.log(err);

@@ -53,23 +53,22 @@ const getUser = (email) => {
 
 const generateToken = (email, roles = []) => {
   return new Promise((resolve, reject) => {
+    let application = 'awsBB';
     let sessionID = uuid.v4();
-    let sessionData = jwt.sign({
+    let token = jwt.sign({
       email,
-      application: 'awsBB',
+      application,
       roles,
       sessionID
     }, Config.JWT_SECRET);
-    cache.set('logins', sessionID, sessionData)
+    return cache.set('logins', sessionID, token)
       .then(() => {
         resolve({
           sessionID,
-          token: sessionData
+          token
         });
       })
-      .catch((err) => {
-        reject(err);
-      });
+      .catch((err) => reject(err));
   });
 };
 
@@ -119,14 +118,14 @@ export function handler(event, context) {
               }
               return generateToken(email);
             });
-        })
-        .then(({ sessionID, token }) => {
-          context.succeed({
-            success: true,
-            sessionID,
-            token
-          });
         });
+    })
+    .then(({ sessionID, token }) => {
+      context.succeed({
+        success: true,
+        sessionID,
+        token
+      });
     })
     .catch((err) => {
       console.log(err);
