@@ -58,7 +58,7 @@ const generateToken = (email) => {
       email: email,
       application: 'awsBB'
     }, Config.JWT_SECRET);
-    cache.set(sessionID, token)
+    cache.set('logins', sessionID, token)
       .then(() => {
         resolve({
           sessionID: sessionID,

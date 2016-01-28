@@ -38,7 +38,7 @@ export default class Cache {
       // TODO: don't split the string, use the proper one later when using jsonwebtoken parsing
       let token = headers.authorization.split(' ')[1];
       let sessionID = headers['x-awsbb-sessionid'];
-      return this.get(sessionID)
+      return this.get('logins', sessionID)
         .then((cacheResult) => {
           // TODO: JWT decode/authorize per https://github.com/boketto/hapi-auth-jsonwebtoken
           // if true, resolve, if not reject;
@@ -49,10 +49,10 @@ export default class Cache {
         });
     });
   }
-  get(id) {
+  get(segment, id) {
     return new Promise((resolve, reject) => {
       cacheClient.get({
-        segment: 'logins',
+        segment: segment,
         id: id
       }, (err, cached) => {
         if (err) {
@@ -65,10 +65,10 @@ export default class Cache {
       });
     });
   }
-  drop(id) {
+  drop(segment, id) {
     return new Promise((resolve, reject) => {
       cacheClient.drop({
-        segment: 'logins',
+        segment: segment,
         id: id
       }, (err) => {
         if (err) {
@@ -78,10 +78,10 @@ export default class Cache {
       });
     });
   }
-  set(id, value) {
+  set(segment, id, value) {
     return new Promise((resolve, reject) => {
       cacheClient.set({
-        segment: 'logins',
+        segment: segment,
         id: id
       }, {
         value: value,
