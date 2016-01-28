@@ -38,7 +38,7 @@ export default class Cache {
       // TODO: don't split the string, use the proper one later when using jsonwebtoken parsing
       let token = headers.authorization.split(' ')[1];
       let sessionID = headers['x-awsbb-sessionid'];
-      return this.get('logins', sessionID)
+      get('logins', sessionID)
         .then((cacheResult) => {
           // TODO: JWT decode/authorize per https://github.com/boketto/hapi-auth-jsonwebtoken
           // if true, resolve, if not reject;

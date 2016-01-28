@@ -120,9 +120,6 @@ export function handler(event, context) {
     })
     .catch((err) => {
       console.log(err);
-      context.fail({
-        success: false,
-        message: err.message
-      });
+      context.fail(err);
     });
 };

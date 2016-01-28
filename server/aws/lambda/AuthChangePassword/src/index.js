@@ -44,7 +44,7 @@ const getUser = (email) => {
           verified
         });
       }
-      reject(new Error('UserNotFound'));
+      throw new Error('UserNotFound');
     });
   });
 };
@@ -101,7 +101,7 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(new Error('PasswordConfirmationNotEqual'));
+      throw new Error('PasswordConfirmationNotEqual');
     });
   });
 };
@@ -122,16 +122,16 @@ export function handler(event, context) {
             .then(() => getUser(email))
             .then(({ salt, hash, verified }) => {
               if (!hash) {
-                return Promise.reject(new Error('UserHasNoHash'));
+                throw new Error('UserHasNoHash');
               }
               if (!verified) {
-                return Promise.reject(new Error('UserNotVerified'));
+                throw new Error('UserNotVerified');
               }
               let userHash = hash;
               return computeHash(currentPassword, salt)
                 .then(({ hash }) => {
                   if (userHash !== hash) {
-                    return Promise.reject(new Error('IncorrectPassword'));
+                    throw new Error('IncorrectPassword');
                   }
                   return computeHash(password);
                 });
@@ -145,11 +145,7 @@ export function handler(event, context) {
       });
     })
     .catch((err) => {
-      console.log(err);
-      context.fail({
-        success: false,
-        message: err.message
-      });
+      context.fail(err);
     })
     .finally(() => {
       return cache.stop();

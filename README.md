@@ -8,11 +8,11 @@ Serverless AWS based forum software (In-Progress)
 	* Client source.
 * ./distribution
 	* Compiled distribution to be hosted on a S3 bucket.
-* ./plugin
+* ./server
 	* General store for server side local development.
-* ./plugin/aws/
+* ./server/aws/
 	* AWS code in abstracted form to utilize local installs.
-* ./plugin/route-maps
+* ./server/route-maps
 	* Lambda->HapiJS route translation.
 
 This README and project is still highly unstable since it just began. It's being built up piece by piece.

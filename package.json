@@ -2,7 +2,7 @@
   "name": "awsBB",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "postinstall": "sh ./init.sh",
     "start": "nodemon",

@@ -23,8 +23,16 @@ exports.register = (server, options, next) => {
       succeed: (data) => {
         reply(data);
       },
-      fail: (data) => {
-        reply(data).code(500);
+      fail: (error) => {
+        let response = {
+          errorMessage: error.message,
+          errorType: 'Error'
+        };
+        response.stackTrace = [];
+        if (error.stack) {
+          response.stackTrace.push(error.stack);
+        }
+        reply(response);
       }
     };
   };
