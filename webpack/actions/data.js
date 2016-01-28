@@ -36,29 +36,33 @@ export function dataFailure(message) {
   };
 };
 
-// export function getData(url, query = {}, authenticated = false) {
-//   let config = {
-//     ...configuration
-//   };
-//   let queryString = Object.keys(query).map((key) => {
-//     return key + '=' + query[key];
-//   }).join('&');
-//   if(queryString) {
-//     url += '?' + queryString;
-//   }
-//   return (dispatch) => new Promise((resolve, reject) => {
-//     dispatch(dataRequest());
-//     return Rover.rover(url, config, authenticated)
-//       .then((data) => {
-//         dispatch(dataSuccess());
-//         return resolve(data);
-//       })
-//       .catch((err) => {
-//         dispatch(dataFailure(err.message));
-//         return reject(err);
-//       });
-//   });
-// };
+export function getData(url, query = {}, authenticated = false) {
+  let config = {
+    ...configuration
+  };
+  let queryString = Object.keys(query).map((key) => {
+    return key + '=' + query[key];
+  }).join('&');
+  if (queryString) {
+    url += '?' + queryString;
+  }
+  return (dispatch) => new Promise((resolve, reject) => {
+    dispatch(dataRequest());
+    return Rover.rover(url, config, authenticated)
+      .then((data) => {
+        if (data.success) {
+          dispatch(dataSuccess());
+          return resolve(data);
+        }
+        dispatch(dataFailure(data.errorMessage));
+        reject(data);
+      })
+      .catch((err) => {
+        dispatch(dataFailure(err.message));
+        reject(err);
+      });
+  });
+};
 
 export function postData(url, data, authenticated = false) {
   let config = {
@@ -70,12 +74,16 @@ export function postData(url, data, authenticated = false) {
     dispatch(dataRequest());
     return Rover.rover(url, config, authenticated)
       .then((data) => {
-        dispatch(dataSuccess());
-        return resolve(data);
+        if (data.success) {
+          dispatch(dataSuccess());
+          return resolve(data);
+        }
+        dispatch(dataFailure(data.errorMessage));
+        reject(data);
       })
       .catch((err) => {
         dispatch(dataFailure(err.message));
-        return reject(err);
+        reject(err);
       });
   });
 };
@@ -90,32 +98,40 @@ export function updateData(url, data, authenticated = false) {
     dispatch(dataRequest());
     return Rover.rover(url, config, authenticated)
       .then((data) => {
-        dispatch(dataSuccess());
-        return resolve(data);
+        if (data.success) {
+          dispatch(dataSuccess());
+          return resolve(data);
+        }
+        dispatch(dataFailure(data.errorMessage));
+        reject(data);
       })
       .catch((err) => {
         console.log(err);
         dispatch(dataFailure(err.message));
-        return reject(err);
+        reject(err);
       });
   });
 };
 
-// export function deleteData(url, authenticated = false) {
-//   let config = {
-//     ...configuration,
-//     method: 'DELETE'
-//   };
-//   return (dispatch) => new Promise((resolve, reject) => {
-//     dispatch(dataRequest());
-//     return Rover.rover(url, config, authenticated)
-//       .then((data) => {
-//         dispatch(dataSuccess());
-//         return resolve(data);
-//       })
-//       .catch((err) => {
-//         dispatch(dataFailure(err.message));
-//         return reject(err);
-//       });
-//   });
-// };
+export function deleteData(url, authenticated = false) {
+  let config = {
+    ...configuration,
+    method: 'DELETE'
+  };
+  return (dispatch) => new Promise((resolve, reject) => {
+    dispatch(dataRequest());
+    return Rover.rover(url, config, authenticated)
+      .then((data) => {
+        if (data.success) {
+          dispatch(dataSuccess());
+          return resolve(data);
+        }
+        dispatch(dataFailure(data.errorMessage));
+        reject(data);
+      })
+      .catch((err) => {
+        dispatch(dataFailure(err.message));
+        reject(err);
+      });
+  });
+};
