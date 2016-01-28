@@ -34,6 +34,7 @@
     "jsonwebtoken": "*",
     "lab": "*",
     "moment": "*",
+    "node-uuid": "*",
     "nodemailer": "*",
     "nodemailer-mailgun-transport": "*",
     "nodemon": "*",

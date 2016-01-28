@@ -133,7 +133,7 @@ class Profile extends React.Component {
       currentPassword,
       password,
       confirmation
-    })
+    }, true)
     .then(() => authorizeActions.logout())
     .then(() => push('/thanks?type=ChangePassword'))
     .catch(() => {});

@@ -5,12 +5,9 @@ import pkg from '../package.json';
 import Joi from 'joi';
 
 import jwt from 'jsonwebtoken';
-import moment from 'moment';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
-
-import Catbox from 'catbox';
-import CatboxRedis from 'catbox-redis';
+import uuid from 'node-uuid';
 
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
@@ -56,13 +53,17 @@ const getUser = (email) => {
 
 const generateToken = (email) => {
   return new Promise((resolve, reject) => {
-    var token = jwt.sign({
+    let sessionID = uuid.v4();
+    let token = jwt.sign({
       email: email,
       application: 'awsBB'
     }, Config.JWT_SECRET);
-    cache.set(email, token)
+    cache.set(sessionID, token)
       .then(() => {
-        resolve(token);
+        resolve({
+          sessionID: sessionID,
+          token: token
+        });
       })
       .catch((err) => {
         reject(err);
@@ -121,10 +122,11 @@ export function handler(event, context) {
               return generateToken(email);
             });
         })
-        .then((token) => {
-          console.log(token);
+        .then(({ sessionID, token }) => {
+          console.log(sessionID, token);
           context.succeed({
             success: true,
+            sessionID: sessionID,
             token: token
           });
         });

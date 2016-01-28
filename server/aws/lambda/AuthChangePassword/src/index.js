@@ -11,7 +11,13 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-import { computeHash } from '@awsbb/awsbb-hashing';
+import {
+  computeHash
+}
+from '@awsbb/awsbb-hashing';
+import Cache from '@awsbb/awsbb-cache';
+// the redis cacheClient will connect and partition data in database 0
+const cache = new Cache(Config.AWS.EC_ENDPOINT);
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -111,42 +117,51 @@ export function handler(event, context) {
   let currentPassword = event.payload.currentPassword;
   let password = event.payload.password;
 
-  return validate(event.payload)
+  return cache.start()
     .then(() => {
-      return getUser(email);
-    })
-    .then((getUserResult) => {
-      console.log(getUserResult);
-      if (!getUserResult.hash) {
-        return Promise.reject(new Error('UserHasNoHash'));
-      }
-      if (!getUserResult.verified) {
-        return Promise.reject(new Error('UserNotVerified'));
-      }
-      return computeHash(currentPassword, getUserResult.salt)
-        .then((computeCurrentHashResult) => {
-          console.log(computeCurrentHashResult);
-          if (getUserResult.hash !== computeCurrentHashResult.hash) {
-            return Promise.reject(new Error('IncorrectPassword'));
-          }
-          return computeHash(password);
+      return cache.authorizeUser(event.headers)
+        .then(() => {
+          return validate(event.payload)
+            .then(() => {
+              return getUser(email);
+            })
+            .then((getUserResult) => {
+              console.log(getUserResult);
+              if (!getUserResult.hash) {
+                return Promise.reject(new Error('UserHasNoHash'));
+              }
+              if (!getUserResult.verified) {
+                return Promise.reject(new Error('UserNotVerified'));
+              }
+              return computeHash(currentPassword, getUserResult.salt)
+                .then((computeCurrentHashResult) => {
+                  console.log(computeCurrentHashResult);
+                  if (getUserResult.hash !== computeCurrentHashResult.hash) {
+                    return Promise.reject(new Error('IncorrectPassword'));
+                  }
+                  return computeHash(password);
+                });
+            })
+            .then((computeHashResult) => {
+              console.log(computeHashResult);
+              return updateUser(email, computeHashResult.hash, computeHashResult.salt);
+            })
+            .then((updateUserResult) => {
+              console.log(updateUserResult);
+              context.succeed({
+                success: true
+              });
+            });
+        })
+        .catch((err) => {
+          console.log(err);
+          context.fail({
+            success: false,
+            message: err.message
+          });
+        })
+        .finally(() => {
+          return cache.stop();
         });
-    })
-    .then((computeHashResult) => {
-      console.log(computeHashResult);
-      return updateUser(email, computeHashResult.hash, computeHashResult.salt);
-    })
-    .then((updateUserResult) => {
-      console.log(updateUserResult);
-      context.succeed({
-        success: true
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      context.fail({
-        success: false,
-        message: err.message
-      });
     });
 };

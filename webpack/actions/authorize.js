@@ -70,6 +70,7 @@ export function login(credentials) {
           email: credentials.email
         };
         localStorage.setItem('token', data.token);
+        localStorage.setItem('sessionID', data.sessionID);
         localStorage.setItem('user', user);
         dispatch(loginSuccess(user));
         return resolve(data);
@@ -85,6 +86,8 @@ export function logout() {
   return (dispatch) => {
     dispatch(logoutRequest());
     localStorage.removeItem('token');
+    localStorage.removeItem('sessionID');
+    localStorage.removeItem('user');
     dispatch(logoutSuccess());
     return Promise.resolve();
   };

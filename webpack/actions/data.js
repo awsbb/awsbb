@@ -40,10 +40,6 @@ export function dataFailure(message) {
 //   let config = {
 //     ...configuration
 //   };
-//   if (authenticated) {
-//     let token = localStorage.getItem('token');
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
 //   let queryString = Object.keys(query).map((key) => {
 //     return key + '=' + query[key];
 //   }).join('&');
@@ -52,7 +48,7 @@ export function dataFailure(message) {
 //   }
 //   return (dispatch) => new Promise((resolve, reject) => {
 //     dispatch(dataRequest());
-//     return Rover.rover(url, config)
+//     return Rover.rover(url, config, authenticated)
 //       .then((data) => {
 //         dispatch(dataSuccess());
 //         return resolve(data);
@@ -70,13 +66,9 @@ export function postData(url, data, authenticated = false) {
     method: 'POST',
     body: JSON.stringify(data)
   };
-  if (authenticated) {
-    let token = localStorage.getItem('token');
-    config.headers.Authorization = `Bearer ${token}`;
-  }
   return (dispatch) => new Promise((resolve, reject) => {
     dispatch(dataRequest());
-    return Rover.rover(url, config)
+    return Rover.rover(url, config, authenticated)
       .then((data) => {
         dispatch(dataSuccess());
         return resolve(data);
@@ -94,13 +86,9 @@ export function updateData(url, data, authenticated = false) {
     method: 'PATCH',
     body: JSON.stringify(data)
   };
-  if (authenticated) {
-    let token = localStorage.getItem('token');
-    config.headers.Authorization = `Bearer ${token}`;
-  }
   return (dispatch) => new Promise((resolve, reject) => {
     dispatch(dataRequest());
-    return Rover.rover(url, config)
+    return Rover.rover(url, config, authenticated)
       .then((data) => {
         dispatch(dataSuccess());
         return resolve(data);
@@ -118,13 +106,9 @@ export function updateData(url, data, authenticated = false) {
 //     ...configuration,
 //     method: 'DELETE'
 //   };
-//   if (authenticated) {
-//     let token = localStorage.getItem('token');
-//     config.headers.Authorization = `Bearer ${token}`;
-//   }
 //   return (dispatch) => new Promise((resolve, reject) => {
 //     dispatch(dataRequest());
-//     return Rover.rover(url, config)
+//     return Rover.rover(url, config, authenticated)
 //       .then((data) => {
 //         dispatch(dataSuccess());
 //         return resolve(data);

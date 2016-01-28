@@ -33,6 +33,22 @@ export default class Cache {
       resolve();
     });
   }
+  authorizeUser(headers) {
+    return new Promise((resolve, reject) => {
+      // TODO: don't split the string, use the proper one later when using jsonwebtoken parsing
+      let token = headers.authorization.split(' ')[1];
+      let sessionID = headers['x-awsbb-sessionid'];
+      return this.get(sessionID)
+        .then((cacheResult) => {
+          // TODO: JWT decode/authorize per https://github.com/boketto/hapi-auth-jsonwebtoken
+          // if true, resolve, if not reject;
+          if (cacheResult.value === token) {
+            return resolve();
+          }
+          reject(new Error('UserNotAuthorized'));
+        });
+    });
+  }
   get(id) {
     return new Promise((resolve, reject) => {
       cacheClient.get({
@@ -44,6 +60,19 @@ export default class Cache {
         }
         if (cached && cached.item) {
           return resolve(cached.item);
+        }
+        reject(new Error('CacheItemNotFound'));
+      });
+    });
+  }
+  drop(id) {
+    return new Promise((resolve, reject) => {
+      cacheClient.drop({
+        segment: 'logins',
+        id: id
+      }, (err) => {
+        if (err) {
+          return reject(err);
         }
         resolve();
       });
