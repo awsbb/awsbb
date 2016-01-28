@@ -134,8 +134,8 @@ class Profile extends React.Component {
       password,
       confirmation
     }, true)
-    .then(() => authorizeActions.logout())
-    .then(() => push('/thanks?type=ChangePassword'))
+    // .then(() => authorizeActions.logout())
+    // .then(() => push('/thanks?type=ChangePassword'))
     .catch(() => {});
   }
   canSubmit() {

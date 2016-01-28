@@ -41,9 +41,9 @@ const getUser = (email) => {
         let salt = data.Item.passwordSalt.S;
         let verified = data.Item.verified.BOOL;
         return resolve({
-          hash: hash,
-          salt: salt,
-          verified: verified
+          salt,
+          hash,
+          verified
         });
       }
       reject(new Error('UserNotFound'));
@@ -51,18 +51,20 @@ const getUser = (email) => {
   });
 };
 
-const generateToken = (email) => {
+const generateToken = (email, roles = []) => {
   return new Promise((resolve, reject) => {
     let sessionID = uuid.v4();
-    let token = jwt.sign({
-      email: email,
-      application: 'awsBB'
+    let sessionData = jwt.sign({
+      email,
+      application: 'awsBB',
+      roles,
+      sessionID
     }, Config.JWT_SECRET);
-    cache.set('logins', sessionID, token)
+    cache.set('logins', sessionID, sessionData)
       .then(() => {
         resolve({
-          sessionID: sessionID,
-          token: token
+          sessionID,
+          token: sessionData
         });
       })
       .catch((err) => {
@@ -97,37 +99,32 @@ export function handler(event, context) {
 
   let email = event.payload.email;
   let password = event.payload.password;
-  // let userToken = event.headers['X-awsBB-User-Token'];
 
   return cache.start()
     .then(() => {
       return validate(event.payload)
-        .then(() => {
-          return getUser(email);
-        })
-        .then((getUserResult) => {
-          console.log(getUserResult);
-          if (!getUserResult.hash) {
+        .then(() => getUser(email))
+        .then(({ salt, hash, verified }) => {
+          if (!hash) {
             return Promise.reject(new Error('UserHasNoHash'));
           }
-          if (!getUserResult.verified) {
+          if (!verified) {
             return Promise.reject(new Error('UserNotVerified'));
           }
-          return computeHash(password, getUserResult.salt)
-            .then((computeHashResult) => {
-              console.log(computeHashResult);
-              if (getUserResult.hash !== computeHashResult.hash) {
+          let userHash = hash;
+          return computeHash(password, salt)
+            .then(({ hash }) => {
+              if (userHash !== hash) {
                 return Promise.reject(new Error('IncorrectPassword'));
               }
               return generateToken(email);
             });
         })
         .then(({ sessionID, token }) => {
-          console.log(sessionID, token);
           context.succeed({
             success: true,
-            sessionID: sessionID,
-            token: token
+            sessionID,
+            token
           });
         });
     })

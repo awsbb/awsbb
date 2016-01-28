@@ -132,19 +132,10 @@ export function handler(event, context) {
   let email = event.payload.email;
 
   return validate(event.payload)
+    .then(() => getUser(email))
+    .then((email) => storeToken(email))
+    .then((token) => sendLostPasswordEmail(email, token))
     .then(() => {
-      return getUser(email);
-    })
-    .then((email) => {
-      console.log(email);
-      return storeToken(email);
-    })
-    .then((token) => {
-      console.log(token);
-      return sendLostPasswordEmail(email, token);
-    })
-    .then((info) => {
-      console.log(info);
       context.succeed({
         success: true
       });

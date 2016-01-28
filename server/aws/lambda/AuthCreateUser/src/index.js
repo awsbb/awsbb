@@ -125,19 +125,10 @@ export function handler(event, context) {
   let password = event.payload.password;
 
   return validate(event.payload)
+    .then(() => computeHash(password))
+    .then(({ salt, hash }) => ensureUser(email, hash, salt))
+    .then((token) => sendVerificationEmail(email, token))
     .then(() => {
-      return computeHash(password);
-    })
-    .then((computeHashResult) => {
-      console.log(computeHashResult);
-      return ensureUser(email, computeHashResult.hash, computeHashResult.salt);
-    })
-    .then((token) => {
-      console.log(token);
-      return sendVerificationEmail(email, token);
-    })
-    .then((info) => {
-      console.log(info);
       context.succeed({
         success: true
       });

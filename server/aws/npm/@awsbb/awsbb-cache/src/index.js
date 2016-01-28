@@ -42,6 +42,7 @@ export default class Cache {
         .then((cacheResult) => {
           // TODO: JWT decode/authorize per https://github.com/boketto/hapi-auth-jsonwebtoken
           // if true, resolve, if not reject;
+          console.log(cacheResult);
           if (cacheResult.value === token) {
             return resolve();
           }

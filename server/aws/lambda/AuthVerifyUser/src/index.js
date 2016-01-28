@@ -36,8 +36,8 @@ const getUser = (email) => {
           token = data.Item.verifyToken.S;
         }
         return resolve({
-          verified: verified,
-          token: token
+          verified,
+          token
         });
       }
       reject(new Error('UserNotFound'));
@@ -102,15 +102,12 @@ export function handler(event, context) {
   let verify = event.payload.verify;
 
   return validate(event.payload)
-    .then(() => {
-      return getUser(email);
-    })
-    .then((result) => {
-      console.log(result);
-      if (result.verified) {
-        return Promise.resolve(result);
+    .then(() => getUser(email))
+    .then(({ verified, token }) => {
+      if (verified) {
+        return Promise.resolve({ verified, token });
       }
-      if (verify !== result.token) {
+      if (verify !== token) {
         return Promise.reject(new Error('InvalidVerifyUserToken'));
       }
       return updateUser(email);

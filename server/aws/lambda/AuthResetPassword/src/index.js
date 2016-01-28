@@ -112,21 +112,15 @@ export function handler(event, context) {
   let password = event.payload.password;
 
   return validate(event.payload)
-    .then(() => {
-      return getUser(email);
-    })
+    .then(() => getUser(email))
     .then((token) => {
-      console.log(token);
       if (lost !== token) {
         return Promise.reject(new Error('InvalidResetPasswordToken'));
       }
       return computeHash(password);
     })
-    .then((computeHashResult) => {
-      return updateUser(email, computeHashResult.hash, computeHashResult.salt);
-    })
-    .then((updateUserResult) => {
-      console.log(updateUserResult);
+    .then(({ salt, hash }) => updateUser(email, hash, salt))
+    .then(() => {
       context.succeed({
         success: true
       });

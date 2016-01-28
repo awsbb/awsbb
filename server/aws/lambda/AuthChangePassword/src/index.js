@@ -11,10 +11,7 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-import {
-  computeHash
-}
-from '@awsbb/awsbb-hashing';
+import { computeHash } from '@awsbb/awsbb-hashing';
 import Cache from '@awsbb/awsbb-cache';
 // the redis cacheClient will connect and partition data in database 0
 const cache = new Cache(Config.AWS.EC_ENDPOINT);
@@ -38,13 +35,13 @@ const getUser = (email) => {
         return reject(err);
       }
       if (data.Item) {
-        let hash = data.Item.passwordHash.S;
         let salt = data.Item.passwordSalt.S;
+        let hash = data.Item.passwordHash.S;
         let verified = data.Item.verified.BOOL;
         return resolve({
-          hash: hash,
-          salt: salt,
-          verified: verified
+          salt,
+          hash,
+          verified
         });
       }
       reject(new Error('UserNotFound'));
@@ -125,43 +122,38 @@ export function handler(event, context) {
             .then(() => {
               return getUser(email);
             })
-            .then((getUserResult) => {
-              console.log(getUserResult);
-              if (!getUserResult.hash) {
+            .then(({ salt, hash, verified }) => {
+              if (!hash) {
                 return Promise.reject(new Error('UserHasNoHash'));
               }
-              if (!getUserResult.verified) {
+              if (!verified) {
                 return Promise.reject(new Error('UserNotVerified'));
               }
-              return computeHash(currentPassword, getUserResult.salt)
-                .then((computeCurrentHashResult) => {
-                  console.log(computeCurrentHashResult);
-                  if (getUserResult.hash !== computeCurrentHashResult.hash) {
+              let userHash = hash;
+              return computeHash(currentPassword, salt)
+                .then(({ hash }) => {
+                  if (userHash !== hash) {
                     return Promise.reject(new Error('IncorrectPassword'));
                   }
                   return computeHash(password);
                 });
             })
-            .then((computeHashResult) => {
-              console.log(computeHashResult);
-              return updateUser(email, computeHashResult.hash, computeHashResult.salt);
-            })
-            .then((updateUserResult) => {
-              console.log(updateUserResult);
+            .then(({ salt, hash }) => updateUser(email, hash, salt))
+            .then(() => {
               context.succeed({
                 success: true
               });
             });
-        })
-        .catch((err) => {
-          console.log(err);
-          context.fail({
-            success: false,
-            message: err.message
-          });
-        })
-        .finally(() => {
-          return cache.stop();
         });
+    })
+    .catch((err) => {
+      console.log(err);
+      context.fail({
+        success: false,
+        message: err.message
+      });
+    })
+    .finally(() => {
+      return cache.stop();
     });
 };

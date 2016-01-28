@@ -14,7 +14,7 @@ export function computeHash(password, salt) {
           return reject(err);
         }
         return resolve({
-          salt: salt,
+          salt,
           hash: key.toString('base64')
         });
       });
@@ -30,7 +30,5 @@ export function computeHash(password, salt) {
     });
   });
   return randomBytes
-    .then((salt) => {
-      return computeHash(password, salt);
-    });
+    .then((salt) => computeHash(password, salt));
 };
