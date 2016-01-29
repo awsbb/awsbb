@@ -115,30 +115,26 @@ export function handler(event, context) {
   let password = event.payload.password;
 
   return cache.start()
-    .then(() => {
-      return cache.authorizeUser(event.headers)
-        .then(() => {
-          return validate(event.payload)
-            .then(() => getUser(email))
-            .then(({ salt, hash, verified }) => {
-              if (!hash) {
-                reject(new Error('UserHasNoHash'));
-              }
-              if (!verified) {
-                reject(new Error('UserNotVerified'));
-              }
-              let userHash = hash;
-              return computeHash(currentPassword, salt)
-                .then(({ hash }) => {
-                  if (userHash !== hash) {
-                    reject(new Error('IncorrectPassword'));
-                  }
-                  return computeHash(password);
-                });
-            })
-            .then(({ salt, hash }) => updateUser(email, hash, salt));
+    .then(() => cache.authorizeUser(email, event.headers))
+    .then(() => validate(event.payload))
+    .then(() => getUser(email))
+    .then(({ salt, hash, verified }) => {
+      if (!hash) {
+        return Promise.reject(new Error('UserHasNoHash'));
+      }
+      if (!verified) {
+        return Promise.reject(new Error('UserNotVerified'));
+      }
+      let userHash = hash;
+      return computeHash(currentPassword, salt)
+        .then(({ hash }) => {
+          if (userHash !== hash) {
+            return Promise.reject(new Error('IncorrectPassword'));
+          }
+          return computeHash(password);
         });
     })
+    .then(({ salt, hash }) => updateUser(email, hash, salt))
     .then(() => {
       context.succeed({
         success: true

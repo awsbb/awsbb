@@ -100,24 +100,22 @@ export function handler(event, context) {
   let password = event.payload.password;
 
   return cache.start()
-    .then(() => {
-      return validate(event.payload)
-        .then(() => getUser(email))
-        .then(({ salt, hash, verified }) => {
-          if (!hash) {
-            return Promise.reject(new Error('UserHasNoHash'));
+    .then(() => validate(event.payload))
+    .then(() => getUser(email))
+    .then(({ salt, hash, verified }) => {
+      if (!hash) {
+        return Promise.reject(new Error('UserHasNoHash'));
+      }
+      if (!verified) {
+        return Promise.reject(new Error('UserNotVerified'));
+      }
+      let userHash = hash;
+      return computeHash(password, salt)
+        .then(({ hash }) => {
+          if (userHash !== hash) {
+            return Promise.reject(new Error('IncorrectPassword'));
           }
-          if (!verified) {
-            return Promise.reject(new Error('UserNotVerified'));
-          }
-          let userHash = hash;
-          return computeHash(password, salt)
-            .then(({ hash }) => {
-              if (userHash !== hash) {
-                return Promise.reject(new Error('IncorrectPassword'));
-              }
-              return generateToken(email);
-            });
+          return generateToken(email);
         });
     })
     .then(({ sessionID, token }) => {

@@ -6,7 +6,34 @@ import Promise from 'bluebird';
 import Catbox from 'catbox';
 import CatboxRedis from 'catbox-redis';
 
+import jwt from 'jsonwebtoken';
+
 let cacheClient = null;
+
+const decode = (authorization) => {
+  return new Promise((resolve, reject) => {
+    let parts = authorization.split(/\s+/);
+    if (parts[0] && parts[0].toLowerCase() !== 'bearer') {
+      return reject(new Error('NotBearerToken'));
+    }
+    if (parts.length !== 2) {
+      return reject(new Error('BadHTTPAuthenticationHeaderFormat'));
+    }
+    if(parts[1].split('.').length !== 3) {
+      return reject(new Error('BadHTTPAuthenticationHeaderFormat'));
+    }
+    let token = parts[1];
+    jwt.verify(token, Config.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        if (err.message === 'jwt expired') {
+          return reject(new Error('ExpiredToken'));
+        }
+        return reject(new Error('InvalidTokenSignature'));
+      }
+      resolve(decoded);
+    });
+  });
+};
 
 export default class Cache {
   constructor(endpoint = '127.0.0.1:6379', password = '') {
@@ -33,19 +60,33 @@ export default class Cache {
       resolve();
     });
   }
-  authorizeUser(headers) {
-    // TODO: don't split the string, use the proper one later when using jsonwebtoken parsing
-    let token = headers.authorization.split(' ')[1];
+  authorizeUser(email, headers) {
+    let authorization = headers.authorization;
     let sessionID = headers['x-awsbb-sessionid'];
+    if(!authorization) {
+      return Promise.reject(new Error('AuthorizationHeaderMissing'));
+    }
     return this.get('logins', sessionID)
       .then((cacheResult) => {
-        // TODO: JWT decode/authorize per https://github.com/boketto/hapi-auth-jsonwebtoken
-        // if true, resolve, if not reject;
-        console.log(cacheResult);
-        if (cacheResult.value === token) {
-          return Promise.resolve();
-        }
-        Promise.reject(new Error('UserNotAuthorized'));
+        // get the decoded value of what's in the cache
+        return decode(`Bearer ${cacheResult.value}`)
+          .then(({ email, sessionID }) => {
+            return Promise.resolve({
+              cacheEmail: email,
+              cacheSessionID: sessionID
+            });
+          })
+          .then(({ cacheEmail, cacheSessionID }) => {
+            // get the decoded value of what was sent in headers
+            return decode(authorization)
+              .then(({ email, sessionID }) => {
+                // compare the two
+                if (cacheEmail === email && cacheSessionID === sessionID) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('UserNotAuthorized'));
+              });
+          });
       });
   }
   get(segment, id) {
