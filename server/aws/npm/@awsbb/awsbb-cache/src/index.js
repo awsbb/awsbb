@@ -19,7 +19,7 @@ const decode = (authorization) => {
     if (parts.length !== 2) {
       return reject(new Error('BadHTTPAuthenticationHeaderFormat'));
     }
-    if(parts[1].split('.').length !== 3) {
+    if (parts[1].split('.').length !== 3) {
       return reject(new Error('BadHTTPAuthenticationHeaderFormat'));
     }
     let token = parts[1];
@@ -60,28 +60,49 @@ export default class Cache {
       resolve();
     });
   }
-  authorizeUser(email, headers) {
+  authorizeUser(userEmail, headers) {
     let authorization = headers.authorization;
-    let sessionID = headers['x-awsbb-sessionid'];
-    if(!authorization) {
+    let userSessionID = headers['x-awsbb-sessionid'];
+    if (!authorization) {
       return Promise.reject(new Error('AuthorizationHeaderMissing'));
     }
-    return this.get('logins', sessionID)
-      .then((cacheResult) => {
+    return this.get('logins', userSessionID)
+      .then(({
+        value
+      }) => {
         // get the decoded value of what's in the cache
-        return decode(`Bearer ${cacheResult.value}`)
-          .then(({ email, sessionID }) => {
+        return decode(`Bearer ${value}`)
+          .then(({
+            email, sessionID
+          }) => {
             return Promise.resolve({
               cacheEmail: email,
               cacheSessionID: sessionID
             });
           })
-          .then(({ cacheEmail, cacheSessionID }) => {
+          .then(({
+            cacheEmail, cacheSessionID
+          }) => {
             // get the decoded value of what was sent in headers
             return decode(authorization)
-              .then(({ email, sessionID }) => {
-                // compare the two
-                if (cacheEmail === email && cacheSessionID === sessionID) {
+              .then(({
+                email, sessionID
+              }) => {
+                // compare all three areas of information
+                let userInfo = {
+                  email: userEmail,
+                  sessionID: userSessionID
+                };
+                let cacheInfo = {
+                  email: cacheEmail,
+                  sessionID: cacheSessionID
+                };
+                let authorizationInfo = {
+                  email,
+                  sessionID
+                };
+                let valid = Object.is(userInfo, cacheInfo) && Object.is(userInfo, authorizationInfo) && Object.is(cacheInfo, authorizationInfo);
+                if (valid) {
                   return Promise.resolve();
                 }
                 return Promise.reject(new Error('UserNotAuthorized'));
