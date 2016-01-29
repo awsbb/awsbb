@@ -1,13 +1,14 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { AuthorizeActions, DataActions } from '../../../actions';
+import { SessionActions } from '../../../actions';
+import { Rover } from '../../../common';
 
 import { Validators } from '../../../common';
 
@@ -119,7 +120,7 @@ class Profile extends React.Component {
     }
   }
   handleSubmit() {
-    const { push, authorizeActions, dataActions, user } = this.props;
+    const { push, sessionActions, user } = this.props;
     let email = user.email;
     let currentPassword = this.refs.currentPassword.getValue();
     let password = this.refs.password.getValue();
@@ -128,14 +129,17 @@ class Profile extends React.Component {
     console.log('currentPassword:', currentPassword);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    dataActions.updateData('http://127.0.0.1:3000/api/AuthChangePassword', {
-      email,
-      currentPassword,
-      password,
-      confirmation
+    Rover.rover('http://127.0.0.1:3000/api/AuthChangePassword', {
+      method: 'PATCH',
+      body: JSON.stringify({
+        email,
+        currentPassword,
+        password,
+        confirmation
+      })
     }, true)
-    // .then(() => authorizeActions.logout())
-    // .then(() => push('/thanks?type=ChangePassword'))
+    .then(() => sessionActions.logout())
+    .then(() => push('/thanks?type=ChangePassword'))
     .catch(() => {});
   }
   canSubmit() {
@@ -151,11 +155,13 @@ class Profile extends React.Component {
   }
 }
 
-Profile.propTypes = {};
+Profile.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
-  const { authorize } = state;
-  const { isAuthenticated, user } = authorize;
+  const { session } = state;
+  const { isAuthenticated, user } = session;
   return {
     isAuthenticated,
     user
@@ -164,9 +170,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    authorizeActions: bindActionCreators(AuthorizeActions, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    sessionActions: bindActionCreators(SessionActions, dispatch)
   };
 }
 

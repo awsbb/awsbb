@@ -19,11 +19,30 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  context.succeed([{
+  let data = [{
+    id: 0,
+    threadID: 0,
     title: 'One',
-    message: 'This is a reply.'
+    description: 'This is a reply for thread One.'
   }, {
+    id: 1,
+    threadID: 0,
     title: 'Two',
-    message: 'This is another reply.'
-  }]);
+    description: 'This is another reply for thread One.'
+  }, {
+    id: 2,
+    threadID: 1,
+    title: 'One',
+    description: 'This is a reply for thread Two.'
+  }, {
+    id: 3,
+    threadID: 1,
+    title: 'Two',
+    description: 'This is another reply for thread Two.'
+  }];
+
+  context.succeed({
+    success: true,
+    data: data.filter((reply) => reply.threadID === event.params.threadID)
+  });
 };

@@ -1,13 +1,13 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { DataActions } from '../../actions';
+import { Rover } from '../../common';
 
 import { Validators } from '../../common';
 
@@ -79,11 +79,15 @@ class LostPassword extends React.Component {
       this.setState(state);
     }
   }
-  handleSubmit() {
-    const { push, dataActions } = this.props;
+  handleSubmit(e) {
+    e.preventDefault();
+    const { push } = this.props;
     let email = this.refs.email.getValue();
-    dataActions.postData('http://127.0.0.1:3000/api/AuthLostPassword', {
-      email
+    Rover.rover('http://127.0.0.1:3000/api/AuthLostPassword', {
+      method: 'POST',
+      body: JSON.stringify({
+        email
+      })
     })
     .then(() => push('/thanks?type=LostPassword'))
     .catch(() => {});
@@ -99,7 +103,9 @@ class LostPassword extends React.Component {
   }
 }
 
-LostPassword.propTypes = {};
+LostPassword.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
   return {};
@@ -107,8 +113,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    dispatch,
+    push: bindActionCreators(routeActions.push, dispatch)
   };
 }
 

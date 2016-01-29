@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { AuthorizeActions } from '../../actions';
+import { SessionActions } from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -21,23 +21,25 @@ class Login extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  componentWillReceiveProps(nextProps) {
+    const { push } = this.props;
+    if (nextProps.isAuthenticated) {
+      return push('/');
+    }
+  }
   componentWillMount() {
+    const { push, isAuthenticated } = this.props;
+    if (isAuthenticated) {
+      return push('/');
+    }
     this.setState({
       email: '',
       password: ''
     });
   }
   render() {
-    const { isAuthenticated } = this.props;
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
     let lock = <FontAwesome name="lock" fixedWidth/>;
-    if(isAuthenticated) {
-      return (
-        <section id="login">
-          You are already logged in.
-        </section>
-      );
-    }
     return (
       <section id="login">
         <div className="container">
@@ -103,23 +105,22 @@ class Login extends React.Component {
   handleOnChange(e) {
     let state = {};
     let key = e.target.name;
-    if(this.refs[key]) {
+    if (this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
   }
-  handleSubmit() {
-    const { push, authorizeActions } = this.props;
+  handleSubmit(e) {
+    e.preventDefault();
+    const { sessionActions } = this.props;
     let email = this.refs.email.getValue();
     let password = this.refs.password.getValue();
     console.log('email:', email);
     console.log('password:', password);
-    authorizeActions.login({
+    sessionActions.login({
       email,
       password
-    })
-    .then(() => push('/'))
-    .catch(() => {});
+    });
   }
   canSubmit() {
     try {
@@ -133,11 +134,13 @@ class Login extends React.Component {
   }
 }
 
-Login.propTypes = {};
+Login.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
-  const { authorize } = state;
-  const { isAuthenticated } = authorize;
+  const { session } = state;
+  const { isAuthenticated } = session;
   return {
     isAuthenticated
   };
@@ -145,8 +148,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    authorizeActions: bindActionCreators(AuthorizeActions, dispatch)
+    sessionActions: bindActionCreators(SessionActions, dispatch)
   };
 }
 

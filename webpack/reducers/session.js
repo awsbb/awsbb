@@ -1,39 +1,39 @@
 'use strict';
 
-import { AuthorizeActions } from '../actions';
+import { SessionActions } from '../actions';
 
 export default function authorize(state = {
-  isFetching: false,
-  isAuthenticated: localStorage.getItem('token') ? true : false,
+  sessionIsFetching: false,
+  isAuthenticated: localStorage.getItem('token') && localStorage.getItem('sessionID') ? true : false,
   user: localStorage.getItem('user') || null
 }, action) {
   switch (action.type) {
-    case AuthorizeActions.LOGIN_REQUEST:
+    case SessionActions.LOGIN_REQUEST:
       return Object.assign({}, state, {
-        isFetching: true,
+        sessionIsFetching: true,
         isAuthenticated: false
       });
-    case AuthorizeActions.LOGIN_SUCCESS:
+    case SessionActions.LOGIN_SUCCESS:
       return Object.assign({}, state, {
-        isFetching: false,
+        sessionIsFetching: false,
         isAuthenticated: true,
         user: action.user,
         message: ''
       });
-    case AuthorizeActions.LOGIN_FAILURE:
+    case SessionActions.LOGIN_FAILURE:
       return Object.assign({}, state, {
-        isFetching: false,
+        sessionIsFetching: false,
         isAuthenticated: false,
         message: action.message
       });
-    case AuthorizeActions.LOGOUT_REQUEST:
+    case SessionActions.LOGOUT_REQUEST:
       return Object.assign({}, state, {
-        isFetching: true,
+        sessionIsFetching: true,
         isAuthenticated: true
       });
-    case AuthorizeActions.LOGOUT_SUCCESS:
+    case SessionActions.LOGOUT_SUCCESS:
       return Object.assign({}, state, {
-        isFetching: false,
+        sessionIsFetching: false,
         isAuthenticated: false,
         user: null,
         message: ''

@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -32,7 +32,9 @@ class Home extends React.Component {
   }
 }
 
-Home.propTypes = {};
+Home.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
   return {};
@@ -40,6 +42,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    dispatch,
     push: bindActionCreators(routeActions.push, dispatch)
   };
 }

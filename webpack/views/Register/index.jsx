@@ -1,13 +1,13 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { DataActions } from '../../actions';
+import { Rover } from '../../common';
 
 import { Validators } from '../../common';
 
@@ -21,6 +21,10 @@ class Register extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
   componentWillMount() {
+    const { push, isAuthenticated } = this.props;
+    if (isAuthenticated) {
+      return push('/');
+    }
     this.setState({
       email: '',
       password: '',
@@ -28,14 +32,6 @@ class Register extends React.Component {
     });
   }
   render() {
-    const { isAuthenticated } = this.props;
-    if(isAuthenticated) {
-      return (
-        <section id="register">
-          You are already logged in.
-        </section>
-      );
-    }
     let envelope = <FontAwesome name="envelope" fixedWidth/>;
     let lock = <FontAwesome name="lock" fixedWidth/>;
     return (
@@ -119,18 +115,22 @@ class Register extends React.Component {
       this.setState(state);
     }
   }
-  handleSubmit() {
-    const { push, dataActions } = this.props;
+  handleSubmit(e) {
+    e.preventDefault();
+    const { push } = this.props;
     let email = this.refs.email.getValue();
     let password = this.refs.password.getValue();
     let confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    dataActions.postData('http://127.0.0.1:3000/api/AuthCreateUser', {
-      email,
-      password,
-      confirmation
+    Rover.rover('http://127.0.0.1:3000/api/AuthCreateUser', {
+      method: 'POST',
+      body: JSON.stringify({
+        email,
+        password,
+        confirmation
+      })
     })
     .then(() => push('/thanks?type=CreateUser'))
     .catch(() => {});
@@ -148,11 +148,13 @@ class Register extends React.Component {
   }
 }
 
-Register.propTypes = {};
+Register.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
-  const { authorize } = state;
-  const { isAuthenticated } = authorize;
+  const { session } = state;
+  const { isAuthenticated } = session;
   return {
     isAuthenticated
   };
@@ -160,8 +162,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    dispatch,
+    push: bindActionCreators(routeActions.push, dispatch)
   };
 }
 

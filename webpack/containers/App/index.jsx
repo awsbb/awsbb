@@ -14,11 +14,11 @@ class App extends React.Component {
     super(props, context);
   }
   render() {
-    const { children, isAuthenticated, isFetching } = this.props;
+    const { children } = this.props;
     return (
       <div>
-        <Loader isFetching={isFetching}/>
-        <Header isAuthenticated={isAuthenticated}/>
+        <Loader/>
+        <Header/>
         <section id="main">
           {children}
         </section>
@@ -29,20 +29,25 @@ class App extends React.Component {
 }
 
 App.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired
+  isAuthenticated: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
-  const { authorize } = state;
-  const { isAuthenticated, isFetching } = authorize;
+  const { session, data } = state;
+  const { isAuthenticated, sessionIsFetching } = session;
+  const { isFetching } = data;
   return {
     isAuthenticated,
+    sessionIsFetching,
     isFetching
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    dispatch
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

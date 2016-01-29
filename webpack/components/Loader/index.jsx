@@ -1,6 +1,6 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
 import style from './style.css';
@@ -10,9 +10,9 @@ class Loader extends React.Component {
     super(props, context);
   }
   render() {
-    const { isFetching } = this.props;
+    const { sessionIsFetching, isFetching } = this.props;
     let innerBar = <div></div>;
-    if(isFetching) {
+    if(sessionIsFetching || isFetching) {
       innerBar = <div>
         <div className={style.bar}></div>
         <div className={style.bar}></div>
@@ -29,18 +29,26 @@ class Loader extends React.Component {
   }
 }
 
-Loader.propTypes = {};
+Loader.propTypes = {
+  sessionIsFetching: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
-  const { authorize } = state;
-  const { isFetching } = authorize;
+  const { session, data } = state;
+  const { sessionIsFetching } = session;
+  const { isFetching } = data;
   return {
+    sessionIsFetching,
     isFetching
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return {};
+  return {
+    dispatch
+  };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Loader);

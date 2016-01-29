@@ -1,6 +1,6 @@
 'use strict';
 
-import * as ForumCategoriesGet from '../aws/lambda/ForumCategoriesGet';
+import { handler as forumCategoriesGet } from '../aws/lambda/ForumCategoriesGet';
 
 export function setup(server) {
   server.route({
@@ -8,7 +8,7 @@ export function setup(server) {
     path: '/api/ForumCategoriesGet',
     config: {
       handler: (request, reply) => {
-        ForumCategoriesGet.handler(server.getEvent(request), server.getContext(reply));
+        forumCategoriesGet(server.getEvent(request), server.getContext(reply));
       }
     }
   });

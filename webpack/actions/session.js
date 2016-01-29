@@ -13,18 +13,18 @@ import { Rover } from '../common';
 export function loginRequest() {
   return {
     type: LOGIN_REQUEST,
-    isFetching: true,
+    sessionIsFetching: true,
     isAuthenticated: false
   };
 };
 
-export function loginSuccess(credentials) {
+export function loginSuccess(user) {
   return {
     type: LOGIN_SUCCESS,
-    isFetching: false,
+    sessionIsFetching: false,
     isAuthenticated: true,
     user: {
-      email: credentials.email
+      email: user.email
     }
   };
 };
@@ -32,7 +32,7 @@ export function loginSuccess(credentials) {
 export function loginFailure(message) {
   return {
     type: LOGIN_FAILURE,
-    isFetching: false,
+    sessionIsFetching: false,
     isAuthenticated: false,
     message: message
   };
@@ -41,7 +41,7 @@ export function loginFailure(message) {
 export function logoutRequest() {
   return {
     type: LOGOUT_REQUEST,
-    isFetching: true,
+    sessionIsFetching: true,
     isAuthenticated: true
   };
 };
@@ -49,7 +49,7 @@ export function logoutRequest() {
 export function logoutSuccess() {
   return {
     type: LOGOUT_SUCCESS,
-    isFetching: false,
+    sessionIsFetching: false,
     isAuthenticated: false
   };
 };
@@ -57,33 +57,24 @@ export function logoutSuccess() {
 export function login(credentials) {
   let config = {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
     body: JSON.stringify(credentials)
   };
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(loginRequest());
-    return Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
+    Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
-        if(data.success) {
-          let user = {
-            email: credentials.email
-          };
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('sessionID', data.sessionID);
-          localStorage.setItem('user', user);
-          dispatch(loginSuccess(user));
-          return resolve(data);
-        }
-        dispatch(loginFailure(data.errorMessage));
-        reject(data);
+        let user = {
+          email: credentials.email
+        };
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('sessionID', data.sessionID);
+        localStorage.setItem('user', user);
+        dispatch(loginSuccess(user));
       })
       .catch((err) => {
-        dispatch(loginFailure(err.message));
-        return reject(err);
+        dispatch(loginFailure(err.message || err.errorMessage));
       });
-  });
+  };
 };
 
 export function logout() {
@@ -93,6 +84,5 @@ export function logout() {
     localStorage.removeItem('sessionID');
     localStorage.removeItem('user');
     dispatch(logoutSuccess());
-    return Promise.resolve();
   };
 };

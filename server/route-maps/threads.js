@@ -1,14 +1,14 @@
 'use strict';
 
-import * as ForumThreadsGet from '../aws/lambda/ForumThreadsGet';
+import { handler as forumThreadsGet } from '../aws/lambda/ForumThreadsGet';
 
 export function setup(server) {
   server.route({
     method: 'GET',
-    path: '/api/ForumThreadsGet',
+    path: '/api/ForumThreadsGet/{categoryID}',
     config: {
       handler: (request, reply) => {
-        ForumThreadsGet.handler(server.getEvent(request), server.getContext(reply));
+        forumThreadsGet(server.getEvent(request), server.getContext(reply));
       }
     }
   });

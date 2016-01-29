@@ -5,13 +5,6 @@ export const DATA_REQUEST = 'DATA_REQUEST';
 export const DATA_SUCCESS = 'DATA_SUCCESS';
 export const DATA_FAILURE = 'DATA_FAILURE';
 
-const configuration = {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json; charset=utf-8'
-  }
-};
-
 import { Rover } from '../common';
 
 export function dataRequest() {
@@ -37,9 +30,6 @@ export function dataFailure(message) {
 };
 
 export function getData(url, query = {}, authenticated = false) {
-  let config = {
-    ...configuration
-  };
   let queryString = Object.keys(query).map((key) => {
     return key + '=' + query[key];
   }).join('&');
@@ -48,17 +38,13 @@ export function getData(url, query = {}, authenticated = false) {
   }
   return (dispatch) => new Promise((resolve, reject) => {
     dispatch(dataRequest());
-    return Rover.rover(url, config, authenticated)
+    return Rover.rover(url, {}, authenticated)
       .then((data) => {
-        if (data.success) {
-          dispatch(dataSuccess());
-          return resolve(data);
-        }
-        dispatch(dataFailure(data.errorMessage));
-        reject(data);
+        dispatch(dataSuccess(data));
+        resolve(data);
       })
       .catch((err) => {
-        dispatch(dataFailure(err.message));
+        dispatch(dataFailure(err.message || err.errorMessage));
         reject(err);
       });
   });
@@ -66,7 +52,6 @@ export function getData(url, query = {}, authenticated = false) {
 
 export function postData(url, data, authenticated = false) {
   let config = {
-    ...configuration,
     method: 'POST',
     body: JSON.stringify(data)
   };
@@ -74,15 +59,11 @@ export function postData(url, data, authenticated = false) {
     dispatch(dataRequest());
     return Rover.rover(url, config, authenticated)
       .then((data) => {
-        if (data.success) {
-          dispatch(dataSuccess());
-          return resolve(data);
-        }
-        dispatch(dataFailure(data.errorMessage));
-        reject(data);
+        dispatch(dataSuccess(data));
+        resolve(data);
       })
       .catch((err) => {
-        dispatch(dataFailure(err.message));
+        dispatch(dataFailure(err.message || err.errorMessage));
         reject(err);
       });
   });
@@ -90,7 +71,6 @@ export function postData(url, data, authenticated = false) {
 
 export function updateData(url, data, authenticated = false) {
   let config = {
-    ...configuration,
     method: 'PATCH',
     body: JSON.stringify(data)
   };
@@ -98,16 +78,12 @@ export function updateData(url, data, authenticated = false) {
     dispatch(dataRequest());
     return Rover.rover(url, config, authenticated)
       .then((data) => {
-        if (data.success) {
-          dispatch(dataSuccess());
-          return resolve(data);
-        }
-        dispatch(dataFailure(data.errorMessage));
-        reject(data);
+        dispatch(dataSuccess(data));
+        resolve(data);
       })
       .catch((err) => {
         console.log(err);
-        dispatch(dataFailure(err.message));
+        dispatch(dataFailure(err.message || err.errorMessage));
         reject(err);
       });
   });
@@ -115,22 +91,17 @@ export function updateData(url, data, authenticated = false) {
 
 export function deleteData(url, authenticated = false) {
   let config = {
-    ...configuration,
     method: 'DELETE'
   };
   return (dispatch) => new Promise((resolve, reject) => {
     dispatch(dataRequest());
     return Rover.rover(url, config, authenticated)
       .then((data) => {
-        if (data.success) {
-          dispatch(dataSuccess());
-          return resolve(data);
-        }
-        dispatch(dataFailure(data.errorMessage));
-        reject(data);
+        dispatch(dataSuccess(data));
+        resolve(data);
       })
       .catch((err) => {
-        dispatch(dataFailure(err.message));
+        dispatch(dataFailure(err.message || err.errorMessage));
         reject(err);
       });
   });

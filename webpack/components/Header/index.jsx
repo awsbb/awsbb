@@ -1,13 +1,13 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
-import { AuthorizeActions } from '../../actions';
+import { SessionActions } from '../../actions';
 
 import './style.css';
 
@@ -59,28 +59,33 @@ class Header extends React.Component {
     );
   }
   handleLogout() {
-    const { push, authorizeActions } = this.props;
-    authorizeActions.logout()
+    const { push, sessionActions } = this.props;
+    sessionActions.logout()
       .then(() => {
         push('/');
       });
   }
 }
 
-Header.propTypes = {};
+Header.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
-  const { authorize } = state;
-  const { isAuthenticated } = authorize;
+  const { session } = state;
+  const { isAuthenticated, sessionIsFetching } = session;
   return {
-    isAuthenticated
+    isAuthenticated,
+    sessionIsFetching
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
+    dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    authorizeActions: bindActionCreators(AuthorizeActions, dispatch)
+    sessionActions: bindActionCreators(SessionActions, dispatch)
   };
 }
 

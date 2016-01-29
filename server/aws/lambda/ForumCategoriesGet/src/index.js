@@ -19,11 +19,16 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  context.succeed([{
-    title: 'One',
-    description: 'This is a category.'
-  }, {
-    title: 'Two',
-    description: 'This is another category.'
-  }]);
+  context.succeed({
+    success: true,
+    data: [{
+      id: 0,
+      title: 'One',
+      description: 'This is a category.'
+    }, {
+      id: 1,
+      title: 'Two',
+      description: 'This is another category.'
+    }]
+  });
 };

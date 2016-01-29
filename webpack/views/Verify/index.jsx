@@ -1,11 +1,11 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
-import { DataActions } from '../../actions';
+import { Rover } from '../../common';
 
 import './style.css';
 
@@ -14,17 +14,18 @@ class Verify extends React.Component {
     super(props, context);
   }
   componentDidMount() {
-    const { push, dataActions, location } = this.props;
+    const { push, location } = this.props;
     let email = location.query.email;
     let verify = location.query.verify;
-    setTimeout(() => {
-      dataActions.postData('http://127.0.0.1:3000/api/AuthVerifyUser', {
+    Rover.rover('http://127.0.0.1:3000/api/AuthVerifyUser', {
+      method: 'POST',
+      body: JSON.stringify({
         email,
         verify
       })
-      .then(() => push('/thanks?type=VerifyUser'))
-      .catch(() => {});
-    }, 1000);
+    })
+    .then(() => push('/thanks?type=VerifyUser'))
+    .catch(() => {});
   }
   render() {
     return (
@@ -39,7 +40,9 @@ class Verify extends React.Component {
   }
 }
 
-Verify.propTypes = {};
+Verify.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
   return {};
@@ -47,8 +50,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    dispatch,
+    push: bindActionCreators(routeActions.push, dispatch)
   };
 }
 

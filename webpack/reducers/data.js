@@ -13,7 +13,8 @@ export default function data(state = {
     case DataActions.DATA_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
-        message: ''
+        message: '',
+        data: action.data
       });
     case DataActions.DATA_FAILURE:
       return Object.assign({}, state, {

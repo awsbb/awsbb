@@ -1,19 +1,20 @@
 'use strict';
 
-export function rover(url, config, authenticated = false) {
+export function rover(url, configuration = {}, authenticated = false) {
   let sessionID = localStorage.getItem('sessionID');
+  let token = localStorage.getItem('token');
+  let config = {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8'
+    },
+    ...configuration
+  };
   if (sessionID) {
-    config.headers = {
-      ...config.headers,
-      'X-awsBB-SessionID': `${sessionID}`
-    };
+    config.headers['X-awsBB-SessionID'] = `${sessionID}`;
   }
   if (authenticated) {
-    let token = localStorage.getItem('token');
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${token}`
-    };
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return fetch(url, config)
     .then((response) => {
@@ -25,7 +26,10 @@ export function rover(url, config, authenticated = false) {
           data, response
         }) => {
           if (response.ok) {
-            return Promise.resolve(data);
+            if (data.success) {
+              return Promise.resolve(data);
+            }
+            return Promise.reject(data);
           }
           return Promise.reject(data);
         });

@@ -1,13 +1,13 @@
 'use strict';
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { DataActions } from '../../actions';
+import { Rover } from '../../common';
 
 import { Validators } from '../../common';
 
@@ -97,7 +97,7 @@ class Reset extends React.Component {
     }
   }
   handleSubmit() {
-    const { push, location, dataActions } = this.props;
+    const { push, location } = this.props;
     let email = location.query.email;
     let lost = location.query.lost;
     let password = this.refs.password.getValue();
@@ -106,11 +106,14 @@ class Reset extends React.Component {
     console.log('lost:', lost);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    dataActions.postData('http://127.0.0.1:3000/api/AuthResetPassword', {
-      email,
-      lost,
-      password,
-      confirmation
+    Rover.rover('http://127.0.0.1:3000/api/AuthResetPassword', {
+      method: 'POST',
+      body: JSON.stringify({
+        email,
+        lost,
+        password,
+        confirmation
+      })
     })
     .then(() => push('/thanks?type=ResetPassword'))
     .catch(() => {});
@@ -130,7 +133,9 @@ class Reset extends React.Component {
   }
 }
 
-Reset.propTypes = {};
+Reset.propTypes = {
+  dispatch: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
   return {};
@@ -138,8 +143,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    dispatch,
+    push: bindActionCreators(routeActions.push, dispatch)
   };
 }
 

@@ -44,7 +44,7 @@ const getUser = (email) => {
           verified
         });
       }
-      throw new Error('UserNotFound');
+      reject(new Error('UserNotFound'));
     });
   });
 };
@@ -101,7 +101,7 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      throw new Error('PasswordConfirmationNotEqual');
+      reject(new Error('PasswordConfirmationNotEqual'));
     });
   });
 };
@@ -122,16 +122,16 @@ export function handler(event, context) {
             .then(() => getUser(email))
             .then(({ salt, hash, verified }) => {
               if (!hash) {
-                throw new Error('UserHasNoHash');
+                reject(new Error('UserHasNoHash'));
               }
               if (!verified) {
-                throw new Error('UserNotVerified');
+                reject(new Error('UserNotVerified'));
               }
               let userHash = hash;
               return computeHash(currentPassword, salt)
                 .then(({ hash }) => {
                   if (userHash !== hash) {
-                    throw new Error('IncorrectPassword');
+                    reject(new Error('IncorrectPassword'));
                   }
                   return computeHash(password);
                 });
