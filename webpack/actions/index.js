@@ -34,7 +34,7 @@ export function queryAPIThenLogout({ method = 'GET', url, query = {}, data = {},
   const config = resolveConfig({ method, data });
   return (dispatch) => {
     dispatch(Dispatchers.dataRequest());
-    Rover.rover(resolvedURL, config, authenticated)
+    Rover.query(resolvedURL, config, authenticated)
       .then((data) => {
         dispatch(Dispatchers.dataSuccess(data));
         if (successRoute) {
@@ -56,7 +56,7 @@ export function queryAPI({ method = 'GET', url, query = {}, data = {}, authentic
   const config = resolveConfig({ method, data });
   return (dispatch) => {
     dispatch(Dispatchers.dataRequest());
-    Rover.rover(resolvedURL, config, authenticated)
+    Rover.query(resolvedURL, config, authenticated)
       .then((data) => {
         dispatch(Dispatchers.dataSuccess(data));
         if (successRoute) {
@@ -71,21 +71,24 @@ export function queryAPI({ method = 'GET', url, query = {}, data = {}, authentic
       });
   };
 }
+
 export function login({ email, password, successRoute = '/', errorRoute }) {
-  const config = {
+  const config = resolveConfig({
     method: 'POST',
-    body: JSON.stringify({ email, password })
-  };
+    data: {
+      email,
+      password
+    }
+  });
   return (dispatch) => {
     dispatch(Dispatchers.loginRequest());
-    Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
+    Rover.query('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
         const user = {
           email
         };
-        const responseData = data.data;
-        localStorage.setItem('token', responseData.token);
-        localStorage.setItem('sessionID', responseData.sessionID);
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('sessionID', data.sessionID);
         localStorage.setItem('user', user);
         dispatch(Dispatchers.loginSuccess(user));
         if (successRoute) {

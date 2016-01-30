@@ -1,4 +1,4 @@
-export function rover(url, configuration = {}, authenticated = false) {
+export function query(url, configuration = {}, authenticated = false) {
   const sessionID = localStorage.getItem('sessionID');
   const token = localStorage.getItem('token');
   const config = {
@@ -14,7 +14,6 @@ export function rover(url, configuration = {}, authenticated = false) {
   if (authenticated) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  console.log(config);
   return fetch(url, config)
     .then((response) => {
       return response.json()
@@ -22,7 +21,7 @@ export function rover(url, configuration = {}, authenticated = false) {
         .then(({ data, response }) => {
           if (response.ok) {
             if (data.success) {
-              return Promise.resolve(data);
+              return Promise.resolve(data.data);
             }
             try {
               data.errorMessage = JSON.parse(data.errorMessage);
