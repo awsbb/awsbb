@@ -19,6 +19,15 @@ class Login extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  componentWillUpdate(nextProps) {
+    const { session, push } = nextProps;
+    if (!session.isFetching) {
+      const response = session.data;
+      if (response && response.success) {
+        return push('/');
+      }
+    }
+  }
   componentWillMount() {
     const { push, isAuthenticated } = this.props;
     if (isAuthenticated) {
@@ -104,17 +113,13 @@ class Login extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { push, sessionActions } = this.props;
+    const { sessionActions } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
-    console.log('email:', email);
-    console.log('password:', password);
     sessionActions.login({
       email,
       password
-    })
-    .then(() => push('/'))
-    .catch(() => {});
+    });
   }
   canSubmit() {
     try {
@@ -136,7 +141,8 @@ function mapStateToProps(state) {
   const { session } = state;
   const { isAuthenticated } = session;
   return {
-    isAuthenticated
+    isAuthenticated,
+    session
   };
 }
 

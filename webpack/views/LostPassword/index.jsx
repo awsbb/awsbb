@@ -18,6 +18,16 @@ class LostPassword extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  componentWillUpdate(nextProps) {
+    const { data, dataActions, push } = nextProps;
+    if (!data.isFetching) {
+      const response = data.data;
+      if (response && response.success) {
+        dataActions.clear();
+        return push('/thanks?type=LostPassword');
+      }
+    }
+  }
   componentWillMount() {
     this.setState({
       email: '',
@@ -79,16 +89,14 @@ class LostPassword extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { push, dataActions } = this.props;
+    const { dataActions } = this.props;
     const email = this.refs.email.getValue();
-    dataActions.postData({
+    dataActions.postAPI({
       url: 'http://127.0.0.1:3000/api/AuthLostPassword',
       data: {
         email
       }
-    })
-    .then(() => push('/thanks?type=LostPassword'))
-    .catch(() => {});
+    });
   }
   canSubmit() {
     try {
@@ -106,7 +114,10 @@ LostPassword.propTypes = {
 };
 
 function mapStateToProps(state) {
-  return {};
+  const { data } = state;
+  return {
+    data
+  };
 }
 
 function mapDispatchToProps(dispatch) {

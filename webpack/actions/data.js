@@ -1,79 +1,61 @@
 import { Rover } from '../common';
 import { DataDispatchers } from '../dispachers';
 
-export function getData(url, query = {}, authenticated = false) {
+export function getAPI({ url, query = {}, authenticated = false }) {
   const queryString = Object.keys(query).map((key) => {
     return `${key}=${query[key]}`;
   }).join('&');
   if (queryString) {
     url += `?${queryString}`;
   }
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(DataDispatchers.dataRequest());
-    return Rover.rover(url, {}, authenticated)
-      .then((data) => {
-        dispatch(DataDispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
+    Rover.rover(url, {}, authenticated)
+      .then((data) => dispatch(DataDispatchers.dataSuccess(data)))
+      .catch((err) => dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage)));
+  };
 }
 
-export function postData(url, data, authenticated = false) {
+export function postAPI({ url, data, authenticated = false }) {
   const config = {
     method: 'POST',
     body: JSON.stringify(data)
   };
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(DataDispatchers.dataRequest());
-    return Rover.rover(url, config, authenticated)
-      .then((data) => {
-        dispatch(DataDispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
+    Rover.rover(url, config, authenticated)
+      .then((data) => dispatch(DataDispatchers.dataSuccess(data)))
+      .catch((err) => dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage)));
+  };
 }
 
-export function updateData(url, data, authenticated = false) {
+export function patchAPI({ url, data, authenticated = false }) {
   const config = {
     method: 'PATCH',
     body: JSON.stringify(data)
   };
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(DataDispatchers.dataRequest());
-    return Rover.rover(url, config, authenticated)
-      .then((data) => {
-        dispatch(DataDispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
+    Rover.rover(url, config, authenticated)
+      .then((data) => dispatch(DataDispatchers.dataSuccess(data)))
+      .catch((err) => dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage)));
+  };
 }
 
-export function deleteData(url, authenticated = false) {
+export function deleteAPI({ url, authenticated = false }) {
   const config = {
     method: 'DELETE'
   };
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(DataDispatchers.dataRequest());
-    return Rover.rover(url, config, authenticated)
-      .then((data) => {
-        dispatch(DataDispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
+    Rover.rover(url, config, authenticated)
+      .then((data) => dispatch(DataDispatchers.dataSuccess(data)))
+      .catch((err) => dispatch(DataDispatchers.dataFailure(err.message || err.errorMessage)));
+  };
+}
+
+export function clear() {
+  return (dispatch) => {
+    dispatch(DataDispatchers.clear());
+  };
 }

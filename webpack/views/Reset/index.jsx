@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Button, Input } from 'react-bootstrap';
+import { Button, Input, Alert } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
@@ -17,6 +17,16 @@ class Reset extends React.Component {
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  componentWillUpdate(nextProps) {
+    const { data, dataActions, push } = nextProps;
+    if (!data.isFetching) {
+      const response = data.data;
+      if (response && response.success) {
+        dataActions.clear();
+        return push('/thanks?type=ResetPassword');
+      }
+    }
   }
   componentWillMount() {
     this.setState({
@@ -95,15 +105,11 @@ class Reset extends React.Component {
     }
   }
   handleSubmit() {
-    const { push, dataActions, location } = this.props;
+    const { dataActions, location } = this.props;
     const email = location.query.email;
     const lost = location.query.lost;
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    console.log('email:', email);
-    console.log('lost:', lost);
-    console.log('password:', password);
-    console.log('confirmation:', confirmation);
     dataActions.postData({
       url: 'http://127.0.0.1:3000/api/AuthResetPassword',
       data: {
@@ -112,9 +118,7 @@ class Reset extends React.Component {
         password,
         confirmation
       }
-    })
-    .then(() => push('/thanks?type=ResetPassword'))
-    .catch(() => {});
+    });
   }
   canSubmit() {
     const { location } = this.props;
@@ -136,7 +140,10 @@ Reset.propTypes = {
 };
 
 function mapStateToProps(state) {
-  return {};
+  const { data } = state;
+  return {
+    data
+  };
 }
 
 function mapDispatchToProps(dispatch) {

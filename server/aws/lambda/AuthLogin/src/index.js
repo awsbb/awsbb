@@ -123,8 +123,10 @@ export function handler(event, context) {
     .then(({ sessionID, token }) => {
       context.succeed({
         success: true,
-        sessionID,
-        token
+        data: {
+          sessionID,
+          token
+        }
       });
     })
     .catch((err) => {

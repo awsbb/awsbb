@@ -18,6 +18,17 @@ class Profile extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  componentWillUpdate(nextProps) {
+    const { data, sessionActions, dataActions, push } = nextProps;
+    if (!data.isFetching) {
+      const response = data.data;
+      if (response && response.success) {
+        dataActions.clear();
+        sessionActions.logout();
+        return push('/thanks?type=ChangePassword');
+      }
+    }
+  }
   componentWillMount() {
     this.setState({
       currentPassword: '',
@@ -117,16 +128,12 @@ class Profile extends React.Component {
     }
   }
   handleSubmit() {
-    const { push, sessionActions, dataActions, user } = this.props;
+    const { dataActions, user } = this.props;
     const email = user.email;
     const currentPassword = this.refs.currentPassword.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    console.log('email:', email);
-    console.log('currentPassword:', currentPassword);
-    console.log('password:', password);
-    console.log('confirmation:', confirmation);
-    dataActions.updateData({
+    dataActions.patchAPI({
       url: 'http://127.0.0.1:3000/api/AuthChangePassword',
       data: {
         email,
@@ -134,10 +141,7 @@ class Profile extends React.Component {
         password,
         confirmation
       }
-    })
-    .then(() => sessionActions.logout())
-    .then(() => push('/thanks?type=ChangePassword'))
-    .catch(() => {});
+    });
   }
   canSubmit() {
     try {
@@ -157,11 +161,12 @@ Profile.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const { session } = state;
+  const { session, data } = state;
   const { isAuthenticated, user } = session;
   return {
     isAuthenticated,
-    user
+    user,
+    data
   };
 }
 

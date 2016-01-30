@@ -1,4 +1,4 @@
-import { DATA_REQUEST, DATA_SUCCESS, DATA_FAILURE } from '../constants.js';
+import { DATA_REQUEST, DATA_SUCCESS, DATA_FAILURE, DATA_CLEAR } from '../constants.js';
 
 export function dataRequest() {
   return {
@@ -19,6 +19,12 @@ export function dataFailure(message) {
   return {
     type: DATA_FAILURE,
     isFetching: false,
-    message: message
+    message
+  };
+}
+
+export function clear() {
+  return {
+    type: DATA_CLEAR
   };
 }

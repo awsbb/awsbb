@@ -8,14 +8,13 @@ export function loginRequest() {
   };
 }
 
-export function loginSuccess(user) {
+export function loginSuccess({ data, user }) {
   return {
     type: LOGIN_SUCCESS,
     isFetching: false,
     isAuthenticated: true,
-    user: {
-      email: user.email
-    }
+    data,
+    user
   };
 }
 
@@ -24,7 +23,7 @@ export function loginFailure(message) {
     type: LOGIN_FAILURE,
     isFetching: false,
     isAuthenticated: false,
-    message: message
+    message
   };
 }
 

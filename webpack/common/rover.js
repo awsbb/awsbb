@@ -19,6 +19,7 @@ export function rover(url, configuration = {}, authenticated = false) {
       return response.json()
         .then((data) => ({ data, response }))
         .then(({ data, response }) => {
+          console.log(response);
           if (response.ok) {
             if (data.success) {
               return Promise.resolve(data);
@@ -26,7 +27,21 @@ export function rover(url, configuration = {}, authenticated = false) {
             try {
               data.errorMessage = JSON.parse(data.errorMessage);
             } catch (e) {
-              data.errorMessage = 'Unknown Response Error';
+              const message = data.errorMessage.toLowerCase();
+              switch (message) {
+                case 'the conditional request failed':
+                  data.errorMessage = {
+                    error: 'Error',
+                    message: 'A Server Condition Was Not Met (Duplicate Data?)'
+                  };
+                  break;
+                default:
+                  data.errorMessage = {
+                    error: 'Internal Server Error',
+                    message: data.errorMessage
+                  };
+                  break;
+              }
             }
             return Promise.reject(data);
           }

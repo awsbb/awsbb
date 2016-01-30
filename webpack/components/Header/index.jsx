@@ -73,7 +73,6 @@ Header.propTypes = {
 function mapStateToProps(state) {
   const { session } = state;
   const { isAuthenticated, isFetching } = session;
-  console.log(session);
   return {
     isAuthenticated,
     isFetching

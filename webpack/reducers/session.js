@@ -4,37 +4,47 @@ export default function authorize(state = {
   isFetching: false,
   isAuthenticated: localStorage.getItem('token') && localStorage.getItem('sessionID') ? true : false,
   user: localStorage.getItem('user') || null
-}, action) {
-  switch (action.type) {
+}, { type, data, user, message }) {
+  switch (type) {
     case LOGIN_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
-        isAuthenticated: false
+        isAuthenticated: false,
+        message: '',
+        data: '',
+        user: ''
       });
     case LOGIN_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: true,
-        user: action.user,
-        message: ''
+        message: '',
+        data,
+        user
       });
     case LOGIN_FAILURE:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: false,
-        message: action.message
+        data: '',
+        message,
+        user: ''
       });
     case LOGOUT_REQUEST:
       return Object.assign({}, state, {
         isFetching: true,
-        isAuthenticated: true
+        isAuthenticated: true,
+        data: '',
+        message: '',
+        user: ''
       });
     case LOGOUT_SUCCESS:
       return Object.assign({}, state, {
         isFetching: false,
         isAuthenticated: false,
-        user: null,
-        message: ''
+        data: '',
+        message: '',
+        user: ''
       });
     default:
       return state;

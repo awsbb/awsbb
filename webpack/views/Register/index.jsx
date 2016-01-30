@@ -18,6 +18,16 @@ class Register extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+  componentWillUpdate(nextProps) {
+    const { data, dataActions, push } = nextProps;
+    if (!data.isFetching) {
+      const response = data.data;
+      if (response && response.success) {
+        dataActions.clear();
+        return push('/thanks?type=CreateUser');
+      }
+    }
+  }
   componentWillMount() {
     const { push, isAuthenticated } = this.props;
     if (isAuthenticated) {
@@ -115,23 +125,18 @@ class Register extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { push, dataActions } = this.props;
+    const { dataActions } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    console.log('email:', email);
-    console.log('password:', password);
-    console.log('confirmation:', confirmation);
-    dataActions.postData({
+    dataActions.postAPI({
       url: 'http://127.0.0.1:3000/api/AuthCreateUser',
       data: {
         email,
         password,
         confirmation
       }
-    })
-    .then(() => push('/thanks?type=CreateUser'))
-    .catch(() => {});
+    });
   }
   canSubmit() {
     try {
@@ -151,10 +156,11 @@ Register.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const { session } = state;
+  const { session, data } = state;
   const { isAuthenticated } = session;
   return {
-    isAuthenticated
+    isAuthenticated,
+    data
   };
 }
 
