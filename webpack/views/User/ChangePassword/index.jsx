@@ -116,13 +116,15 @@ class ChangePassword extends React.Component {
       this.setState(state);
     }
   }
-  handleSubmit() {
-    const { store, actions, push } = this.props;
+  handleSubmit(e) {
+    e.preventDefault();
+    const { store, actions } = this.props;
     const email = store.user.email;
     const currentPassword = this.refs.currentPassword.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.patchAPI({
+    actions.queryAPI({
+      method: 'PATCH',
       url: 'http://127.0.0.1:3000/api/AuthChangePassword',
       data: {
         email,
@@ -130,14 +132,10 @@ class ChangePassword extends React.Component {
         password,
         confirmation
       },
-      authenticated: true
-    })
-    .then(() => {
-      actions.clear();
-      actions.logout();
-      push('/thanks?type=ChangePassword');
-    })
-    .catch(() => {});
+      authenticated: true,
+      forceLogout: true,
+      resolveRoute: '/thanks?type=ChangePassword'
+    });
   }
   canSubmit() {
     try {

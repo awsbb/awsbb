@@ -94,27 +94,25 @@ class Reset extends React.Component {
       this.setState(state);
     }
   }
-  handleSubmit() {
-    const { location, actions, push } = this.props;
+  handleSubmit(e) {
+    e.preventDefault();
+    const { location, actions } = this.props;
     const email = location.query.email;
     const lost = location.query.lost;
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.postAPI({
+    actions.queryAPI({
+      method: 'POST',
       url: 'http://127.0.0.1:3000/api/AuthResetPassword',
       data: {
         email,
         lost,
         password,
         confirmation
-      }
-    })
-    .then(() => {
-      actions.clear();
-      actions.logout();
-      push('/thanks?type=ResetPassword');
-    })
-    .catch(() => {});
+      },
+      forceLogout: true,
+      resolveRoute: '/thanks?type=ResetPassword'
+    });
   }
   canSubmit() {
     const { location } = this.props;

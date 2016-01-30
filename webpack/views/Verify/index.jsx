@@ -13,28 +13,18 @@ class Verify extends React.Component {
     super(props, context);
   }
   componentWillMount() {
-    const { location, actions, push } = this.props;
+    const { location, actions } = this.props;
     const email = location.query.email;
     const verify = location.query.verify;
-    Rover.rover('http://127.0.0.1:3000/api/AuthVerifyUser', {
+    actions.queryAPI({
       method: 'POST',
-      body: JSON.stringify({
+      url: 'http://127.0.0.1:3000/api/AuthVerifyUser',
+      data: {
         email,
         verify
-      })
-    })
-    // actions.postAPI({
-    //   url: 'http://127.0.0.1:3000/api/AuthVerifyUser',
-    //   data: {
-    //     email,
-    //     verify
-    //   }
-    // })
-    .then(() => {
-      actions.clear();
-      push('/thanks?type=VerifyUser');
-    })
-    .catch(() => {});
+      },
+      resolveRoute: '/thanks?type=VerifyUser'
+    });
   }
   render() {
     return (

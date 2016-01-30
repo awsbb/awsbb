@@ -57,11 +57,8 @@ class Header extends React.Component {
     );
   }
   handleLogout() {
-    const { push, actions } = this.props;
-    actions.logout()
-      .then(() => {
-        push('/');
-      });
+    const { actions } = this.props;
+    actions.logout();
   }
 }
 

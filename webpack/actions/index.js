@@ -1,99 +1,51 @@
 
 import { Rover } from '../common';
 import * as Dispatchers from '../dispachers';
+import { routeActions } from 'redux-simple-router';
 
-export function getAPI({ url, query = {}, authenticated = false }) {
+export function queryAPI({ method = 'GET', url, query = {}, data = {}, authenticated = false, forceLogout, resolveRoute, rejectRoute }) {
   const queryString = Object.keys(query).map((key) => {
     return `${key}=${query[key]}`;
   }).join('&');
   if (queryString) {
     url += `?${queryString}`;
   }
-  return (dispatch) => new Promise((resolve, reject) => {
-    dispatch(Dispatchers.dataRequest());
-    return Rover.rover(url, {}, authenticated)
-      .then((data) => {
-        dispatch(Dispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(Dispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
-}
-
-export function postAPI({ url, data, authenticated = false }) {
   const config = {
-    method: 'POST',
+    method,
     body: JSON.stringify(data)
   };
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(Dispatchers.dataRequest());
-    return Rover.rover(url, config, authenticated)
+    Rover.rover(url, config, authenticated)
       .then((data) => {
         dispatch(Dispatchers.dataSuccess(data));
-        resolve(data);
+        if (forceLogout) {
+          if (resolveRoute) {
+            return dispatch(exports.logout(resolveRoute));
+          }
+          return dispatch(exports.logout());
+        }
+        if (resolveRoute) {
+          dispatch(routeActions.push(resolveRoute));
+        }
       })
       .catch((err) => {
         dispatch(Dispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
+        if (rejectRoute) {
+          dispatch(routeActions.push(rejectRoute));
+        }
       });
-  });
-}
-
-export function patchAPI({ url, data, authenticated = false }) {
-  const config = {
-    method: 'PATCH',
-    body: JSON.stringify(data)
   };
-  return (dispatch) => new Promise((resolve, reject) => {
-    dispatch(Dispatchers.dataRequest());
-    return Rover.rover(url, config, authenticated)
-      .then((data) => {
-        dispatch(Dispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(Dispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
 }
 
-export function deleteAPI({ url, authenticated = false }) {
-  const config = {
-    method: 'DELETE'
-  };
-  return (dispatch) => new Promise((resolve, reject) => {
-    dispatch(Dispatchers.dataRequest());
-    return Rover.rover(url, config, authenticated)
-      .then((data) => {
-        dispatch(Dispatchers.dataSuccess(data));
-        resolve(data);
-      })
-      .catch((err) => {
-        dispatch(Dispatchers.dataFailure(err.message || err.errorMessage));
-        reject(err);
-      });
-  });
-}
-
-export function clear() {
-  return (dispatch) => new Promise((resolve) => {
-    dispatch(Dispatchers.clear());
-    resolve();
-  });
-}
-
-export function login({ email, password }) {
+export function login({ email, password, resolveRoute = '/', rejectRoute }) {
   const config = {
     method: 'POST',
     body: JSON.stringify({ email, password })
   };
-  return (dispatch) => new Promise((resolve, reject) => {
+  return (dispatch) => {
     dispatch(Dispatchers.loginRequest());
-    return Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
+    Rover.rover('http://127.0.0.1:3000/api/AuthLogin', config)
       .then((data) => {
         const user = {
           email
@@ -103,22 +55,28 @@ export function login({ email, password }) {
         localStorage.setItem('sessionID', responseData.sessionID);
         localStorage.setItem('user', user);
         dispatch(Dispatchers.loginSuccess(user));
-        resolve(user);
+        if (resolveRoute) {
+          dispatch(routeActions.push(resolveRoute));
+        }
       })
       .catch((err) => {
         dispatch(Dispatchers.loginFailure(err.message || err.errorMessage));
-        reject(err);
+        if (rejectRoute) {
+          dispatch(routeActions.push(rejectRoute));
+        }
       });
-  });
+  };
 }
 
-export function logout() {
-  return (dispatch) => new Promise((resolve) => {
+export function logout(resolveRoute) {
+  return (dispatch) => {
     dispatch(Dispatchers.logoutRequest());
     localStorage.removeItem('token');
     localStorage.removeItem('sessionID');
     localStorage.removeItem('user');
     dispatch(Dispatchers.logoutSuccess());
-    resolve();
-  });
+    if (resolveRoute) {
+      dispatch(routeActions.push(resolveRoute));
+    }
+  };
 }

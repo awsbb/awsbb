@@ -115,23 +115,20 @@ class Register extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { actions, push } = this.props;
+    const { actions } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.postAPI({
+    actions.queryAPI({
+      method: 'POST',
       url: 'http://127.0.0.1:3000/api/AuthCreateUser',
       data: {
         email,
         password,
         confirmation
-      }
-    })
-    .then(() => {
-      actions.clear();
-      push('/thanks?type=CreateUser');
-    })
-    .catch(() => {});
+      },
+      resolveRoute: '/thanks?type=CreateUser'
+    });
   }
   canSubmit() {
     try {

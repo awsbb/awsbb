@@ -104,18 +104,13 @@ class Login extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { actions, push } = this.props;
+    const { actions } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
     actions.login({
       email,
       password
-    })
-    .then(() => {
-      actions.clear();
-      push('/');
-    })
-    .catch(() => {});
+    });
   }
   canSubmit() {
     try {

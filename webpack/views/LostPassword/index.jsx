@@ -79,19 +79,16 @@ class LostPassword extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { actions, push } = this.props;
+    const { actions } = this.props;
     const email = this.refs.email.getValue();
-    actions.postAPI({
+    actions.queryAPI({
+      method: 'POST',
       url: 'http://127.0.0.1:3000/api/AuthLostPassword',
       data: {
         email
-      }
-    })
-    .then(() => {
-      actions.clear();
-      push('/thanks?type=LostPassword');
-    })
-    .catch(() => {});
+      },
+      resolveRoute: '/thanks?type=LostPassword'
+    });
   }
   canSubmit() {
     try {
