@@ -8,10 +8,14 @@ import { routeActions } from 'redux-simple-router';
 import './style.css';
 
 class Home extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired
+  };
+  render = () => {
     const { push } = this.props;
     return (
       <section id="user-home">
@@ -27,18 +31,10 @@ class Home extends React.Component {
         </div>
       </section>
     );
-  }
+  };
 }
 
-Home.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -46,13 +42,13 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -10,11 +10,15 @@ import * as Actions from '../../actions';
 import './style.css';
 
 class Header extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.handleLogout = this.handleLogout.bind(this);
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired
+  };
+  render = () => {
     const { push, isAuthenticated } = this.props;
     let UserNaviation = <Nav pullRight>
       <NavItem onClick={() => push('/login')}>
@@ -55,23 +59,14 @@ class Header extends React.Component {
         </Navbar.Collapse>
       </Navbar>
     );
-  }
-  handleLogout() {
+  };
+  handleLogout = () => {
     const { actions } = this.props;
     actions.logout();
-  }
+  };
 }
 
-Header.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -79,14 +74,14 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
     actions: bindActionCreators(Actions, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

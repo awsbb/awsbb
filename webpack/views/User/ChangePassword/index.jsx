@@ -12,20 +12,20 @@ import { Validators } from '../../../common';
 import './style.css';
 
 class ChangePassword extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillMount() {
-    this.setState({
-      currentPassword: '',
-      password: '',
-      confirmation: ''
-    });
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired
+  };
+  state = {
+    currentPassword: '',
+    password: '',
+    confirmation: ''
+  };
+  render = () => {
     const { isAuthenticated } = this.props;
     const lock = <FontAwesome name="lock" fixedWidth/>;
     if(isAuthenticated) {
@@ -95,8 +95,8 @@ class ChangePassword extends React.Component {
         You can't view this page unless you are logged in.
       </section>
     );
-  }
-  resolveStyleFromState(type) {
+  };
+  resolveStyleFromState = (type) => {
     switch (type) {
       case 'currentPassword':
         return Validators.getPasswordValidationClass(this.state.currentPassword);
@@ -107,23 +107,23 @@ class ChangePassword extends React.Component {
       default:
         return '';
     }
-  }
-  handleOnChange(e) {
+  };
+  handleOnChange = (e) => {
     const state = {};
     const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
-  }
-  handleSubmit(e) {
+  };
+  handleSubmit = (e) => {
     e.preventDefault();
     const { store, actions } = this.props;
     const email = store.user.email;
     const currentPassword = this.refs.currentPassword.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.queryAPI({
+    actions.queryAPIThenLogout({
       method: 'PATCH',
       url: 'http://127.0.0.1:3000/api/AuthChangePassword',
       data: {
@@ -133,11 +133,10 @@ class ChangePassword extends React.Component {
         confirmation
       },
       authenticated: true,
-      forceLogout: true,
-      resolveRoute: '/thanks?type=ChangePassword'
+      successRoute: '/thanks?type=ChangePassword'
     });
-  }
-  canSubmit() {
+  };
+  canSubmit = () => {
     try {
       const currentPassword = this.refs.currentPassword.getValue();
       const password = this.refs.password.getValue();
@@ -147,19 +146,10 @@ class ChangePassword extends React.Component {
     } catch (e) {
       return true;
     }
-  }
+  };
 }
 
-ChangePassword.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -167,14 +157,14 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
     actions: bindActionCreators(Actions, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChangePassword);

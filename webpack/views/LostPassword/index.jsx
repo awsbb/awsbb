@@ -12,19 +12,19 @@ import { Validators } from '../../common';
 import './style.css';
 
 class LostPassword extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillMount() {
-    this.setState({
-      email: '',
-      password: ''
-    });
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired
+  };
+  state = {
+    email: '',
+    password: ''
+  };
+  render = () => {
     const envelope = <FontAwesome name="envelope" fixedWidth/>;
     return (
       <section id="login">
@@ -58,8 +58,8 @@ class LostPassword extends React.Component {
         </div>
       </section>
     );
-  }
-  resolveStyleFromState(type) {
+  };
+  resolveStyleFromState = (type) => {
     switch (type) {
       case 'email':
         return Validators.getEmailValidationClass(this.state.email);
@@ -68,16 +68,16 @@ class LostPassword extends React.Component {
       default:
         return '';
     }
-  }
-  handleOnChange(e) {
+  };
+  handleOnChange = (e) => {
     const state = {};
     const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
-  }
-  handleSubmit(e) {
+  };
+  handleSubmit = (e) => {
     e.preventDefault();
     const { actions } = this.props;
     const email = this.refs.email.getValue();
@@ -87,10 +87,10 @@ class LostPassword extends React.Component {
       data: {
         email
       },
-      resolveRoute: '/thanks?type=LostPassword'
+      successRoute: '/thanks?type=LostPassword'
     });
-  }
-  canSubmit() {
+  };
+  canSubmit = () => {
     try {
       const email = this.refs.email.getValue();
       const validState = Validators.isValidEmail(email);
@@ -98,19 +98,10 @@ class LostPassword extends React.Component {
     } catch (e) {
       return true;
     }
-  }
+  };
 }
 
-LostPassword.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -118,14 +109,14 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
     actions: bindActionCreators(Actions, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(LostPassword);

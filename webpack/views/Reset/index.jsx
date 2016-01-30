@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Button, Input, Alert } from 'react-bootstrap';
+import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
@@ -12,20 +12,20 @@ import { Validators } from '../../common';
 import './style.css';
 
 class Reset extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillMount() {
-    this.setState({
-      email: '',
-      password: '',
-      confirmation: ''
-    });
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired
+  };
+  state = {
+    email: '',
+    password: '',
+    confirmation: ''
+  };
+  render = () => {
     const lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="register">
@@ -73,8 +73,8 @@ class Reset extends React.Component {
         </div>
       </section>
     );
-  }
-  resolveStyleFromState(type) {
+  };
+  resolveStyleFromState = (type) => {
     switch (type) {
       case 'email':
         return Validators.getEmailValidationClass(this.state.email);
@@ -85,23 +85,23 @@ class Reset extends React.Component {
       default:
         return '';
     }
-  }
-  handleOnChange(e) {
+  };
+  handleOnChange = (e) => {
     const state = {};
     const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
-  }
-  handleSubmit(e) {
+  };
+  handleSubmit = (e) => {
     e.preventDefault();
     const { location, actions } = this.props;
     const email = location.query.email;
     const lost = location.query.lost;
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.queryAPI({
+    actions.queryAPIThenLogout({
       method: 'POST',
       url: 'http://127.0.0.1:3000/api/AuthResetPassword',
       data: {
@@ -110,11 +110,10 @@ class Reset extends React.Component {
         password,
         confirmation
       },
-      forceLogout: true,
-      resolveRoute: '/thanks?type=ResetPassword'
+      successRoute: '/thanks?type=ResetPassword'
     });
-  }
-  canSubmit() {
+  };
+  canSubmit = () => {
     const { location } = this.props;
     try {
       const email = location.query.email;
@@ -126,19 +125,10 @@ class Reset extends React.Component {
     } catch (e) {
       return true;
     }
-  }
+  };
 }
 
-Reset.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -146,14 +136,14 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
     actions: bindActionCreators(Actions, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reset);

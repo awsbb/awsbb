@@ -4,15 +4,19 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
 import * as Actions from '../../actions';
-import { Rover } from '../../common';
 
 import './style.css';
 
 class Verify extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-  componentWillMount() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired
+  };
+  componentWillMount = () => {
     const { location, actions } = this.props;
     const email = location.query.email;
     const verify = location.query.verify;
@@ -23,10 +27,10 @@ class Verify extends React.Component {
         email,
         verify
       },
-      resolveRoute: '/thanks?type=VerifyUser'
+      successRoute: '/thanks?type=VerifyUser'
     });
-  }
-  render() {
+  };
+  render = () => {
     return (
       <section id="verify">
         <div className="container">
@@ -38,19 +42,10 @@ class Verify extends React.Component {
         </div>
       </section>
     );
-  }
+  };
 }
 
-Verify.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -58,14 +53,14 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
     actions: bindActionCreators(Actions, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Verify);

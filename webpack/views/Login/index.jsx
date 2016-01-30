@@ -13,23 +13,25 @@ import { Validators } from '../../common';
 import './style.css';
 
 class Login extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-    this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
-    this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillMount() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    actions: PropTypes.object.isRequired
+  };
+  state = {
+    email: '',
+    password: ''
+  };
+  componentWillMount = () => {
     const { push, isAuthenticated } = this.props;
     if (isAuthenticated) {
       return push('/');
     }
-    this.setState({
-      email: '',
-      password: ''
-    });
-  }
-  render() {
+  };
+  render = () => {
     const envelope = <FontAwesome name="envelope" fixedWidth/>;
     const lock = <FontAwesome name="lock" fixedWidth/>;
     return (
@@ -83,8 +85,8 @@ class Login extends React.Component {
         </div>
       </section>
     );
-  }
-  resolveStyleFromState(type) {
+  };
+  resolveStyleFromState = (type) => {
     switch (type) {
       case 'email':
         return Validators.getEmailValidationClass(this.state.email);
@@ -93,16 +95,16 @@ class Login extends React.Component {
       default:
         return '';
     }
-  }
-  handleOnChange(e) {
+  };
+  handleOnChange = (e) => {
     const state = {};
     const key = e.target.name;
     if (this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
-  }
-  handleSubmit(e) {
+  };
+  handleSubmit = (e) => {
     e.preventDefault();
     const { actions } = this.props;
     const email = this.refs.email.getValue();
@@ -111,8 +113,8 @@ class Login extends React.Component {
       email,
       password
     });
-  }
-  canSubmit() {
+  };
+  canSubmit = () => {
     try {
       const email = this.refs.email.getValue();
       const password = this.refs.password.getValue();
@@ -121,19 +123,10 @@ class Login extends React.Component {
     } catch (e) {
       return true;
     }
-  }
+  };
 }
 
-Login.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -141,14 +134,14 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
     actions: bindActionCreators(Actions, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

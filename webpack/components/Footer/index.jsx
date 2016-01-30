@@ -6,10 +6,14 @@ import { routeActions } from 'redux-simple-router';
 import './style.css';
 
 class Footer extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired
+  };
+  render = () => {
     return (
       <section id="footer">
         <div className="container">
@@ -43,18 +47,10 @@ class Footer extends React.Component {
         </div>
       </section>
     );
-  }
+  };
 }
 
-Footer.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-  push: PropTypes.func.isRequired
-};
-
-function mapStateToProps(state) {
+const mapStateToProps = (state) => {
   const { store } = state;
   const { isAuthenticated, isFetching } = store;
   return {
@@ -62,13 +58,13 @@ function mapStateToProps(state) {
     isFetching,
     store
   };
-}
+};
 
-function mapDispatchToProps(dispatch) {
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch)
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Footer);
