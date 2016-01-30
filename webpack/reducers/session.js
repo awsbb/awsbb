@@ -1,39 +1,37 @@
-'use strict';
-
-import { SessionActions } from '../actions';
+import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT_REQUEST, LOGOUT_SUCCESS } from '../constants.js';
 
 export default function authorize(state = {
-  sessionIsFetching: false,
+  isFetching: false,
   isAuthenticated: localStorage.getItem('token') && localStorage.getItem('sessionID') ? true : false,
   user: localStorage.getItem('user') || null
 }, action) {
   switch (action.type) {
-    case SessionActions.LOGIN_REQUEST:
+    case LOGIN_REQUEST:
       return Object.assign({}, state, {
-        sessionIsFetching: true,
+        isFetching: true,
         isAuthenticated: false
       });
-    case SessionActions.LOGIN_SUCCESS:
+    case LOGIN_SUCCESS:
       return Object.assign({}, state, {
-        sessionIsFetching: false,
+        isFetching: false,
         isAuthenticated: true,
         user: action.user,
         message: ''
       });
-    case SessionActions.LOGIN_FAILURE:
+    case LOGIN_FAILURE:
       return Object.assign({}, state, {
-        sessionIsFetching: false,
+        isFetching: false,
         isAuthenticated: false,
         message: action.message
       });
-    case SessionActions.LOGOUT_REQUEST:
+    case LOGOUT_REQUEST:
       return Object.assign({}, state, {
-        sessionIsFetching: true,
+        isFetching: true,
         isAuthenticated: true
       });
-    case SessionActions.LOGOUT_SUCCESS:
+    case LOGOUT_SUCCESS:
       return Object.assign({}, state, {
-        sessionIsFetching: false,
+        isFetching: false,
         isAuthenticated: false,
         user: null,
         message: ''
@@ -41,4 +39,4 @@ export default function authorize(state = {
     default:
       return state;
   }
-};
+}

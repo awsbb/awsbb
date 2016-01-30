@@ -1,7 +1,6 @@
-'use strict';
-
 import pkg from '../package.json';
 
+import Boom from 'boom';
 import Joi from 'joi';
 
 import Promise from 'bluebird';
@@ -13,6 +12,12 @@ if (process.env.NODE_ENV === 'production') {
 
 import { computeHash } from '@awsbb/awsbb-hashing';
 import Cache from '@awsbb/awsbb-cache';
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
+
 // the redis cacheClient will connect and partition data in database 0
 const cache = new Cache(Config.AWS.EC_ENDPOINT);
 
@@ -35,16 +40,16 @@ const getUser = (email) => {
         return reject(err);
       }
       if (data.Item) {
-        let salt = data.Item.passwordSalt.S;
-        let hash = data.Item.passwordHash.S;
-        let verified = data.Item.verified.BOOL;
+        const salt = data.Item.passwordSalt.S;
+        const hash = data.Item.passwordHash.S;
+        const verified = data.Item.verified.BOOL;
         return resolve({
           salt,
           hash,
           verified
         });
       }
-      reject(new Error('UserNotFound'));
+      reject(boomError('User Not Found', 404));
     });
   });
 };
@@ -101,7 +106,7 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(new Error('PasswordConfirmationNotEqual'));
+      reject(boomError('Invalid Password/Confirmation Combination', 400));
     });
   });
 };
@@ -110,26 +115,23 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  let email = event.payload.email;
-  let currentPassword = event.payload.currentPassword;
-  let password = event.payload.password;
+  const email = event.payload.email;
+  const currentPassword = event.payload.currentPassword;
+  const password = event.payload.password;
 
   return cache.start()
     .then(() => cache.authorizeUser(email, event.headers))
     .then(() => validate(event.payload))
     .then(() => getUser(email))
     .then(({ salt, hash, verified }) => {
-      if (!hash) {
-        return Promise.reject(new Error('UserHasNoHash'));
-      }
       if (!verified) {
-        return Promise.reject(new Error('UserNotVerified'));
+        return Promise.reject(boomError('User Not Verified', 401));
       }
-      let userHash = hash;
+      const userHash = hash;
       return computeHash(currentPassword, salt)
         .then(({ hash }) => {
           if (userHash !== hash) {
-            return Promise.reject(new Error('IncorrectPassword'));
+            return Promise.reject(boomError('Invalid Password', 401));
           }
           return computeHash(password);
         });
@@ -146,4 +148,4 @@ export function handler(event, context) {
     .finally(() => {
       return cache.stop();
     });
-};
+}

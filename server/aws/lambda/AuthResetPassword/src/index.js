@@ -1,7 +1,6 @@
-'use strict';
-
 import pkg from '../package.json';
 
+import Boom from 'boom';
 import Joi from 'joi';
 
 import Promise from 'bluebird';
@@ -12,6 +11,11 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 import { computeHash } from '@awsbb/awsbb-hashing';
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -33,12 +37,12 @@ const getUser = (email) => {
       }
       if (data.Item) {
         if (data.Item.lostToken) {
-          let token = data.Item.lostToken.S;
+          const token = data.Item.lostToken.S;
           return resolve(token);
         }
-        return reject(new Error('UserHasNoLostToken'));
+        return reject(boomError('User Missing Lost Token', 401));
       }
-      reject(new Error('UserNotFound'));
+      reject(boomError('User Not Found', 404));
     });
   });
 };
@@ -98,7 +102,7 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(new Error('PasswordConfirmationNotEqual'));
+      reject(boomError('Invalid Password/Confirmation Combination', 400));
     });
   });
 };
@@ -107,15 +111,15 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  let email = event.payload.email;
-  let lost = event.payload.lost;
-  let password = event.payload.password;
+  const email = event.payload.email;
+  const lost = event.payload.lost;
+  const password = event.payload.password;
 
   return validate(event.payload)
     .then(() => getUser(email))
     .then((token) => {
       if (lost !== token) {
-        return Promise.reject(new Error('InvalidResetPasswordToken'));
+        return Promise.reject(boomError('Invalid Lost Token', 401));
       }
       return computeHash(password);
     })
@@ -126,7 +130,6 @@ export function handler(event, context) {
       });
     })
     .catch((err) => {
-      console.log(err);
       context.fail(err);
     });
-};
+}

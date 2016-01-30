@@ -1,5 +1,4 @@
-'use strict';
-
+/*eslint prefer-arrow-callback: 0, no-var: 0*/
 var gulp = require('gulp-param')(require('gulp'), process.argv);
 var eslint = require('gulp-eslint');
 var lab = require('gulp-lab');

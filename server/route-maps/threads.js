@@ -1,5 +1,3 @@
-'use strict';
-
 import { handler as forumThreadsGet } from '../aws/lambda/ForumThreadsGet';
 
 export function setup(server) {
@@ -12,4 +10,4 @@ export function setup(server) {
       }
     }
   });
-};
+}

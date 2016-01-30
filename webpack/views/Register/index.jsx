@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -7,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { Rover } from '../../common';
+import { DataActions } from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -32,8 +30,8 @@ class Register extends React.Component {
     });
   }
   render() {
-    let envelope = <FontAwesome name="envelope" fixedWidth/>;
-    let lock = <FontAwesome name="lock" fixedWidth/>;
+    const envelope = <FontAwesome name="envelope" fixedWidth/>;
+    const lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="register">
         <div className="container">
@@ -86,7 +84,7 @@ class Register extends React.Component {
                   bsStyle="success"
                   onClick={this.handleSubmit}
                   disabled={this.canSubmit()}>
-                  ★　REGISTER　★
+                  ★REGISTER★
                 </Button>
               </div>
             </div>
@@ -108,8 +106,8 @@ class Register extends React.Component {
     }
   }
   handleOnChange(e) {
-    let state = {};
-    let key = e.target.name;
+    const state = {};
+    const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
@@ -117,30 +115,30 @@ class Register extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { push } = this.props;
-    let email = this.refs.email.getValue();
-    let password = this.refs.password.getValue();
-    let confirmation = this.refs.confirmation.getValue();
+    const { push, dataActions } = this.props;
+    const email = this.refs.email.getValue();
+    const password = this.refs.password.getValue();
+    const confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    Rover.rover('http://127.0.0.1:3000/api/AuthCreateUser', {
-      method: 'POST',
-      body: JSON.stringify({
+    dataActions.postData({
+      url: 'http://127.0.0.1:3000/api/AuthCreateUser',
+      data: {
         email,
         password,
         confirmation
-      })
+      }
     })
     .then(() => push('/thanks?type=CreateUser'))
     .catch(() => {});
   }
   canSubmit() {
     try {
-      let email = this.refs.email.getValue();
-      let password = this.refs.password.getValue();
-      let confirmation = this.refs.confirmation.getValue();
-      let validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation);
+      const email = this.refs.email.getValue();
+      const password = this.refs.password.getValue();
+      const confirmation = this.refs.confirmation.getValue();
+      const validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation);
       return !validState;
     } catch (e) {
       return true;
@@ -163,7 +161,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

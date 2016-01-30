@@ -1,7 +1,6 @@
-'use strict';
-
 import pkg from '../package.json';
 
+import Boom from 'boom';
 import Joi from 'joi';
 
 import crypto from 'crypto';
@@ -13,6 +12,11 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
   global.SES = new AWS.SES();
 }
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -37,7 +41,7 @@ const getUser = (email) => {
       if (data.Item) {
         return resolve(email);
       }
-      reject(new Error('UserNotFound'));
+      reject(boomError('User Not Found', 404));
     });
   });
 };
@@ -76,10 +80,10 @@ const storeToken = (email) => {
 
 const sendLostPasswordEmail = (email, token) => {
   return new Promise((resolve, reject) => {
-    let subject = format('Password Lost For [{}]', Config.EXTERNAL_NAME);
-    let lostPasswordLink = format('{}?email={}&lost={}', Config.RESET_PAGE, encodeURIComponent(email), token);
-    let template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to reset your password</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
-    let HTML = format(template, subject, lostPasswordLink);
+    const subject = format('Password Lost For [{}]', Config.EXTERNAL_NAME);
+    const lostPasswordLink = format('{}?email={}&lost={}', Config.RESET_PAGE, encodeURIComponent(email), token);
+    const template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to reset your password</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
+    const HTML = format(template, subject, lostPasswordLink);
     SES.sendEmail({
       Source: Config.EMAIL_SOURCE,
       Destination: {
@@ -129,7 +133,7 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  let email = event.payload.email;
+  const email = event.payload.email;
 
   return validate(event.payload)
     .then(() => getUser(email))
@@ -141,7 +145,6 @@ export function handler(event, context) {
       });
     })
     .catch((err) => {
-      console.log(err);
       context.fail(err);
     });
-};
+}

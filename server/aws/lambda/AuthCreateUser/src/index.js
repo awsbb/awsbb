@@ -1,7 +1,6 @@
-'use strict';
-
 import pkg from '../package.json';
 
+import Boom from 'boom';
 import Joi from 'joi';
 
 import crypto from 'crypto';
@@ -15,6 +14,11 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 import { computeHash } from '@awsbb/awsbb-hashing';
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -62,10 +66,10 @@ const ensureUser = (email, password, salt) => {
 
 const sendVerificationEmail = (email, token) => {
   return new Promise((resolve, reject) => {
-    let subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
-    let verificationLink = format('{}?email={}&verify={}&type=user', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
-    let template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
-    let HTML = format(template, subject, verificationLink);
+    const subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
+    const verificationLink = format('{}?email={}&verify={}&type=user', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
+    const template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to verify your email address</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
+    const HTML = format(template, subject, verificationLink);
 
     SES.sendEmail({
       Source: Config.EMAIL_SOURCE,
@@ -112,7 +116,7 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(new Error('PasswordConfirmationNotEqual'));
+      reject(boomError('Invalid Password/Confirmation Combination', 400));
     });
   });
 };
@@ -121,8 +125,8 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  let email = event.payload.email;
-  let password = event.payload.password;
+  const email = event.payload.email;
+  const password = event.payload.password;
 
   return validate(event.payload)
     .then(() => computeHash(password))
@@ -136,4 +140,4 @@ export function handler(event, context) {
     .catch((err) => {
       context.fail(err);
     });
-};
+}

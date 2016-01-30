@@ -1,5 +1,3 @@
-'use strict';
-
 import { handler as authChangePassword } from '../aws/lambda/AuthChangePassword';
 import { handler as authCreateUser } from '../aws/lambda/AuthCreateUser';
 import { handler as authLogin } from '../aws/lambda/AuthLogin';
@@ -62,4 +60,4 @@ export function setup(server) {
       }
     }
   });
-};
+}

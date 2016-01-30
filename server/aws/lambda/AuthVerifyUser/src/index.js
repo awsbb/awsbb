@@ -1,7 +1,6 @@
-'use strict';
-
 import pkg from '../package.json';
 
+import Boom from 'boom';
 import Joi from 'joi';
 
 import Promise from 'bluebird';
@@ -10,6 +9,11 @@ import AWS from 'aws-sdk';
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -30,7 +34,7 @@ const getUser = (email) => {
         return reject(err);
       }
       if (data.Item) {
-        let verified = data.Item.verified.BOOL;
+        const verified = data.Item.verified.BOOL;
         let token = null;
         if (!verified) {
           token = data.Item.verifyToken.S;
@@ -40,7 +44,7 @@ const getUser = (email) => {
           token
         });
       }
-      reject(new Error('UserNotFound'));
+      reject(boomError('User Not Found', 404));
     });
   });
 };
@@ -98,8 +102,8 @@ export function handler(event, context) {
   console.log('Event:', event);
   console.log('Context:', context);
 
-  let email = event.payload.email;
-  let verify = event.payload.verify;
+  const email = event.payload.email;
+  const verify = event.payload.verify;
 
   return validate(event.payload)
     .then(() => getUser(email))
@@ -108,18 +112,16 @@ export function handler(event, context) {
         return Promise.resolve({ verified, token });
       }
       if (verify !== token) {
-        return Promise.reject(new Error('InvalidVerifyUserToken'));
+        return Promise.reject(boomError('Invalid Verify Token', 401));
       }
       return updateUser(email);
     })
-    .then((result) => {
-      console.log(result);
+    .then(() => {
       context.succeed({
         success: true
       });
     })
     .catch((err) => {
-      console.log(err);
       context.fail(err);
     });
-};
+}

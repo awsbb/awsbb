@@ -1,5 +1,3 @@
-'use strict';
-
 import nodemailer from 'nodemailer';
 import mg from 'nodemailer-mailgun-transport';
 
@@ -13,13 +11,11 @@ const auth = {
 const nodemailerMailgun = nodemailer.createTransport(mg(auth));
 
 export function sendEmail(options, callback) {
-  var MGOptions = {
+  const MGOptions = {
     from: options.Source,
     to: options.Destination.ToAddresses[0],
     subject: options.Message.Subject.Data,
     html: options.Message.Body.Html.Data
   };
-  nodemailerMailgun.sendMail(MGOptions, function (err, info) {
-    callback(null, info);
-  });
-};
+  nodemailerMailgun.sendMail(MGOptions, (err, info) => callback(err, info));
+}

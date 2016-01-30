@@ -1,5 +1,3 @@
-'use strict';
-
 import session from './session.js';
 import data from './data.js';
 

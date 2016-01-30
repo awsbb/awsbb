@@ -1,7 +1,6 @@
-'use strict';
-
 import pkg from '../package.json';
 
+import Boom from 'boom';
 import crypto from 'crypto';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
@@ -9,6 +8,11 @@ import AWS from 'aws-sdk';
 if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
@@ -31,4 +35,4 @@ export function handler(event, context) {
       description: 'This is another category.'
     }]
   });
-};
+}

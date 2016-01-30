@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -21,12 +19,6 @@ class Login extends React.Component {
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-  componentWillReceiveProps(nextProps) {
-    const { push } = this.props;
-    if (nextProps.isAuthenticated) {
-      return push('/');
-    }
-  }
   componentWillMount() {
     const { push, isAuthenticated } = this.props;
     if (isAuthenticated) {
@@ -38,8 +30,8 @@ class Login extends React.Component {
     });
   }
   render() {
-    let envelope = <FontAwesome name="envelope" fixedWidth/>;
-    let lock = <FontAwesome name="lock" fixedWidth/>;
+    const envelope = <FontAwesome name="envelope" fixedWidth/>;
+    const lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="login">
         <div className="container">
@@ -83,7 +75,7 @@ class Login extends React.Component {
                   bsStyle="success"
                   onClick={this.handleSubmit}
                   disabled={this.canSubmit()}>
-                  ★　LOGIN　★
+                  ★LOGIN★
                 </Button>
               </div>
             </div>
@@ -103,8 +95,8 @@ class Login extends React.Component {
     }
   }
   handleOnChange(e) {
-    let state = {};
-    let key = e.target.name;
+    const state = {};
+    const key = e.target.name;
     if (this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
@@ -112,21 +104,23 @@ class Login extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { sessionActions } = this.props;
-    let email = this.refs.email.getValue();
-    let password = this.refs.password.getValue();
+    const { push, sessionActions } = this.props;
+    const email = this.refs.email.getValue();
+    const password = this.refs.password.getValue();
     console.log('email:', email);
     console.log('password:', password);
     sessionActions.login({
       email,
       password
-    });
+    })
+    .then(() => push('/'))
+    .catch(() => {});
   }
   canSubmit() {
     try {
-      let email = this.refs.email.getValue();
-      let password = this.refs.password.getValue();
-      let validState = Validators.isValidEmail(email) && Validators.isValidPassword(password);
+      const email = this.refs.email.getValue();
+      const password = this.refs.password.getValue();
+      const validState = Validators.isValidEmail(email) && Validators.isValidPassword(password);
       return !validState;
     } catch (e) {
       return true;

@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -7,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { Rover } from '../../common';
+import { DataActions } from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -27,7 +25,7 @@ class LostPassword extends React.Component {
     });
   }
   render() {
-    let envelope = <FontAwesome name="envelope" fixedWidth/>;
+    const envelope = <FontAwesome name="envelope" fixedWidth/>;
     return (
       <section id="login">
         <div className="container">
@@ -52,7 +50,7 @@ class LostPassword extends React.Component {
                   bsStyle="success"
                   onClick={this.handleSubmit}
                   disabled={this.canSubmit()}>
-                  ★　SEND E-MAIL　★
+                  ★SEND E-MAIL★
                 </Button>
               </div>
             </div>
@@ -72,8 +70,8 @@ class LostPassword extends React.Component {
     }
   }
   handleOnChange(e) {
-    let state = {};
-    let key = e.target.name;
+    const state = {};
+    const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
@@ -81,21 +79,21 @@ class LostPassword extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { push } = this.props;
-    let email = this.refs.email.getValue();
-    Rover.rover('http://127.0.0.1:3000/api/AuthLostPassword', {
-      method: 'POST',
-      body: JSON.stringify({
+    const { push, dataActions } = this.props;
+    const email = this.refs.email.getValue();
+    dataActions.postData({
+      url: 'http://127.0.0.1:3000/api/AuthLostPassword',
+      data: {
         email
-      })
+      }
     })
     .then(() => push('/thanks?type=LostPassword'))
     .catch(() => {});
   }
   canSubmit() {
     try {
-      let email = this.refs.email.getValue();
-      let validState = Validators.isValidEmail(email);
+      const email = this.refs.email.getValue();
+      const validState = Validators.isValidEmail(email);
       return !validState;
     } catch (e) {
       return true;
@@ -114,7 +112,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

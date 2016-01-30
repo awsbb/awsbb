@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -7,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { Rover } from '../../common';
+import { DataActions } from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -28,7 +26,7 @@ class Reset extends React.Component {
     });
   }
   render() {
-    let lock = <FontAwesome name="lock" fixedWidth/>;
+    const lock = <FontAwesome name="lock" fixedWidth/>;
     return (
       <section id="register">
         <div className="container">
@@ -67,7 +65,7 @@ class Reset extends React.Component {
                   bsStyle="success"
                   onClick={this.handleSubmit}
                   disabled={this.canSubmit()}>
-                  ★　RESET　★
+                  ★RESET★
                 </Button>
               </div>
             </div>
@@ -89,31 +87,31 @@ class Reset extends React.Component {
     }
   }
   handleOnChange(e) {
-    let state = {};
-    let key = e.target.name;
+    const state = {};
+    const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
   }
   handleSubmit() {
-    const { push, location } = this.props;
-    let email = location.query.email;
-    let lost = location.query.lost;
-    let password = this.refs.password.getValue();
-    let confirmation = this.refs.confirmation.getValue();
+    const { push, dataActions, location } = this.props;
+    const email = location.query.email;
+    const lost = location.query.lost;
+    const password = this.refs.password.getValue();
+    const confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
     console.log('lost:', lost);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    Rover.rover('http://127.0.0.1:3000/api/AuthResetPassword', {
-      method: 'POST',
-      body: JSON.stringify({
+    dataActions.postData({
+      url: 'http://127.0.0.1:3000/api/AuthResetPassword',
+      data: {
         email,
         lost,
         password,
         confirmation
-      })
+      }
     })
     .then(() => push('/thanks?type=ResetPassword'))
     .catch(() => {});
@@ -121,11 +119,11 @@ class Reset extends React.Component {
   canSubmit() {
     const { location } = this.props;
     try {
-      let email = location.query.email;
-      let token = location.query.lost;
-      let password = this.refs.password.getValue();
-      let confirmation = this.refs.confirmation.getValue();
-      let validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation) && token;
+      const email = location.query.email;
+      const token = location.query.lost;
+      const password = this.refs.password.getValue();
+      const confirmation = this.refs.confirmation.getValue();
+      const validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation) && token;
       return !validState;
     } catch (e) {
       return true;
@@ -144,7 +142,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     dispatch,
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routeActions.push, dispatch),
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

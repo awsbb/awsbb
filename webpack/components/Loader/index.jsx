@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
@@ -10,9 +8,9 @@ class Loader extends React.Component {
     super(props, context);
   }
   render() {
-    const { sessionIsFetching, isFetching } = this.props;
+    const { isFetching } = this.props;
     let innerBar = <div></div>;
-    if(sessionIsFetching || isFetching) {
+    if(isFetching) {
       innerBar = <div>
         <div className={style.bar}></div>
         <div className={style.bar}></div>
@@ -30,18 +28,14 @@ class Loader extends React.Component {
 }
 
 Loader.propTypes = {
-  sessionIsFetching: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
   const { session, data } = state;
-  const { sessionIsFetching } = session;
-  const { isFetching } = data;
   return {
-    sessionIsFetching,
-    isFetching
+    isFetching: session.isFetching || data.isFetching
   };
 }
 

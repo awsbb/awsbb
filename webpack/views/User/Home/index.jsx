@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -23,7 +21,7 @@ class Home extends React.Component {
             bsClass="btn"
             bsStyle="primary"
             onClick={() => push('/')}>
-            ★　GO HOME　★
+            ★GO HOME★
           </Button>
           <Link to="/user/changePassword">Click here to change your password.</Link>
         </div>

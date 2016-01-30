@@ -1,5 +1,3 @@
-'use strict';
-
 import pkg from '../package.json';
 import _ from 'underscore';
 
@@ -24,7 +22,7 @@ exports.register = (server, options, next) => {
         reply(data);
       },
       fail: (error) => {
-        let response = {
+        const response = {
           errorMessage: error.message,
           errorType: 'Error'
         };
@@ -57,7 +55,8 @@ exports.register = (server, options, next) => {
   // Let's use nodemailer/mailgun to start sending out emails from our localmachine only
   global.SES = require('./mailer');
 
-  let router = require('./router.js');
+  const router = require('./router.js');
+
   router.mapRoutes(server)
     .then(() => {
       process.nextTick(() => {

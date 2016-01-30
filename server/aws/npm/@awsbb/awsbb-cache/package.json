@@ -24,6 +24,7 @@
     "babel-register": "*",
     "babel-runtime": "*",
     "bluebird": "*",
+    "boom": "*",
     "catbox": "*",
     "catbox-redis": "*",
     "eslint": "*",
@@ -33,7 +34,8 @@
     "gulp-param": "*",
     "joi": "*",
     "jsonwebtoken": "*",
-    "lab": "*"
+    "lab": "*",
+    "underscore": "^1.8.3"
   },
   "config": {}
 }

@@ -22,6 +22,7 @@
     "babel-preset-stage-0": "*",
     "babel-register": "*",
     "babel-runtime": "*",
+    "boom": "*",
     "bluebird": "*",
     "catbox": "*",
     "catbox-redis": "*",

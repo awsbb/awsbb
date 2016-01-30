@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
@@ -34,13 +32,10 @@ App.propTypes = {
 };
 
 function mapStateToProps(state) {
-  const { session, data } = state;
-  const { isAuthenticated, sessionIsFetching } = session;
-  const { isFetching } = data;
+  const { session } = state;
+  const { isAuthenticated } = session;
   return {
-    isAuthenticated,
-    sessionIsFetching,
-    isFetching
+    isAuthenticated
   };
 }
 

@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -14,11 +12,11 @@ class Thanks extends React.Component {
   }
   render() {
     const { push, location } = this.props;
-    var button = <Button
+    const button = <Button
       bsClass="btn"
       bsStyle="primary"
       onClick={() => push('/')}>
-      ★　GO HOME　★
+      ★GO HOME★
     </Button>;
     return (
       <section id="thanks">

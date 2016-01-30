@@ -1,7 +1,12 @@
-'use strict';
+import Boom from 'boom';
 
 import crypto from 'crypto';
 import Promise from 'bluebird';
+
+const boomError = (message, code = 500) => {
+  const boomData = Boom.wrap(new Error(message), code).output.payload;
+  return new Error(JSON.stringify(boomData));
+};
 
 const length = 128;
 const iterations = 4096;
@@ -20,7 +25,7 @@ export function computeHash(password, salt) {
       });
     });
   }
-  let randomBytes = new Promise((resolve, reject) => {
+  const randomBytes = new Promise((resolve, reject) => {
     crypto.randomBytes(length, (err, salt) => {
       if (err) {
         return reject(err);
@@ -31,4 +36,4 @@ export function computeHash(password, salt) {
   });
   return randomBytes
     .then((salt) => computeHash(password, salt));
-};
+}

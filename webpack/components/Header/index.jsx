@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
@@ -18,7 +16,7 @@ class Header extends React.Component {
   }
   render() {
     const { push, isAuthenticated } = this.props;
-    var UserNaviation = <Nav pullRight>
+    let UserNaviation = <Nav pullRight>
       <NavItem onClick={() => push('/login')}>
         <i className="fa fa-fw fa-sign-in"></i> Login
       </NavItem>
@@ -74,10 +72,11 @@ Header.propTypes = {
 
 function mapStateToProps(state) {
   const { session } = state;
-  const { isAuthenticated, sessionIsFetching } = session;
+  const { isAuthenticated, isFetching } = session;
+  console.log(session);
   return {
     isAuthenticated,
-    sessionIsFetching
+    isFetching
   };
 }
 

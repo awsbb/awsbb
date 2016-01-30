@@ -1,5 +1,3 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
@@ -7,8 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { SessionActions } from '../../../actions';
-import { Rover } from '../../../common';
+import { SessionActions, DataActions } from '../../../actions';
 
 import { Validators } from '../../../common';
 
@@ -30,7 +27,7 @@ class Profile extends React.Component {
   }
   render() {
     const { isAuthenticated } = this.props;
-    let lock = <FontAwesome name="lock" fixedWidth/>;
+    const lock = <FontAwesome name="lock" fixedWidth/>;
     if(isAuthenticated) {
       return (
         <section id="user-change-password">
@@ -84,7 +81,7 @@ class Profile extends React.Component {
                     bsStyle="success"
                     onClick={this.handleSubmit}
                     disabled={this.canSubmit()}>
-                    ★　CHANGE PASSWORD　★
+                    ★CHANGE PASSWORD★
                   </Button>
                 </div>
               </div>
@@ -112,42 +109,42 @@ class Profile extends React.Component {
     }
   }
   handleOnChange(e) {
-    let state = {};
-    let key = e.target.name;
+    const state = {};
+    const key = e.target.name;
     if(this.refs[key]) {
       state[key] = this.refs[key].getValue();
       this.setState(state);
     }
   }
   handleSubmit() {
-    const { push, sessionActions, user } = this.props;
-    let email = user.email;
-    let currentPassword = this.refs.currentPassword.getValue();
-    let password = this.refs.password.getValue();
-    let confirmation = this.refs.confirmation.getValue();
+    const { push, sessionActions, dataActions, user } = this.props;
+    const email = user.email;
+    const currentPassword = this.refs.currentPassword.getValue();
+    const password = this.refs.password.getValue();
+    const confirmation = this.refs.confirmation.getValue();
     console.log('email:', email);
     console.log('currentPassword:', currentPassword);
     console.log('password:', password);
     console.log('confirmation:', confirmation);
-    Rover.rover('http://127.0.0.1:3000/api/AuthChangePassword', {
-      method: 'PATCH',
-      body: JSON.stringify({
+    dataActions.updateData({
+      url: 'http://127.0.0.1:3000/api/AuthChangePassword',
+      data: {
         email,
         currentPassword,
         password,
         confirmation
-      })
-    }, true)
+      }
+    })
     .then(() => sessionActions.logout())
     .then(() => push('/thanks?type=ChangePassword'))
     .catch(() => {});
   }
   canSubmit() {
     try {
-      let currentPassword = this.refs.currentPassword.getValue();
-      let password = this.refs.password.getValue();
-      let confirmation = this.refs.confirmation.getValue();
-      let validState = Validators.isValidPassword(currentPassword) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation);
+      const currentPassword = this.refs.currentPassword.getValue();
+      const password = this.refs.password.getValue();
+      const confirmation = this.refs.confirmation.getValue();
+      const validState = Validators.isValidPassword(currentPassword) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation);
       return !validState;
     } catch (e) {
       return true;
@@ -172,7 +169,8 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    sessionActions: bindActionCreators(SessionActions, dispatch)
+    sessionActions: bindActionCreators(SessionActions, dispatch),
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 }
 

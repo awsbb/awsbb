@@ -1,10 +1,9 @@
-'use strict';
-
 import React, { PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
+import { Alert } from 'react-bootstrap';
 import { Rover } from '../../common';
 
 import './style.css';
@@ -13,10 +12,10 @@ class Verify extends React.Component {
   constructor(props, context) {
     super(props, context);
   }
-  componentDidMount() {
+  componentWillMount() {
     const { push, location } = this.props;
-    let email = location.query.email;
-    let verify = location.query.verify;
+    const email = location.query.email;
+    const verify = location.query.verify;
     Rover.rover('http://127.0.0.1:3000/api/AuthVerifyUser', {
       method: 'POST',
       body: JSON.stringify({
@@ -31,9 +30,11 @@ class Verify extends React.Component {
     return (
       <section id="verify">
         <div className="container">
-          <p>
-            Verifying your token...
-          </p>
+          <div>
+            <p>
+              Verifying your token...
+            </p>
+          </div>
         </div>
       </section>
     );

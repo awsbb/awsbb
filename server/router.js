@@ -1,5 +1,3 @@
-'use strict';
-
 import fs from 'fs';
 import path from 'path';
 
@@ -10,10 +8,10 @@ export function mapRoutes(server) {
         return reject(err);
       }
       files.map((file) => {
-        var routeMaps = require('./route-maps/' + file);
+        const routeMaps = require(`./route-maps/${file}`);
         routeMaps.setup(server);
       });
       resolve();
     });
   });
-};
+}
