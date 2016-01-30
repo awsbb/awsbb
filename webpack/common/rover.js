@@ -14,12 +14,12 @@ export function rover(url, configuration = {}, authenticated = false) {
   if (authenticated) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  console.log(config);
   return fetch(url, config)
     .then((response) => {
       return response.json()
         .then((data) => ({ data, response }))
         .then(({ data, response }) => {
-          console.log(response);
           if (response.ok) {
             if (data.success) {
               return Promise.resolve(data);

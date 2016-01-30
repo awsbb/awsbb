@@ -28,14 +28,15 @@ class App extends React.Component {
 
 App.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired
+  isFetching: PropTypes.bool.isRequired
 };
 
 function mapStateToProps(state) {
-  const { session } = state;
-  const { isAuthenticated } = session;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
-    isAuthenticated
+    isAuthenticated,
+    isFetching
   };
 }
 

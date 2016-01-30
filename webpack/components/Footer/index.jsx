@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
@@ -46,14 +46,27 @@ class Footer extends React.Component {
   }
 }
 
-Footer.propTypes = {};
+Footer.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired
+};
 
 function mapStateToProps(state) {
-  return {};
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
+  return {
+    isAuthenticated,
+    isFetching,
+    store
+  };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
+    dispatch,
     push: bindActionCreators(routeActions.push, dispatch)
   };
 }

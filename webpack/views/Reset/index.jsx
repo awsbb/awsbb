@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { DataActions } from '../../actions';
+import * as Actions from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -17,16 +17,6 @@ class Reset extends React.Component {
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillUpdate(nextProps) {
-    const { data, dataActions, push } = nextProps;
-    if (!data.isFetching) {
-      const response = data.data;
-      if (response && response.success) {
-        dataActions.clear();
-        return push('/thanks?type=ResetPassword');
-      }
-    }
   }
   componentWillMount() {
     this.setState({
@@ -105,12 +95,12 @@ class Reset extends React.Component {
     }
   }
   handleSubmit() {
-    const { dataActions, location } = this.props;
+    const { location, actions, push } = this.props;
     const email = location.query.email;
     const lost = location.query.lost;
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    dataActions.postData({
+    actions.postAPI({
       url: 'http://127.0.0.1:3000/api/AuthResetPassword',
       data: {
         email,
@@ -118,7 +108,13 @@ class Reset extends React.Component {
         password,
         confirmation
       }
-    });
+    })
+    .then(() => {
+      actions.clear();
+      actions.logout();
+      push('/thanks?type=ResetPassword');
+    })
+    .catch(() => {});
   }
   canSubmit() {
     const { location } = this.props;
@@ -136,13 +132,21 @@ class Reset extends React.Component {
 }
 
 Reset.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
-  const { data } = state;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
-    data
+    isAuthenticated,
+    isFetching,
+    store
   };
 }
 
@@ -150,7 +154,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

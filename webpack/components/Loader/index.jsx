@@ -28,14 +28,19 @@ class Loader extends React.Component {
 }
 
 Loader.propTypes = {
+  isAuthenticated: PropTypes.bool.isRequired,
   isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
-  const { session, data } = state;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
-    isFetching: session.isFetching || data.isFetching
+    isAuthenticated,
+    isFetching,
+    store
   };
 }
 

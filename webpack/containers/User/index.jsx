@@ -28,14 +28,18 @@ class User extends React.Component {
 
 User.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
-  const { session } = state;
-  const { isAuthenticated } = session;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
-    isAuthenticated
+    isAuthenticated,
+    isFetching,
+    store
   };
 }
 

@@ -79,11 +79,21 @@ class Thanks extends React.Component {
 }
 
 Thanks.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired
 };
 
 function mapStateToProps(state) {
-  return {};
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
+  return {
+    isAuthenticated,
+    isFetching,
+    store
+  };
 }
 
 function mapDispatchToProps(dispatch) {

@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
-import { SessionActions } from '../../actions';
+import * as Actions from '../../actions';
 
 import './style.css';
 
@@ -57,8 +57,8 @@ class Header extends React.Component {
     );
   }
   handleLogout() {
-    const { push, sessionActions } = this.props;
-    sessionActions.logout()
+    const { push, actions } = this.props;
+    actions.logout()
       .then(() => {
         push('/');
       });
@@ -67,15 +67,20 @@ class Header extends React.Component {
 
 Header.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
-  const { session } = state;
-  const { isAuthenticated, isFetching } = session;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
     isAuthenticated,
-    isFetching
+    isFetching,
+    store
   };
 }
 
@@ -83,7 +88,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    sessionActions: bindActionCreators(SessionActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

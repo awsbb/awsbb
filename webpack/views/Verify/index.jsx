@@ -3,7 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 
-import { DataActions } from '../../actions';
+import * as Actions from '../../actions';
+import { Rover } from '../../common';
 
 import './style.css';
 
@@ -11,27 +12,29 @@ class Verify extends React.Component {
   constructor(props, context) {
     super(props, context);
   }
-  componentWillUpdate(nextProps) {
-    const { data, dataActions, push } = nextProps;
-    if (!data.isFetching) {
-      const response = data.data;
-      if (response && response.success) {
-        dataActions.clear();
-        return push('/thanks?type=VerifyUser');
-      }
-    }
-  }
   componentWillMount() {
-    const { location, dataActions } = this.props;
+    const { location, actions, push } = this.props;
     const email = location.query.email;
     const verify = location.query.verify;
-    dataActions.postAPI({
-      url: 'http://127.0.0.1:3000/api/AuthVerifyUser',
-      data: {
+    Rover.rover('http://127.0.0.1:3000/api/AuthVerifyUser', {
+      method: 'POST',
+      body: JSON.stringify({
         email,
         verify
-      }
-    });
+      })
+    })
+    // actions.postAPI({
+    //   url: 'http://127.0.0.1:3000/api/AuthVerifyUser',
+    //   data: {
+    //     email,
+    //     verify
+    //   }
+    // })
+    .then(() => {
+      actions.clear();
+      push('/thanks?type=VerifyUser');
+    })
+    .catch(() => {});
   }
   render() {
     return (
@@ -49,13 +52,21 @@ class Verify extends React.Component {
 }
 
 Verify.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
-  const { data } = state;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
-    data
+    isAuthenticated,
+    isFetching,
+    store
   };
 }
 
@@ -63,7 +74,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

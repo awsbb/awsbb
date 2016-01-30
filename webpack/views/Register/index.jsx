@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { DataActions } from '../../actions';
+import * as Actions from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -17,16 +17,6 @@ class Register extends React.Component {
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillUpdate(nextProps) {
-    const { data, dataActions, push } = nextProps;
-    if (!data.isFetching) {
-      const response = data.data;
-      if (response && response.success) {
-        dataActions.clear();
-        return push('/thanks?type=CreateUser');
-      }
-    }
   }
   componentWillMount() {
     const { push, isAuthenticated } = this.props;
@@ -125,18 +115,23 @@ class Register extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { dataActions } = this.props;
+    const { actions, push } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    dataActions.postAPI({
+    actions.postAPI({
       url: 'http://127.0.0.1:3000/api/AuthCreateUser',
       data: {
         email,
         password,
         confirmation
       }
-    });
+    })
+    .then(() => {
+      actions.clear();
+      push('/thanks?type=CreateUser');
+    })
+    .catch(() => {});
   }
   canSubmit() {
     try {
@@ -152,15 +147,21 @@ class Register extends React.Component {
 }
 
 Register.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
-  const { session, data } = state;
-  const { isAuthenticated } = session;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
     isAuthenticated,
-    data
+    isFetching,
+    store
   };
 }
 
@@ -168,7 +169,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    dataActions: bindActionCreators(DataActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

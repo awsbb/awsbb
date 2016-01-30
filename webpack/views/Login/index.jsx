@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import { SessionActions } from '../../actions';
+import * as Actions from '../../actions';
 
 import { Validators } from '../../common';
 
@@ -18,15 +18,6 @@ class Login extends React.Component {
     this.resolveStyleFromState = this.resolveStyleFromState.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-  componentWillUpdate(nextProps) {
-    const { session, push } = nextProps;
-    if (!session.isFetching) {
-      const response = session.data;
-      if (response && response.success) {
-        return push('/');
-      }
-    }
   }
   componentWillMount() {
     const { push, isAuthenticated } = this.props;
@@ -113,13 +104,18 @@ class Login extends React.Component {
   }
   handleSubmit(e) {
     e.preventDefault();
-    const { sessionActions } = this.props;
+    const { actions, push } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
-    sessionActions.login({
+    actions.login({
       email,
       password
-    });
+    })
+    .then(() => {
+      actions.clear();
+      push('/');
+    })
+    .catch(() => {});
   }
   canSubmit() {
     try {
@@ -134,15 +130,21 @@ class Login extends React.Component {
 }
 
 Login.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  isAuthenticated: PropTypes.bool.isRequired,
+  isFetching: PropTypes.bool.isRequired,
+  store: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired
 };
 
 function mapStateToProps(state) {
-  const { session } = state;
-  const { isAuthenticated } = session;
+  const { store } = state;
+  const { isAuthenticated, isFetching } = store;
   return {
     isAuthenticated,
-    session
+    isFetching,
+    store
   };
 }
 
@@ -150,7 +152,7 @@ function mapDispatchToProps(dispatch) {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    sessionActions: bindActionCreators(SessionActions, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 
