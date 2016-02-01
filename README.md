@@ -1,5 +1,7 @@
 # awsBB
 
+[![Join the chat at https://gitter.im/awsbb/awsbb](https://badges.gitter.im/awsbb/awsbb.svg)](https://gitter.im/awsbb/awsbb?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Serverless AWS based forum software (In-Progress)
 
 ### Directories:
