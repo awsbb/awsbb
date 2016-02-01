@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import * as Actions from '../../actions';
+import * as SessionActions from '../../actions/session.js';
 
 import { Validators } from '../../common';
 
@@ -19,7 +19,7 @@ class Login extends React.Component {
     store: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
-    actions: PropTypes.object.isRequired
+    sessionActions: PropTypes.object.isRequired
   };
   state = {
     email: '',
@@ -106,10 +106,10 @@ class Login extends React.Component {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    const { actions } = this.props;
+    const { sessionActions } = this.props;
     const email = this.refs.email.getValue();
     const password = this.refs.password.getValue();
-    actions.login({
+    sessionActions.login({
       email,
       password
     });
@@ -128,10 +128,11 @@ class Login extends React.Component {
 
 const mapStateToProps = (state) => {
   const { store } = state;
-  const { isAuthenticated, isFetching } = store;
+  const { data, session } = store;
+  const { isAuthenticated } = session;
   return {
     isAuthenticated,
-    isFetching,
+    isFetching: data.isFetching || session.isFetching,
     store
   };
 };
@@ -140,7 +141,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    actions: bindActionCreators(Actions, dispatch)
+    sessionActions: bindActionCreators(SessionActions, dispatch)
   };
 };
 

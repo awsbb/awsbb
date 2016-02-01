@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import * as Actions from '../../actions';
+import * as DataActions from '../../actions/data.js';
 
 import { Validators } from '../../common';
 
@@ -18,7 +18,7 @@ class Reset extends React.Component {
     store: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
-    actions: PropTypes.object.isRequired
+    dataActions: PropTypes.object.isRequired
   };
   state = {
     email: '',
@@ -96,12 +96,12 @@ class Reset extends React.Component {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    const { location, actions } = this.props;
+    const { location, dataActions } = this.props;
     const email = location.query.email;
     const lost = location.query.lost;
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.queryAPIThenLogout({
+    dataActions.queryAPIThenLogout({
       method: 'POST',
       url: 'http://127.0.0.1:3000/api/AuthResetPassword',
       data: {
@@ -130,10 +130,11 @@ class Reset extends React.Component {
 
 const mapStateToProps = (state) => {
   const { store } = state;
-  const { isAuthenticated, isFetching } = store;
+  const { data, session } = store;
+  const { isAuthenticated } = session;
   return {
     isAuthenticated,
-    isFetching,
+    isFetching: data.isFetching || session.isFetching,
     store
   };
 };
@@ -142,7 +143,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    actions: bindActionCreators(Actions, dispatch)
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 };
 

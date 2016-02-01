@@ -17,7 +17,9 @@ const history = createHistory();
 const logger = createLogger();
 const middleware = syncHistory(history);
 
-const reducer = combineReducers(Object.assign({}, reducers, {
+const reducer = combineReducers(Object.assign({}, {
+  store: reducers
+}, {
   routing: routeReducer
 }));
 

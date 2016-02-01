@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import * as Actions from '../../../actions';
+import * as DataActions from '../../../actions/data.js';
 
 import { Validators } from '../../../common';
 
@@ -18,7 +18,7 @@ class ChangePassword extends React.Component {
     store: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
-    actions: PropTypes.object.isRequired
+    dataActions: PropTypes.object.isRequired
   };
   state = {
     currentPassword: '',
@@ -118,12 +118,12 @@ class ChangePassword extends React.Component {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    const { store, actions } = this.props;
-    const email = store.user.email;
+    const { store, dataActions } = this.props;
+    const email = store.session.user.email;
     const currentPassword = this.refs.currentPassword.getValue();
     const password = this.refs.password.getValue();
     const confirmation = this.refs.confirmation.getValue();
-    actions.queryAPIThenLogout({
+    dataActions.queryAPIThenLogout({
       method: 'PATCH',
       url: 'http://127.0.0.1:3000/api/AuthChangePassword',
       data: {
@@ -151,10 +151,11 @@ class ChangePassword extends React.Component {
 
 const mapStateToProps = (state) => {
   const { store } = state;
-  const { isAuthenticated, isFetching } = store;
+  const { data, session } = store;
+  const { isAuthenticated } = session;
   return {
     isAuthenticated,
-    isFetching,
+    isFetching: data.isFetching || session.isFetching,
     store
   };
 };
@@ -163,7 +164,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    actions: bindActionCreators(Actions, dispatch)
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 };
 

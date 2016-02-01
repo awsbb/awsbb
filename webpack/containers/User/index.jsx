@@ -8,10 +8,13 @@ import Footer from '../../components/Footer';
 import './style.css';
 
 class User extends React.Component {
-  constructor(props, context) {
-    super(props, context);
-  }
-  render() {
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired,
+    dispatch: PropTypes.func.isRequired
+  };
+  render = () => {
     const { children } = this.props;
     return (
       <div>
@@ -23,30 +26,24 @@ class User extends React.Component {
         <Footer/>
       </div>
     );
-  }
-}
-
-User.propTypes = {
-  isAuthenticated: PropTypes.bool.isRequired,
-  isFetching: PropTypes.bool.isRequired,
-  store: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired
-};
-
-function mapStateToProps(state) {
-  const { store } = state;
-  const { isAuthenticated, isFetching } = store;
-  return {
-    isAuthenticated,
-    isFetching,
-    store
   };
 }
 
-function mapDispatchToProps(dispatch) {
+const mapStateToProps = (state) => {
+  const { store } = state;
+  const { data, session } = store;
+  const { isAuthenticated } = session;
+  return {
+    isAuthenticated,
+    isFetching: data.isFetching || session.isFetching,
+    store
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
   return {
     dispatch
   };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(User);

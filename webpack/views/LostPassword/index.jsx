@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { routeActions } from 'redux-simple-router';
 import FontAwesome from 'react-fontawesome';
 
-import * as Actions from '../../actions';
+import * as DataActions from '../../actions/data.js';
 
 import { Validators } from '../../common';
 
@@ -18,7 +18,7 @@ class LostPassword extends React.Component {
     store: PropTypes.object.isRequired,
     dispatch: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
-    actions: PropTypes.object.isRequired
+    dataActions: PropTypes.object.isRequired
   };
   state = {
     email: '',
@@ -79,9 +79,9 @@ class LostPassword extends React.Component {
   };
   handleSubmit = (e) => {
     e.preventDefault();
-    const { actions } = this.props;
+    const { dataActions } = this.props;
     const email = this.refs.email.getValue();
-    actions.queryAPI({
+    dataActions.queryAPI({
       method: 'POST',
       url: 'http://127.0.0.1:3000/api/AuthLostPassword',
       data: {
@@ -103,10 +103,11 @@ class LostPassword extends React.Component {
 
 const mapStateToProps = (state) => {
   const { store } = state;
-  const { isAuthenticated, isFetching } = store;
+  const { data, session } = store;
+  const { isAuthenticated } = session;
   return {
     isAuthenticated,
-    isFetching,
+    isFetching: data.isFetching || session.isFetching,
     store
   };
 };
@@ -115,7 +116,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
     push: bindActionCreators(routeActions.push, dispatch),
-    actions: bindActionCreators(Actions, dispatch)
+    dataActions: bindActionCreators(DataActions, dispatch)
   };
 };
 
