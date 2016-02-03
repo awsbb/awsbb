@@ -30,6 +30,8 @@ class LostPassword extends React.Component {
       <section id="login">
         <div className="container">
           <form className="form-horizontal">
+            <h2>Forgot Already? <small>Don't worry; the reset is painless.</small></h2>
+            <hr className="colorgraph"/>
             <Input
               type="email"
               value={this.state.email}
@@ -44,6 +46,7 @@ class LostPassword extends React.Component {
               onChange={this.handleOnChange}
               addonBefore={envelope}
               wrapperClassName="col-xs-10"/>
+            <hr className="colorgraph"/>
             <div className="form-group">
               <div className="col-xs-offset-2 col-xs-10">
                 <Button

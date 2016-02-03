@@ -33,6 +33,8 @@ class ChangePassword extends React.Component {
         <section id="user-change-password">
           <div className="container">
             <form className="form-horizontal">
+              <h2>Time for a change! <small>Just remember you have to log back in.</small></h2>
+              <hr className="colorgraph"/>
               <Input
                 type="password"
                 value={this.state.currentPassword}
@@ -75,6 +77,7 @@ class ChangePassword extends React.Component {
                 onChange={this.handleOnChange}
                 addonBefore={lock}
                 wrapperClassName="col-xs-10"/>
+              <hr className="colorgraph"/>
               <div className="form-group">
                 <div className="col-xs-offset-2 col-xs-10">
                   <Button

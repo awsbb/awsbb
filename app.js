@@ -1,18 +1,21 @@
-'use strict';
-
 require('babel-register');
 require('babel-polyfill');
 
 const pkg = require('./package.json');
+const config = require('./local-config.json');
 
 try {
-  global.Config = require('./local-config.json');
+  global.Config = config;
 } catch (e) {
   global.Config = pkg.config;
 }
 
 const Hapi = require('hapi');
 const WebpackPlugin = require('hapi-webpack-plugin');
+
+const inert = require('inert');
+const vision = require('vision');
+const app = require('./server');
 
 const server = new Hapi.Server({
   connections: {
@@ -56,11 +59,11 @@ server.connection({
 });
 
 server.register([{
-  register: require('inert')
+  register: inert
 }, {
-  register: require('vision')
+  register: vision
 }, {
-  register: require('./server')
+  register: app
 }, {
   register: WebpackPlugin,
   options: './webpack.config.js'

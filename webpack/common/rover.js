@@ -23,26 +23,27 @@ export function query(url, configuration = {}, authenticated = false) {
             if (data.success) {
               return Promise.resolve(data.data);
             }
+            let error = {};
             try {
-              data.errorMessage = JSON.parse(data.errorMessage);
+              error = JSON.parse(data.errorMessage);
             } catch (e) {
               const message = data.errorMessage.toLowerCase();
               switch (message) {
                 case 'the conditional request failed':
-                  data.errorMessage = {
+                  error = {
                     error: 'Error',
                     message: 'A Server Condition Was Not Met (Duplicate Data?)'
                   };
                   break;
                 default:
-                  data.errorMessage = {
+                  error = {
                     error: 'Internal Server Error',
                     message: data.errorMessage
                   };
                   break;
               }
             }
-            return Promise.reject(data);
+            return Promise.reject(error);
           }
           return Promise.reject(data);
         });

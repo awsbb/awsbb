@@ -31,6 +31,8 @@ class Reset extends React.Component {
       <section id="register">
         <div className="container">
           <form className="form-horizontal">
+            <h2>Almost Done <small>Just enter in your new password and off we go!</small></h2>
+            <hr className="colorgraph"/>
             <Input
               type="password"
               value={this.state.password}
@@ -59,6 +61,7 @@ class Reset extends React.Component {
               onChange={this.handleOnChange}
               addonBefore={lock}
               wrapperClassName="col-xs-10"/>
+            <hr className="colorgraph"/>
             <div className="form-group">
               <div className="col-xs-offset-2 col-xs-10">
                 <Button

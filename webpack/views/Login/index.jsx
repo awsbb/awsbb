@@ -38,6 +38,8 @@ class Login extends React.Component {
       <section id="login">
         <div className="container">
           <form className="form-horizontal">
+            <h2>Please Login <small>You're just one step away!</small></h2>
+            <hr className="colorgraph"/>
             <Input
               type="email"
               value={this.state.email}
@@ -66,6 +68,7 @@ class Login extends React.Component {
               onChange={this.handleOnChange}
               addonBefore={lock}
               wrapperClassName="col-xs-10"/>
+            <hr className="colorgraph"/>
             <div className="form-group">
               <div className="col-xs-offset-2 col-xs-10">
                 <Link to="/lostPassword">Click here to recover your password.</Link>

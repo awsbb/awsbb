@@ -38,6 +38,8 @@ class Register extends React.Component {
       <section id="register">
         <div className="container">
           <form className="form-horizontal">
+            <h2>Please Register <small>It's free and always will be.</small></h2>
+            <hr className="colorgraph"/>
             <Input
               type="email"
               value={this.state.email}
@@ -80,6 +82,7 @@ class Register extends React.Component {
               onChange={this.handleOnChange}
               addonBefore={lock}
               wrapperClassName="col-xs-10"/>
+            <hr className="colorgraph"/>
             <div className="form-group">
               <div className="col-xs-offset-2 col-xs-10">
                 <Button
