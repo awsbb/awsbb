@@ -4,7 +4,7 @@
 Serverless AWS based forum software (In-Progress)
 
 ## Diagrams:
-[AuthCreateUser](./diagrams/AUTHCREATEUSER.md)
+- [AuthCreateUser](./diagrams/AUTHCREATEUSER.md)
 
 ## Directories:
 - ./webpack

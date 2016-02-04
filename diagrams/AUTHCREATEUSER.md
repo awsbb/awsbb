@@ -1,4 +1,7 @@
 # AuthCreateUser
+
+![](./AUTHCREATEUSER.png)
+
 ## WebSequenceDiagrams Code:
 [WebSequenceDiagrams](https://www.websequencediagrams.commark)
 
@@ -48,7 +51,3 @@ s-->u: Render response
 deactivate s
 deactivate u
 ```
-
-## Resulting Image:
-
-![](./AUTHCREATEUSER.png)
