@@ -1,5 +1,4 @@
 # AuthCreateUser
-
 ![](./AUTHCREATEUSER.png)
 
 ## WebSequenceDiagrams Code:
