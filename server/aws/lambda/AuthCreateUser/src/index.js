@@ -33,7 +33,7 @@ const ensureUser = (email, password, salt) => {
       if (err) {
         return reject(err);
       }
-      token = token.toString('hex');
+      const HEXToken = token.toString('hex');
       DynamoDB.putItem({
         TableName: 'awsBB_Users',
         Item: {
@@ -50,7 +50,7 @@ const ensureUser = (email, password, salt) => {
             BOOL: false
           },
           verifyToken: {
-            S: token
+            S: HEXToken
           }
         },
         ConditionExpression: 'attribute_not_exists (email)'
@@ -58,7 +58,7 @@ const ensureUser = (email, password, salt) => {
         if (err) {
           return reject(err);
         }
-        resolve(token);
+        resolve(HEXToken);
       });
     });
   });

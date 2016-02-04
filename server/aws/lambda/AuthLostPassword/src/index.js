@@ -52,7 +52,7 @@ const storeToken = (email) => {
       if (err) {
         return reject(err);
       }
-      token = token.toString('hex');
+      const HEXToken = token.toString('hex');
       DynamoDB.updateItem({
         TableName: 'awsBB_Users',
         Key: {
@@ -64,7 +64,7 @@ const storeToken = (email) => {
           lostToken: {
             Action: 'PUT',
             Value: {
-              S: token
+              S: HEXToken
             }
           }
         }
@@ -72,7 +72,7 @@ const storeToken = (email) => {
         if (err) {
           return reject(err);
         }
-        resolve(token);
+        resolve(HEXToken);
       });
     });
   });

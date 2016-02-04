@@ -30,8 +30,8 @@ export function computeHash(password, salt) {
       if (err) {
         return reject(err);
       }
-      salt = salt.toString('base64');
-      resolve(salt);
+      const Base64Salt = salt.toString('base64');
+      resolve(Base64Salt);
     });
   });
   return randomBytes

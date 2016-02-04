@@ -1,5 +1,3 @@
-'use strict';
-
 const cacheKeys = Object.keys(require.cache);
 
 const registered = cacheKeys.filter((key) => key.includes('/babel-register/')).length ? true : false;

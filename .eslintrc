@@ -88,6 +88,7 @@
     "no-new-wrappers": 2,
     "no-new": 2,
     "no-octal-escape": 2,
+    "no-param-reassign": 2,
     "no-proto": 2,
     "no-return-assign": 1,
     "no-script-url": 2,

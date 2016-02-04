@@ -1,2 +1,5 @@
-**/node_modules/*
+**/distribution/*
 **/lib/*
+**/node_modules/*
+**/webpack.config.js
+**/webpack.*.config.js

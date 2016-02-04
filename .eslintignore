@@ -1,0 +1,8 @@
+**/distribution/*
+**/lib/*
+**/node_modules/*
+**/gulpfile.js
+**/packman.js
+**/tables-*.js
+**/webpack.config.js
+**/webpack.*.config.js
