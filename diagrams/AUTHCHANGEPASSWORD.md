@@ -1,4 +1,4 @@
-# AuthCreateUser
+# AuthChangePassword
 ![](./AUTHCHANGEPASSWORD.png)
 
 ## WebSequenceDiagrams Code:
