@@ -57,23 +57,19 @@ const getUser = (email) => {
 };
 
 const generateToken = (email, roles = []) => {
-  return new Promise((resolve, reject) => {
-    const application = 'awsBB';
-    const sessionID = uuid.v4();
-    const token = jwt.sign({
-      email,
-      application,
-      roles,
-      sessionID
-    }, Config.JWT_SECRET);
-    return cache.set('logins', sessionID, token)
-      .then(() => {
-        resolve({
-          sessionID,
-          token
-        });
-      })
-      .catch((err) => reject(err));
+  const application = 'awsBB';
+  const sessionID = uuid.v4();
+  const token = jwt.sign({
+    email,
+    application,
+    roles,
+    sessionID
+  }, Config.JWT_SECRET, {
+    expiresIn: '12 days'
+  });
+  return Promise.resolve({
+    sessionID,
+    token
   });
 };
 
@@ -121,6 +117,15 @@ export function handler(event, context) {
         });
     })
     .then(({ sessionID, token }) => {
+      return cache.set('logins', sessionID, token)
+        .then(() => {
+          return Promise.resolve({
+            sessionID,
+            token
+          });
+        });
+    })
+    .then(({ sessionID, token }) => {
       context.succeed({
         success: true,
         data: {
@@ -130,7 +135,6 @@ export function handler(event, context) {
       });
     })
     .catch((err) => {
-      console.log(err);
       context.fail(err);
     })
     .finally(() => {

@@ -4,7 +4,10 @@
 Serverless AWS based forum software (In-Progress)
 
 ## Diagrams:
+- [AuthChangePassword](./diagrams/AUTHCHANGEPASSWORD.md)
 - [AuthCreateUser](./diagrams/AUTHCREATEUSER.md)
+- [AuthLogin](./diagrams/AUTHLOGIN.md)
+- [AuthLogout](./diagrams/AUTHLOGOUT.md)
 
 ## Directories:
 - ./webpack
