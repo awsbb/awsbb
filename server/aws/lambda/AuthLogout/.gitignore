@@ -1,0 +1,13 @@
+.coverData/*
+*.log
+*.logs
+configuration/env.json
+debug/*
+lib/*
+node_modules/*
+reports/*
+.coverrun
+
+.idea/*
+
+local-config.json

@@ -87,13 +87,22 @@ export function login({ email, password, successRoute = '/', errorRoute }) {
   };
 }
 
+const killSession = (dispatch, successRoute) => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('sessionID');
+  localStorage.removeItem('user');
+  dispatch(logoutSuccess());
+  dispatch(routeActions.push(successRoute));
+};
+
 export function logout(successRoute = '/') {
+  const config = resolveConfig({
+    method: 'POST'
+  });
   return (dispatch) => {
     dispatch(logoutRequest());
-    localStorage.removeItem('token');
-    localStorage.removeItem('sessionID');
-    localStorage.removeItem('user');
-    dispatch(logoutSuccess());
-    dispatch(routeActions.push(successRoute));
+    Rover.query('http://127.0.0.1:3000/api/AuthLogout', config)
+      .then(() => killSession(dispatch, successRoute))
+      .catch(() => killSession(dispatch, successRoute));
   };
 }

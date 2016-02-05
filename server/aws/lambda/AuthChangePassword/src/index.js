@@ -119,6 +119,8 @@ export function handler(event, context) {
   const currentPassword = event.payload.currentPassword;
   const password = event.payload.password;
 
+  const userSessionID = event.headers['x-awsbb-sessionid'];
+
   return cache.start()
     .then(() => cache.authorizeUser(email, event.headers))
     .then(() => validate(event.payload))
@@ -137,6 +139,7 @@ export function handler(event, context) {
         });
     })
     .then(({ salt, hash }) => updateUser(email, hash, salt))
+    .then(() => cache.drop('logins', userSessionID))
     .then(() => {
       context.succeed({
         success: true
