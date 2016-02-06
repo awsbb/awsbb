@@ -1,4 +1,4 @@
-export function query(url, configuration = {}, authenticated = false) {
+export function query({ url, configuration = {}, authenticated = false }) {
   const sessionID = localStorage.getItem('sessionID');
   const token = localStorage.getItem('token');
   const config = {

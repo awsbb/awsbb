@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'production') {
 
 import { computeHash } from '@awsbb/awsbb-hashing';
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
@@ -22,7 +22,7 @@ const DynamoDB = new AWS.DynamoDB({
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-const getUser = (email) => {
+const getUserToken = (email) => {
   return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
@@ -40,14 +40,20 @@ const getUser = (email) => {
           const token = data.Item.lostToken.S;
           return resolve(token);
         }
-        return reject(boomError('User Missing Lost Token', 401));
+        return reject(boomError({
+          message: 'User Missing Lost Token',
+          code: 401
+        }));
       }
-      reject(boomError('User Not Found', 404));
+      reject(boomError({
+        message: 'User Not Found',
+        code: 404
+      }));
     });
   });
 };
 
-const updateUser = (email, hash, salt) => {
+const updateUser = ({ email, hash, salt }) => {
   return new Promise((resolve, reject) => {
     DynamoDB.updateItem({
       TableName: 'awsBB_Users',
@@ -102,7 +108,10 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(boomError('Invalid Password/Confirmation Combination', 400));
+      reject(boomError({
+        message: 'Invalid Password/Confirmation Combination',
+        code: 400
+      }));
     });
   });
 };
@@ -116,14 +125,18 @@ export function handler(event, context) {
   const password = event.payload.password;
 
   return validate(event.payload)
-    .then(() => getUser(email))
+    .then(() => getUserToken(email))
     .then((token) => {
       if (lost !== token) {
-        return Promise.reject(boomError('Invalid Lost Token', 401));
+        return Promise.reject(boomError({
+          message: 'Invalid Lost Token',
+          code: 401
+        }));
       }
-      return computeHash(password);
+      return Promise.resolve();
     })
-    .then(({ salt, hash }) => updateUser(email, hash, salt))
+    .then(() => computeHash({ password }))
+    .then(({ salt, hash }) => updateUser({ email, hash, salt }))
     .then(() => {
       context.succeed({
         success: true

@@ -16,7 +16,7 @@ export function handler(event, context) {
   const userSessionID = event.headers['x-awsbb-sessionid'];
 
   return cache.start()
-    .then(() => cache.drop('logins', userSessionID))
+    .then(() => cache.drop({ segment: 'logins', id: userSessionID}))
     .then(() => {
       context.succeed({
         success: true

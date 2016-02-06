@@ -28,10 +28,10 @@ export function getPasswordValidationClass(password) {
   return ERROR;
 }
 
-export function isValidConfirmation(original, confirmation) {
-  return original === confirmation;
+export function isValidConfirmation({ password, confirmation }) {
+  return password === confirmation;
 }
 
-export function getConfirmationValidationClass(original, confirmation) {
-  return isValidConfirmation(original, confirmation) ? SUCCESS : ERROR;
+export function getConfirmationValidationClass({ password, confirmation }) {
+  return isValidConfirmation({ password, confirmation }) ? SUCCESS : ERROR;
 }

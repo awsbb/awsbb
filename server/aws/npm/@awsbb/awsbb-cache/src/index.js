@@ -1,6 +1,6 @@
 import Boom from 'boom';
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
@@ -20,21 +20,36 @@ const decode = (authorization) => {
   return new Promise((resolve, reject) => {
     const parts = authorization.split(/\s+/);
     if (parts[0] && parts[0].toLowerCase() !== 'bearer') {
-      return reject(boomError('Bearer', 401));
+      return reject(boomError({
+        message: 'Bearer',
+        code: 401
+      }));
     }
     if (parts.length !== 2) {
-      return reject(boomError('Bad HTTP Authentication Header Format', 400));
+      return reject(boomError({
+        message: 'Bad HTTP Authentication Header Format',
+        code: 400
+      }));
     }
     if (parts[1].split('.').length !== 3) {
-      return reject(boomError('Bad HTTP Authentication Header Format', 400));
+      return reject(boomError({
+        message: 'Bad HTTP Authentication Header Format',
+        code: 400
+      }));
     }
     const token = parts[1];
     jwt.verify(token, Config.JWT_SECRET, (err, decoded) => {
       if (err) {
         if (err.message === 'jwt expired') {
-          return reject(boomError('Expired token received for JSON Web Token validation', 401));
+          return reject(boomError({
+            message: 'Expired token received for JSON Web Token validation',
+            code: 401
+          }));
         }
-        return reject(boomError('Invalid signature received for JSON Web Token validation', 401));
+        return reject(boomError({
+          message: 'Invalid signature received for JSON Web Token validation',
+          code: 401
+        }));
       }
       resolve(decoded);
     });
@@ -42,7 +57,7 @@ const decode = (authorization) => {
 };
 
 export default class Cache {
-  constructor(endpoint = '127.0.0.1:6379', password = '') {
+  constructor({ endpoint = '127.0.0.1:6379', password = '' }) {
     cacheClient = new Catbox.Client(CatboxRedis, {
       partition: 'catbox-awsBB',
       host: endpoint.split(':')[0],
@@ -50,7 +65,7 @@ export default class Cache {
       password
     });
   }
-  start() {
+  start = () => {
     return new Promise((resolve, reject) => {
       cacheClient.start((err) => {
         if (err) {
@@ -59,56 +74,62 @@ export default class Cache {
         resolve();
       });
     });
-  }
-  stop() {
+  };
+  stop = () => {
     return new Promise((resolve) => {
       cacheClient.stop();
       resolve();
     });
-  }
-  authorizeUser(userEmail, headers) {
+  };
+  authorizeUser = ({ userEmail, headers }) => {
     const authorization = headers.authorization;
     const userSessionID = headers['x-awsbb-sessionid'];
     if (!authorization) {
       return Promise.reject(boomError('Bearer', 401));
     }
-    return this.get('logins', userSessionID)
-      .then(({ value }) => {
-        // get the decoded value of what's in the cache
-        return decode(`Bearer ${value}`)
-          .then(({ email, sessionID }) => {
-            return Promise.resolve({
-              cacheEmail: email,
-              cacheSessionID: sessionID
-            });
-          })
-          .then(({ cacheEmail, cacheSessionID }) => {
-            // get the decoded value of what was sent in headers
-            return decode(authorization)
-              .then(({ email, sessionID }) => {
-                // compare all three areas of information
-                const userInfo = {
-                  email: userEmail,
-                  sessionID: userSessionID
-                };
-                const cacheInfo = {
-                  email: cacheEmail,
-                  sessionID: cacheSessionID
-                };
-                const authorizationInfo = {
-                  email,
-                  sessionID
-                };
-                const valid = _.isEqual(userInfo, cacheInfo) && _.isEqual(userInfo, authorizationInfo) && _.isEqual(cacheInfo, authorizationInfo);
-                if (valid) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(boomError('Unauthorized Session', 401));
-              });
+    return this.get({
+      segment: 'logins',
+      id: userSessionID
+    })
+    .then(({ value }) => {
+      // get the decoded value of what's in the cache
+      return decode(`Bearer ${value}`)
+        .then(({ email, sessionID }) => {
+          return Promise.resolve({
+            cacheEmail: email,
+            cacheSessionID: sessionID
           });
-      });
-  }
-  get(segment, id) {
+        })
+        .then(({ cacheEmail, cacheSessionID }) => {
+          // get the decoded value of what was sent in headers
+          return decode(authorization)
+            .then(({ email, sessionID }) => {
+              // compare all three areas of information
+              const userInfo = {
+                email: userEmail,
+                sessionID: userSessionID
+              };
+              const cacheInfo = {
+                email: cacheEmail,
+                sessionID: cacheSessionID
+              };
+              const authorizationInfo = {
+                email,
+                sessionID
+              };
+              const valid = _.isEqual(userInfo, cacheInfo) && _.isEqual(userInfo, authorizationInfo) && _.isEqual(cacheInfo, authorizationInfo);
+              if (valid) {
+                return Promise.resolve();
+              }
+              return Promise.reject(boomError({
+                message: 'Unauthorized Session',
+                code: 401
+              }));
+            });
+        });
+    });
+  };
+  get = ({ segment = 'cache', id }) => {
     return new Promise((resolve, reject) => {
       cacheClient.get({
         segment,
@@ -120,11 +141,14 @@ export default class Cache {
         if (cached && cached.item) {
           return resolve(cached.item);
         }
-        reject(boomError('Unauthorized', 401));
+        reject(boomError({
+          message: 'Unauthorized',
+          code: 401
+        }));
       });
     });
-  }
-  drop(segment, id) {
+  };
+  drop = ({ segment = 'cache', id }) => {
     return new Promise((resolve, reject) => {
       cacheClient.drop({
         segment,
@@ -136,8 +160,8 @@ export default class Cache {
         resolve();
       });
     });
-  }
-  set(segment, id, value) {
+  };
+  set = ({ segment = 'cache', id, value }) => {
     return new Promise((resolve, reject) => {
       cacheClient.set({
         segment,
@@ -152,5 +176,5 @@ export default class Cache {
         resolve();
       });
     });
-  }
+  };
 }

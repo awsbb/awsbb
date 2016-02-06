@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === 'production') {
 
 import { computeHash } from '@awsbb/awsbb-hashing';
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
@@ -27,44 +27,55 @@ const DynamoDB = new AWS.DynamoDB({
 
 const length = 128;
 
-const ensureUser = (email, password, salt) => {
+const createUserWithToken = ({ email, password, salt }) => {
+  return new Promise((resolve) => {
+    const token = crypto.randomBytes(length).toString('hex');
+    resolve({
+      email,
+      password,
+      salt,
+      token
+    });
+  });
+};
+
+const ensureUser = ({ email, password, salt, token }) => {
   return new Promise((resolve, reject) => {
-    crypto.randomBytes(length, (err, token) => {
+    DynamoDB.putItem({
+      TableName: 'awsBB_Users',
+      Item: {
+        email: {
+          S: email
+        },
+        passwordHash: {
+          S: password
+        },
+        passwordSalt: {
+          S: salt
+        },
+        verified: {
+          BOOL: false
+        },
+        verifyToken: {
+          S: token
+        }
+      },
+      ConditionExpression: 'attribute_not_exists (email)'
+    }, (err) => {
       if (err) {
         return reject(err);
       }
-      const HEXToken = token.toString('hex');
-      DynamoDB.putItem({
-        TableName: 'awsBB_Users',
-        Item: {
-          email: {
-            S: email
-          },
-          passwordHash: {
-            S: password
-          },
-          passwordSalt: {
-            S: salt
-          },
-          verified: {
-            BOOL: false
-          },
-          verifyToken: {
-            S: HEXToken
-          }
-        },
-        ConditionExpression: 'attribute_not_exists (email)'
-      }, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(HEXToken);
+      resolve({
+        email,
+        password,
+        salt,
+        token
       });
     });
   });
 };
 
-const sendVerificationEmail = (email, token) => {
+const sendVerificationEmail = ({ email, token }) => {
   return new Promise((resolve, reject) => {
     const subject = format('Verification Email [{}]', Config.EXTERNAL_NAME);
     const verificationLink = format('{}?email={}&verify={}&type=user', Config.VERIFICATION_PAGE, encodeURIComponent(email), token);
@@ -116,7 +127,10 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(boomError('Invalid Password/Confirmation Combination', 400));
+      reject(boomError({
+        message: 'Invalid Password/Confirmation Combination',
+        code: 400
+      }));
     });
   });
 };
@@ -129,9 +143,10 @@ export function handler(event, context) {
   const password = event.payload.password;
 
   return validate(event.payload)
-    .then(() => computeHash(password))
-    .then(({ salt, hash }) => ensureUser(email, hash, salt))
-    .then((token) => sendVerificationEmail(email, token))
+    .then(() => computeHash({ password }))
+    .then(({ salt, hash }) => createUserWithToken({ email, password: hash, salt }))
+    .then((user) => ensureUser(user))
+    .then(({ token }) => sendVerificationEmail({ email, token }))
     .then(() => {
       context.succeed({
         success: true

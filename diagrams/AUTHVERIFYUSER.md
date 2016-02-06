@@ -1,38 +1,35 @@
-# AuthCreateUser
-![](./AUTHCREATEUSER.png)
+# AuthVerifyUser
+![](./AUTHVERIFYUSER.png)
 
 ## WebSequenceDiagrams Code:
 [WebSequenceDiagrams](https://www.websequencediagrams.comm)
 
 ```
-title awsBB AuthCreateUser
+title awsBB AuthVerifyUser
 
 participant "User" as u
 participant "S3" as s3
 participant "API Gateway" as api
 participant "Lambda" as l
 participant "DynamoDB" as db
-participant "SES" as ses
 
-u->s3: User enters registration details and clicks "Submit"
+u->s3: User clicks link from email
 activate u
 activate s3
 s3->api: Call API
 activate api
-api->l: AuthCreateUser()
+api->l: AuthVerifyUser()
 activate l
 l->l: Validate Payload
-l->l: Hash password/Generate salt
-l->l: Create User object with token
-l->db: Ensure user is unique, save with token
+l->db: Get user object
 activate db
-db-->l: Unique/Saved True/False/Error
+db-->l: Found True/False/Error
 deactivate db
-l->l: Generate verification E-mail
-l->ses: Send verification E-mail
-activate ses
-ses-->l: Sent True/False/Error
-deactivate ses
+l->l: Compare supplied "Verify" token with saved
+l->db: Update user with as verified
+activate db
+db-->l: Saved True/False/Error
+deactivate db
 l-->api: Success/Error
 deactivate l
 api-->s3: Success/Error

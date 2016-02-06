@@ -15,20 +15,22 @@ if (process.env.NODE_ENV === 'production') {
 import { computeHash } from '@awsbb/awsbb-hashing';
 import Cache from '@awsbb/awsbb-cache';
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
 
 // the redis cacheClient will connect and partition data in database 0
-const cache = new Cache(Config.AWS.EC_ENDPOINT);
+const cache = new Cache({
+  endpoint: Config.AWS.EC_ENDPOINT
+});
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-const getUser = (email) => {
+const getUserInfo = (email) => {
   return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
@@ -51,12 +53,15 @@ const getUser = (email) => {
           verified
         });
       }
-      reject(boomError('User Not Found', 404));
+      reject(boomError({
+        message: 'User Not Found',
+        code: 404
+      }));
     });
   });
 };
 
-const generateToken = (email, roles = []) => {
+const generateToken = ({ email, roles = [] }) => {
   const application = 'awsBB';
   const sessionID = uuid.v4();
   const token = jwt.sign({
@@ -102,22 +107,29 @@ export function handler(event, context) {
 
   return cache.start()
     .then(() => validate(event.payload))
-    .then(() => getUser(email))
+    .then(() => getUserInfo(email))
     .then(({ salt, hash, verified }) => {
       if (!verified) {
-        return Promise.reject(boomError('User Not Verified', 401));
+        return Promise.reject(boomError({
+          message: 'User Not Verified',
+          code: 401
+        }));
       }
       const userHash = hash;
-      return computeHash(password, salt)
+      return computeHash({ password, salt })
         .then(({ hash }) => {
           if (userHash !== hash) {
-            return Promise.reject(boomError('Invalid Password', 401));
+            return Promise.reject(boomError({
+              message: 'Invalid Password',
+              code: 401
+            }));
           }
-          return generateToken(email);
+          return Promise.resolve();
         });
     })
+    .then(() => generateToken({ email }))
     .then(({ sessionID, token }) => {
-      return cache.set('logins', sessionID, token)
+      return cache.set({ segment: 'logins', id: sessionID, value: token})
         .then(() => {
           return Promise.resolve({
             sessionID,

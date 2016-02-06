@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
   global.Config = pkg.config;
 }
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
@@ -20,7 +20,7 @@ const DynamoDB = new AWS.DynamoDB({
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-const getUser = (email) => {
+const getUserInfo = (email) => {
   return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
@@ -44,7 +44,10 @@ const getUser = (email) => {
           token
         });
       }
-      reject(boomError('User Not Found', 404));
+      reject(boomError({
+        message: 'User Not Found',
+        code: 404
+      }));
     });
   });
 };
@@ -106,16 +109,20 @@ export function handler(event, context) {
   const verify = event.payload.verify;
 
   return validate(event.payload)
-    .then(() => getUser(email))
+    .then(() => getUserInfo(email))
     .then(({ verified, token }) => {
       if (verified) {
-        return Promise.resolve({ verified, token });
+        return Promise.resolve();
       }
       if (verify !== token) {
-        return Promise.reject(boomError('Invalid Verify Token', 401));
+        return Promise.reject(boomError({
+          message: 'Invalid Verify Token',
+          code: 401
+        }));
       }
-      return updateUser(email);
+      return Promise.resolve();
     })
+    .then(() => updateUser(email))
     .then(() => {
       context.succeed({
         success: true

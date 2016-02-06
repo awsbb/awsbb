@@ -105,7 +105,9 @@ class Register extends React.Component {
       case 'password':
         return Validators.getPasswordValidationClass(this.state.password);
       case 'confirmation':
-        return Validators.getConfirmationValidationClass(this.state.password, this.state.confirmation);
+        const password = this.state.password;
+        const confirmation = this.state.confirmation;
+        return Validators.getConfirmationValidationClass({ password, confirmation });
       default:
         return '';
     }
@@ -140,7 +142,7 @@ class Register extends React.Component {
       const email = this.refs.email.getValue();
       const password = this.refs.password.getValue();
       const confirmation = this.refs.confirmation.getValue();
-      const validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation(password, confirmation);
+      const validState = Validators.isValidEmail(email) && Validators.isValidPassword(password) && Validators.isValidConfirmation({ password, confirmation });
       return !validState;
     } catch (e) {
       return true;

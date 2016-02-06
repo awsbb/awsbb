@@ -33,7 +33,7 @@ class Header extends React.Component {
         <NavItem onClick={() => push('/user')}>
           <i className="fa fa-fw fa-user"></i> Account
         </NavItem>
-        <NavItem onClick={() => {this.handleLogout();}}>
+        <NavItem onClick={this.handleLogout}>
           <i className="fa fa-fw fa-sign-out"></i> Logout
         </NavItem>
       </Nav>;
@@ -60,7 +60,8 @@ class Header extends React.Component {
       </Navbar>
     );
   };
-  handleLogout = () => {
+  handleLogout = (e) => {
+    e.preventDefault();
     const { sessionActions } = this.props;
     sessionActions.logout();
   };

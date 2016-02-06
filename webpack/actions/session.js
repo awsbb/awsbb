@@ -56,7 +56,7 @@ const resolveConfig = ({ method = 'GET', data = {} }) => {
 };
 
 export function login({ email, password, successRoute = '/', errorRoute }) {
-  const config = resolveConfig({
+  const configuration = resolveConfig({
     method: 'POST',
     data: {
       email,
@@ -65,7 +65,7 @@ export function login({ email, password, successRoute = '/', errorRoute }) {
   });
   return (dispatch) => {
     dispatch(loginRequest());
-    Rover.query('http://127.0.0.1:3000/api/AuthLogin', config)
+    Rover.query({ url: 'http://127.0.0.1:3000/api/AuthLogin', configuration })
       .then((data) => {
         const user = {
           email
@@ -87,7 +87,7 @@ export function login({ email, password, successRoute = '/', errorRoute }) {
   };
 }
 
-const killSession = (dispatch, successRoute) => {
+const killSession = ({ dispatch, successRoute }) => {
   localStorage.removeItem('token');
   localStorage.removeItem('sessionID');
   localStorage.removeItem('user');
@@ -96,13 +96,13 @@ const killSession = (dispatch, successRoute) => {
 };
 
 export function logout(successRoute = '/') {
-  const config = resolveConfig({
+  const configuration = resolveConfig({
     method: 'POST'
   });
   return (dispatch) => {
     dispatch(logoutRequest());
-    Rover.query('http://127.0.0.1:3000/api/AuthLogout', config)
-      .then(() => killSession(dispatch, successRoute))
-      .catch(() => killSession(dispatch, successRoute));
+    Rover.query({ url: 'http://127.0.0.1:3000/api/AuthLogout', configuration })
+      .then(() => killSession({ dispatch, successRoute }))
+      .catch(() => killSession({ dispatch, successRoute }));
   };
 }

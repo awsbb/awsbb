@@ -13,20 +13,22 @@ if (process.env.NODE_ENV === 'production') {
 import { computeHash } from '@awsbb/awsbb-hashing';
 import Cache from '@awsbb/awsbb-cache';
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
 
 // the redis cacheClient will connect and partition data in database 0
-const cache = new Cache(Config.AWS.EC_ENDPOINT);
+const cache = new Cache({
+  endpoint: Config.AWS.EC_ENDPOINT
+});
 
 const DynamoDB = new AWS.DynamoDB({
   region: Config.AWS.REGION,
   endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
 });
 
-const getUser = (email) => {
+const getUserInfo = (email) => {
   return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
@@ -49,12 +51,15 @@ const getUser = (email) => {
           verified
         });
       }
-      reject(boomError('User Not Found', 404));
+      reject(boomError({
+        message: 'User Not Found',
+        code: 404
+      }));
     });
   });
 };
 
-const updateUser = (email, hash, salt) => {
+const updateUser = ({ email, hash, salt }) => {
   return new Promise((resolve, reject) => {
     DynamoDB.updateItem({
       TableName: 'awsBB_Users',
@@ -106,7 +111,10 @@ const validate = (event) => {
       if (event.password === event.confirmation) {
         return resolve();
       }
-      reject(boomError('Invalid Password/Confirmation Combination', 400));
+      reject(boomError({
+        message: 'Invalid Password/Confirmation Combination',
+        code: 400
+      }));
     });
   });
 };
@@ -122,24 +130,30 @@ export function handler(event, context) {
   const userSessionID = event.headers['x-awsbb-sessionid'];
 
   return cache.start()
-    .then(() => cache.authorizeUser(email, event.headers))
+    .then(() => cache.authorizeUser({ userEmail: email, headers: event.headers }))
     .then(() => validate(event.payload))
-    .then(() => getUser(email))
+    .then(() => getUserInfo(email))
     .then(({ salt, hash, verified }) => {
       if (!verified) {
-        return Promise.reject(boomError('User Not Verified', 401));
+        return Promise.reject(boomError({
+          message: 'User Not Verified',
+          code: 401
+        }));
       }
       const userHash = hash;
-      return computeHash(currentPassword, salt)
+      return computeHash({ password: currentPassword, salt })
         .then(({ hash }) => {
           if (userHash !== hash) {
-            return Promise.reject(boomError('Invalid Password', 401));
+            return Promise.reject(boomError({
+              message: 'Invalid Password',
+              code: 401
+            }));
           }
-          return computeHash(password);
+          return computeHash({ password });
         });
     })
-    .then(({ salt, hash }) => updateUser(email, hash, salt))
-    .then(() => cache.drop('logins', userSessionID))
+    .then(({ salt, hash }) => updateUser({ email, hash, salt }))
+    .then(() => cache.drop({ segment: 'logins', id: userSessionID }))
     .then(() => {
       context.succeed({
         success: true

@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'production') {
   global.SES = new AWS.SES();
 }
 
-const boomError = (message, code = 500) => {
+const boomError = ({ message, code = 500 }) => {
   const boomData = Boom.wrap(new Error(message), code).output.payload;
   return new Error(JSON.stringify(boomData));
 };
@@ -25,7 +25,7 @@ const DynamoDB = new AWS.DynamoDB({
 
 const length = 128;
 
-const getUser = (email) => {
+const userExists = (email) => {
   return new Promise((resolve, reject) => {
     DynamoDB.getItem({
       TableName: 'awsBB_Users',
@@ -39,46 +39,50 @@ const getUser = (email) => {
         return reject(err);
       }
       if (data.Item) {
-        return resolve(email);
+        return resolve();
       }
-      reject(boomError('User Not Found', 404));
+      reject(boomError({
+        message: 'User Not Found',
+        code: 404
+      }));
     });
   });
 };
 
-const storeToken = (email) => {
+const createToken = () => {
+  return new Promise((resolve) => {
+    const token = crypto.randomBytes(length).toString('hex');
+    resolve(token);
+  });
+};
+
+const storeToken = ({ email, token }) => {
   return new Promise((resolve, reject) => {
-    crypto.randomBytes(length, (err, token) => {
+    DynamoDB.updateItem({
+      TableName: 'awsBB_Users',
+      Key: {
+        email: {
+          S: email
+        }
+      },
+      AttributeUpdates: {
+        lostToken: {
+          Action: 'PUT',
+          Value: {
+            S: token
+          }
+        }
+      }
+    }, (err) => {
       if (err) {
         return reject(err);
       }
-      const HEXToken = token.toString('hex');
-      DynamoDB.updateItem({
-        TableName: 'awsBB_Users',
-        Key: {
-          email: {
-            S: email
-          }
-        },
-        AttributeUpdates: {
-          lostToken: {
-            Action: 'PUT',
-            Value: {
-              S: HEXToken
-            }
-          }
-        }
-      }, (err) => {
-        if (err) {
-          return reject(err);
-        }
-        resolve(HEXToken);
-      });
+      resolve(token);
     });
   });
 };
 
-const sendLostPasswordEmail = (email, token) => {
+const sendLostPasswordEmail = ({ email, token }) => {
   return new Promise((resolve, reject) => {
     const subject = format('Password Lost For [{}]', Config.EXTERNAL_NAME);
     const lostPasswordLink = format('{}?email={}&lost={}', Config.RESET_PAGE, encodeURIComponent(email), token);
@@ -136,9 +140,10 @@ export function handler(event, context) {
   const email = event.payload.email;
 
   return validate(event.payload)
-    .then(() => getUser(email))
-    .then((email) => storeToken(email))
-    .then((token) => sendLostPasswordEmail(email, token))
+    .then(() => userExists(email))
+    .then(() => createToken())
+    .then((token) => storeToken({ email, token }))
+    .then((token) => sendLostPasswordEmail({ email, token }))
     .then(() => {
       context.succeed({
         success: true

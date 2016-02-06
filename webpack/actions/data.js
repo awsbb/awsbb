@@ -55,10 +55,10 @@ const resolveConfig = ({ method = 'GET', data = {} }) => {
 
 export function queryAPIThenLogout({ method = 'GET', url, query = {}, data = {}, authenticated = false, successRoute, errorRoute }) {
   const resolvedURL = resolveUrlWithQUery({ url, query });
-  const config = resolveConfig({ method, data });
+  const configuration = resolveConfig({ method, data });
   return (dispatch) => {
     dispatch(dataRequest());
-    Rover.query(resolvedURL, config, authenticated)
+    Rover.query({ url: resolvedURL, configuration, authenticated })
       .then((data) => {
         dispatch(dataSuccess(data));
         if (successRoute) {
@@ -77,10 +77,10 @@ export function queryAPIThenLogout({ method = 'GET', url, query = {}, data = {},
 
 export function queryAPI({ method = 'GET', url, query = {}, data = {}, authenticated = false, successRoute, errorRoute }) {
   const resolvedURL = resolveUrlWithQUery({ url, query });
-  const config = resolveConfig({ method, data });
+  const configuration = resolveConfig({ method, data });
   return (dispatch) => {
     dispatch(dataRequest());
-    Rover.query(resolvedURL, config, authenticated)
+    Rover.query({ url: resolvedURL, configuration, authenticated })
       .then((data) => {
         dispatch(dataSuccess(data));
         if (successRoute) {
