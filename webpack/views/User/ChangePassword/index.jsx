@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Button, Input } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { routeActions } from 'redux-simple-router';
+import { routeActions } from 'react-router-redux';
 import FontAwesome from 'react-fontawesome';
 
 import * as DataActions from '../../../actions/data.js';

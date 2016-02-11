@@ -1,5 +1,3 @@
-import pkg from '../package.json';
-
 import Boom from 'boom';
 import Joi from 'joi';
 
@@ -7,10 +5,6 @@ import jwt from 'jsonwebtoken';
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
 import uuid from 'node-uuid';
-
-if (process.env.NODE_ENV === 'production') {
-  global.Config = pkg.config;
-}
 
 import { computeHash } from '@awsbb/awsbb-hashing';
 import Cache from '@awsbb/awsbb-cache';
@@ -22,12 +16,12 @@ const boomError = ({ message, code = 500 }) => {
 
 // the redis cacheClient will connect and partition data in database 0
 const cache = new Cache({
-  endpoint: Config.AWS.EC_ENDPOINT
+  endpoint: process.env.EC_ENDPOINT
 });
 
 const DynamoDB = new AWS.DynamoDB({
-  region: Config.AWS.REGION,
-  endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
+  region: process.env.REGION,
+  endpoint: new AWS.Endpoint(process.env.DDB_ENDPOINT)
 });
 
 const getUserInfo = (email) => {
@@ -69,7 +63,7 @@ const generateToken = ({ email, roles = [] }) => {
     application,
     roles,
     sessionID
-  }, Config.JWT_SECRET, {
+  }, process.env.JWT_SECRET, {
     expiresIn: '12 days'
   });
   return Promise.resolve({

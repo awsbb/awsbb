@@ -9,7 +9,7 @@ import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
 import createLogger from 'redux-logger';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
-import { syncHistory, routeReducer } from 'redux-simple-router';
+import { syncHistory, routeReducer } from 'react-router-redux';
 
 import reducers from './reducers';
 

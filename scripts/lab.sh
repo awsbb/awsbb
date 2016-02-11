@@ -2,11 +2,7 @@
 
 LAUNCH_DIR=${PWD}
 
-echo '[app.min.js] File Size (before):'
-ls -lah distribution/application.min.js | awk '{ print $5}'
-echo '[vendor.min.js] File Size (before):'
-ls -lah distribution/vendor.min.js | awk '{ print $5}'
-NODE_ENV=production webpack -p --config webpack.production.config.js --progress --colors
+./node_modules/.bin/lab tests/ -m 10000 -l -v -c -r console -o stdout -r console -o reports/coverage.txt -r html -o reports/coverage.html -r json -o reports/coverage.json
 
 lambdaFunctions=(./server/aws/lambda/*);
 customNPMModules=(./server/aws/npm/@awsbb/*);
@@ -16,7 +12,7 @@ for directory in "${lambdaFunctions[@]}"; do
   if [ ! -d "node_modules" ]; then
     npm i
   fi
-  npm run build
+  npm test
   cd $LAUNCH_DIR
 done
 
@@ -25,7 +21,7 @@ for directory in "${customNPMModules[@]}"; do
   if [ ! -d "node_modules" ]; then
     npm i
   fi
-  npm run build
+  npm test
   cd $LAUNCH_DIR
 done
 

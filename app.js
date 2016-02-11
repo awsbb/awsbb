@@ -1,21 +1,34 @@
 require('babel-register');
 require('babel-polyfill');
 
-const pkg = require('./package.json');
-const config = require('./local-config.json');
-
-try {
-  global.Config = config;
-} catch (e) {
-  global.Config = pkg.config;
-}
-
 const Hapi = require('hapi');
 const WebpackPlugin = require('hapi-webpack-plugin');
 
 const inert = require('inert');
 const vision = require('vision');
 const app = require('./server');
+
+const fs = require('fs');
+
+try {
+  fs.accessSync('./config.js', fs.F_OK);
+} catch (e) {
+  fs.writeFileSync('./config.js', fs.readFileSync('./config.example.js', 'utf8'), 'utf8');
+}
+
+const config = require('./config').default;
+const keys = Object.keys(config);
+
+keys.forEach((key) => {
+  const value = config[key];
+  if (value) {
+    if (typeof value === 'object') {
+      process.env[key] = JSON.stringify(value);
+    } else {
+      process.env[key] = value;
+    }
+  }
+});
 
 const server = new Hapi.Server({
   connections: {
@@ -84,6 +97,6 @@ server.register([{
     }
   });
   server.start(() => {
-    console.log('Server running at:', server.info.uri);
+    console.log('Server Running @', server.info.uri);
   });
 });

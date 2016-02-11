@@ -2,7 +2,7 @@
 
 LAUNCH_DIR=${PWD}
 
-npm run eslint
+./node_modules/.bin/eslint --ext .js --ext .jsx --quiet ./webpack/* ./tests/* ./*.js
 
 lambdaFunctions=(./server/aws/lambda/*);
 customNPMModules=(./server/aws/npm/@awsbb/*);

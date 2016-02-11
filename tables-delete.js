@@ -1,23 +1,16 @@
 'use strict';
 
+const Config = require('./local-config.json');
+
 var async = require('async');
-var pkg = require('./package.json');
-
-try {
-  global.Config = require('./local-config.json');
-} catch (e) {
-  global.Config = pkg.config;
-}
-
-
 var AWS = require('aws-sdk');
 
 var DynamoDB = new AWS.DynamoDB({
-  region: Config.AWS.REGION,
-  endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
+  region: Config.REGION,
+  endpoint: new AWS.Endpoint(Config.DDB_ENDPOINT)
 });
 
-var DDBTables = Config.AWS.DDBTables;
+var DDBTables = Config.DDB_Tables;
 
 async.whilst(
   function () {

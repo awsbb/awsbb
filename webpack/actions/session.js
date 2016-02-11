@@ -1,6 +1,6 @@
 
 import { Rover } from '../common';
-import { routeActions } from 'redux-simple-router';
+import { routeActions } from 'react-router-redux';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';

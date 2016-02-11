@@ -3,8 +3,8 @@ import mg from 'nodemailer-mailgun-transport';
 
 const auth = {
   auth: {
-    api_key: Config.MG_API_KEY,
-    domain: Config.MG_DOMAIN
+    api_key: process.env.MG_API_KEY,
+    domain: process.env.MG_DOMAIN
   }
 };
 

@@ -4,13 +4,11 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "postinstall": "sh ./init.sh",
     "start": "nodemon",
-    "eslint": "eslint --ext .js --ext .jsx --quiet ./webpack/* ./tests/* ./*.js",
-    "eslint-all": "sh ./eslint.sh 2>/dev/null",
-    "test": "lab tests/ -m 10000 -l -v -c -r console -o stdout -r console -o reports/coverage.txt -r html -o reports/coverage.html -r json -o reports/coverage.json",
-    "test-all": "sh ./lab.sh 2>/dev/null",
-    "build": "sh ./build.sh"
+    "clean": "sh ./scripts/clean.sh",
+    "eslint": "sh ./scripts/eslint.sh",
+    "test": "sh ./scripts/lab.sh",
+    "build": "sh ./scripts/build.sh"
   },
   "repository": {
     "type": "git",
@@ -44,7 +42,7 @@
     "catbox": "*",
     "catbox-redis": "*",
     "classnames": "*",
-    "compression-webpack-plugin": "*",
+    "compression-webpack-plugin": "0.2.0",
     "css-loader": "*",
     "eslint": "*",
     "eslint-plugin-babel": "*",
@@ -76,6 +74,7 @@
     "react-hot-loader": "*",
     "react-redux": "*",
     "react-router": "*",
+    "react-router-redux": "*",
     "react-tap-event-plugin": "*",
     "redux": "*",
     "redux-actions": "*",
@@ -84,8 +83,8 @@
     "redux-devtools-log-monitor": "*",
     "redux-logger": "*",
     "redux-persist": "*",
-    "redux-simple-router": "*",
     "redux-thunk": "*",
+    "reloadable-env": "*",
     "rucksack-css": "*",
     "string-format": "*",
     "style-loader": "*",
@@ -97,37 +96,5 @@
   },
   "engines": {
     "node": ">=5.0.0"
-  },
-  "config": {
-    "MG_API_KEY": "key-123412341234123412341234123412341234",
-    "MG_DOMAIN": "awsbb.com",
-    "DEVELOPER_PROVIDER_NAME": "awsbb.com",
-    "EXTERNAL_NAME": "awsBB",
-    "EMAIL_SOURCE": "administrator@awsbb.com",
-    "VERIFICATION_PAGE": "http://127.0.0.1:3000/#/verify",
-    "RESET_PAGE": "http://127.0.0.1:3000/#/reset",
-    "JWT_SECRET": "NOTSECRET!!!",
-    "AWS": {
-      "AWS_ACCOUNT_ID": "123412341234",
-      "REGION": "us-west-2",
-      "BUCKET": "bucket",
-      "EC_ENDPOINT": "127.0.0.1:6379",
-      "DDB_ENDPOINT": "http://127.0.0.1:8000",
-      "DDBTables": [{
-        "TableName": "awsBB_Users",
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "KeySchema": [{
-          "AttributeName": "email",
-          "KeyType": "HASH"
-        }],
-        "AttributeDefinitions": [{
-          "AttributeName": "email",
-          "AttributeType": "S"
-        }]
-      }]
-    }
   }
 }

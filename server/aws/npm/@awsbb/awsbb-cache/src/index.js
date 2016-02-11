@@ -38,7 +38,7 @@ const decode = (authorization) => {
       }));
     }
     const token = parts[1];
-    jwt.verify(token, Config.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
         if (err.message === 'jwt expired') {
           return reject(boomError({

@@ -1,14 +1,8 @@
-import pkg from '../package.json';
-
 import Boom from 'boom';
 import Joi from 'joi';
 
 import Promise from 'bluebird';
 import AWS from 'aws-sdk';
-
-if (process.env.NODE_ENV === 'production') {
-  global.Config = pkg.config;
-}
 
 import { computeHash } from '@awsbb/awsbb-hashing';
 
@@ -18,8 +12,8 @@ const boomError = ({ message, code = 500 }) => {
 };
 
 const DynamoDB = new AWS.DynamoDB({
-  region: Config.AWS.REGION,
-  endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
+  region: process.env.REGION,
+  endpoint: new AWS.Endpoint(process.env.DDB_ENDPOINT)
 });
 
 const getUserToken = (email) => {

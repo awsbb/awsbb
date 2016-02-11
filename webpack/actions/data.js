@@ -1,6 +1,6 @@
 
 import { Rover } from '../common';
-import { routeActions } from 'redux-simple-router';
+import { routeActions } from 'react-router-redux';
 import * as SessionActions from './session.js';
 
 export const DATA_REQUEST = 'DATA_REQUEST';

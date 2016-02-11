@@ -11,3 +11,4 @@ reports/*
 .idea/*
 
 local-config.json
+config.json

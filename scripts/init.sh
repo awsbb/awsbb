@@ -6,16 +6,8 @@ if [ ! -d "node_modules" ]; then
   npm i
 fi
 
-lambdaFunctions=(./server/aws/lambda/*);
 customNPMModules=(./server/aws/npm/@awsbb/*);
-
-for directory in "${lambdaFunctions[@]}"; do
-  cd $directory
-  if [ ! -d "node_modules" ]; then
-    npm i
-  fi
-  cd $LAUNCH_DIR
-done
+lambdaFunctions=(./server/aws/lambda/*);
 
 for directory in "${customNPMModules[@]}"; do
   IFS='@' read -r -a array <<< "$directory"

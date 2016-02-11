@@ -1,5 +1,3 @@
-import pkg from '../package.json';
-
 import Boom from 'boom';
 import Joi from 'joi';
 
@@ -9,7 +7,6 @@ import Promise from 'bluebird';
 import AWS from 'aws-sdk';
 
 if (process.env.NODE_ENV === 'production') {
-  global.Config = pkg.config;
   global.SES = new AWS.SES();
 }
 
@@ -19,8 +16,8 @@ const boomError = ({ message, code = 500 }) => {
 };
 
 const DynamoDB = new AWS.DynamoDB({
-  region: Config.AWS.REGION,
-  endpoint: new AWS.Endpoint(Config.AWS.DDB_ENDPOINT)
+  region: process.env.REGION,
+  endpoint: new AWS.Endpoint(process.env.DDB_ENDPOINT)
 });
 
 const length = 128;
@@ -84,12 +81,12 @@ const storeToken = ({ email, token }) => {
 
 const sendLostPasswordEmail = ({ email, token }) => {
   return new Promise((resolve, reject) => {
-    const subject = format('Password Lost For [{}]', Config.EXTERNAL_NAME);
-    const lostPasswordLink = format('{}?email={}&lost={}', Config.RESET_PAGE, encodeURIComponent(email), token);
+    const subject = format('Password Lost For [{}]', process.env.EXTERNAL_NAME);
+    const lostPasswordLink = format('{}?email={}&lost={}', process.env.RESET_PAGE, encodeURIComponent(email), token);
     const template = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><title>{0}</title></head><body>Please <a href="{1}">click here to reset your password</a> or copy & paste the following link in a browser:<br><br><a href="{1}">{1}</a></body></html>';
     const HTML = format(template, subject, lostPasswordLink);
     SES.sendEmail({
-      Source: Config.EMAIL_SOURCE,
+      Source: process.env.EMAIL_SOURCE,
       Destination: {
         ToAddresses: [
           email
