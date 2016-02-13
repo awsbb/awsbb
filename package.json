@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "postinstall": "sh ./scripts/init.sh",
     "start": "nodemon",
     "clean": "sh ./scripts/clean.sh",
     "eslint": "sh ./scripts/eslint.sh 2>/dev/null",
