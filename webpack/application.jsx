@@ -2,8 +2,7 @@ import 'babel-polyfill';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Router, Route, IndexRoute } from 'react-router';
-import createHistory from 'history/lib/createHashHistory';
+import { Router, Route, IndexRoute, hashHistory as history } from 'react-router';
 import { Provider } from 'react-redux';
 import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
 import createLogger from 'redux-logger';
@@ -13,7 +12,6 @@ import { syncHistory, routeReducer } from 'react-router-redux';
 
 import reducers from './reducers';
 
-const history = createHistory();
 const logger = createLogger();
 const middleware = syncHistory(history);
 
@@ -30,7 +28,7 @@ const store = compose(autoRehydrate(), applyMiddleware(
 ))(createStore)(reducer);
 
 persistStore(store, {
-  blacklist: ['data']
+  blacklist: []
 });
 
 // CONTAINERS

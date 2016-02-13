@@ -7,13 +7,15 @@ exports.register = (server, options, next) => {
   server.path(__dirname);
 
   server.getEvent = (request) => {
-    return {
+    const data = {
       payload: request.payload,
       headers: request.headers,
       method: request.method,
       params: request.params,
       query: request.query
     };
+    request.log('event', data);
+    return data;
   };
 
   server.getContext = (reply) => {

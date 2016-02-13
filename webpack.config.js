@@ -1,8 +1,6 @@
-'use strict';
-
-var rucksack = require('rucksack-css');
-var webpack = require('webpack');
-var path = require('path');
+const rucksack = require('rucksack-css');
+const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
   context: path.join(__dirname, './webpack'),

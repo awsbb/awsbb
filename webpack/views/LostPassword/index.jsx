@@ -12,6 +12,9 @@ import { Validators } from '../../common';
 import './style.css';
 
 class LostPassword extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,

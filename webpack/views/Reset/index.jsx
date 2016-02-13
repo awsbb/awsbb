@@ -12,6 +12,9 @@ import { Validators } from '../../common';
 import './style.css';
 
 class Reset extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,
@@ -83,10 +86,11 @@ class Reset extends React.Component {
         return Validators.getEmailValidationClass(this.state.email);
       case 'password':
         return Validators.getPasswordValidationClass(this.state.password);
-      case 'confirmation':
+      case 'confirmation': {
         const password = this.state.password;
         const confirmation = this.state.confirmation;
         return Validators.getConfirmationValidationClass({ password, confirmation });
+      }
       default:
         return '';
     }

@@ -7,6 +7,9 @@ import { routeActions } from 'react-router-redux';
 import './style.css';
 
 class Thanks extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,

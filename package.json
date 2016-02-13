@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "clean": "sh ./scripts/clean.sh",
-    "eslint": "sh ./scripts/eslint.sh",
+    "eslint": "sh ./scripts/eslint.sh 2>/dev/null",
     "test": "sh ./scripts/lab.sh",
     "build": "sh ./scripts/build.sh"
   },
@@ -51,6 +51,8 @@
     "file-loader": "*",
     "flux": "*",
     "font-awesome": "*",
+    "good": "*",
+    "good-console": "*",
     "hapi": "*",
     "hapi-webpack-plugin": "*",
     "history": "*",
@@ -84,7 +86,6 @@
     "redux-logger": "*",
     "redux-persist": "*",
     "redux-thunk": "*",
-    "reloadable-env": "*",
     "rucksack-css": "*",
     "string-format": "*",
     "style-loader": "*",

@@ -1,33 +1,34 @@
-'use strict';
+require('babel-register');
+require('babel-polyfill');
 
-const Config = require('./local-config.json');
+const Config = require('./config.js').default;
 
-var async = require('async');
-var AWS = require('aws-sdk');
+const async = require('async');
+const AWS = require('aws-sdk');
 
-var DynamoDB = new AWS.DynamoDB({
+const DynamoDB = new AWS.DynamoDB({
   region: Config.REGION,
   endpoint: new AWS.Endpoint(Config.DDB_ENDPOINT)
 });
 
-var DDBTables = Config.DDB_Tables;
+const DDBTables = Config.DDB_Tables;
 
 async.whilst(
-  function () {
+  () => {
     return DDBTables.length;
   },
-  function (cb) {
-    var table = DDBTables.shift();
+  (cb) => {
+    const table = DDBTables.shift();
     DynamoDB.deleteTable({
       TableName: table.TableName
-    }, function (err) {
+    }, (err) => {
       if (err && err.message === 'Cannot do operations on a non-existent table') {
         return cb();
       }
-      cb(err);
+      return cb(err);
     });
   },
-  function (err) {
+  (err) => {
     if (err) {
       console.log('Table Deletion Failed!');
       console.log(err);

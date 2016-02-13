@@ -1,10 +1,8 @@
-'use strict';
-
-var rucksack = require('rucksack-css');
-var webpack = require('webpack');
-var path = require('path');
-var CompressionPlugin = require('compression-webpack-plugin');
-var pkg = require('./package.json');
+const rucksack = require('rucksack-css');
+const webpack = require('webpack');
+const path = require('path');
+const CompressionPlugin = require('compression-webpack-plugin');
+const pkg = require('./package.json');
 
 module.exports = {
   context: path.join(__dirname, './webpack'),
@@ -72,7 +70,7 @@ module.exports = {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'production')
       }
     }),
-    new webpack.BannerPlugin(pkg.name + ' v' + pkg.version + ' ' + new Date()),
+    new webpack.BannerPlugin(`${pkg.name} v${pkg.version} ${new Date()}`),
     new CompressionPlugin()
   ]
 };

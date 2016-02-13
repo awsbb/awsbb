@@ -26,12 +26,6 @@ export default function data(state = initialState, { type, data, message }) {
         message,
         data: ''
       });
-    case Actions.DATA_CLEAR:
-      return Object.assign({}, state, {
-        isFetching: false,
-        message: '',
-        data: ''
-      });
     default:
       return state;
   }

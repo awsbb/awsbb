@@ -4,9 +4,6 @@ import Cache from '@awsbb/awsbb-cache';
 const cache = new Cache(process.env.EC_ENDPOINT);
 
 export function handler(event, context) {
-  console.log('Event:', event);
-  console.log('Context:', context);
-
   const userSessionID = event.headers['x-awsbb-sessionid'];
 
   return cache.start()

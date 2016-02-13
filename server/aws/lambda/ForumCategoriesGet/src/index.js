@@ -14,9 +14,6 @@ const DynamoDB = new AWS.DynamoDB({
 });
 
 export function handler(event, context) {
-  console.log('Event:', event);
-  console.log('Context:', context);
-
   context.succeed({
     success: true,
     data: [{

@@ -12,6 +12,14 @@ import { Validators } from '../../common';
 import './style.css';
 
 class Register extends React.Component {
+  constructor(props) {
+    super(props);
+
+    const { isAuthenticated, dispatch, push } = props;
+    if (isAuthenticated) {
+      dispatch(push('/'));
+    }
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,
@@ -24,12 +32,6 @@ class Register extends React.Component {
     email: '',
     password: '',
     confirmation: ''
-  };
-  componentWillMount = () => {
-    const { push, isAuthenticated } = this.props;
-    if (isAuthenticated) {
-      return push('/');
-    }
   };
   render = () => {
     const envelope = <FontAwesome name="envelope" fixedWidth/>;
@@ -104,10 +106,11 @@ class Register extends React.Component {
         return Validators.getEmailValidationClass(this.state.email);
       case 'password':
         return Validators.getPasswordValidationClass(this.state.password);
-      case 'confirmation':
+      case 'confirmation': {
         const password = this.state.password;
         const confirmation = this.state.confirmation;
         return Validators.getConfirmationValidationClass({ password, confirmation });
+      }
       default:
         return '';
     }
