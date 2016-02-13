@@ -19,7 +19,7 @@ import reducers from './reducers';
 // hard refresh works but has warning
 // import createHistory from 'history/lib/createHashHistory';
 // const history = createHistory();
-a
+
 // hard refresh breaks
 // import useRouterHistory from 'react-router/lib/useRouterHistory';
 // import createHashHistory from 'history/lib/createHashHistory';
