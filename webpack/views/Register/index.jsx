@@ -12,13 +12,11 @@ import { Validators } from '../../common';
 import './style.css';
 
 class Register extends React.Component {
-  constructor(props) {
-    super(props);
-
-    const { isAuthenticated, dispatch, push } = props;
-    if (isAuthenticated) {
-      dispatch(push('/'));
-    }
+  constructor(props, context) {
+    super(props, context);
+  }
+  static contextTypes = {
+    router: PropTypes.object.isRequired
   }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
@@ -32,6 +30,12 @@ class Register extends React.Component {
     email: '',
     password: '',
     confirmation: ''
+  };
+  componentWillMount = () => {
+    const { isAuthenticated, push } = this.props;
+    if (isAuthenticated) {
+      push('/');
+    }
   };
   render = () => {
     const envelope = <FontAwesome name="envelope" fixedWidth/>;

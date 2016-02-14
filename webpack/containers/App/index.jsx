@@ -8,6 +8,9 @@ import Footer from '../../components/Footer';
 import './style.css';
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,

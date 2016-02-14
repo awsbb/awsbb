@@ -6,6 +6,9 @@ import { routeActions } from 'react-router-redux';
 import './style.css';
 
 class Footer extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,

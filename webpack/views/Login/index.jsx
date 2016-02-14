@@ -13,13 +13,11 @@ import { Validators } from '../../common';
 import './style.css';
 
 class Login extends React.Component {
-  constructor(props) {
-    super(props);
-
-    const { isAuthenticated, dispatch, push } = props;
-    if (isAuthenticated) {
-      dispatch(push('/'));
-    }
+  constructor(props, context) {
+    super(props, context);
+  }
+  static contextTypes = {
+    router: PropTypes.object.isRequired
   }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
@@ -32,6 +30,12 @@ class Login extends React.Component {
   state = {
     email: '',
     password: ''
+  };
+  componentWillMount = () => {
+    const { isAuthenticated, push } = this.props;
+    if (isAuthenticated) {
+      push('/');
+    }
   };
   render = () => {
     const envelope = <FontAwesome name="envelope" fixedWidth/>;

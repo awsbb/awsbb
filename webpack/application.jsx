@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom';
 import Router from 'react-router/lib/Router';
 import Route from 'react-router/lib/Route';
 import IndexRoute from 'react-router/lib/IndexRoute';
+import hashHistory from 'react-router/lib/hashHistory';
 
 import { Provider } from 'react-redux';
 import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
@@ -16,19 +17,7 @@ import { syncHistory, routeReducer } from 'react-router-redux';
 
 import reducers from './reducers';
 
-// hard refresh works but has warning
-// import createHistory from 'history/lib/createHashHistory';
-// const history = createHistory();
-
-// hard refresh breaks
-// import useRouterHistory from 'react-router/lib/useRouterHistory';
-// import createHashHistory from 'history/lib/createHashHistory';
-// const history = useRouterHistory(createHashHistory)();
-
-// hard refresh breaks
-import hashHistory from 'react-router/lib/hashHistory';
 const history = hashHistory;
-
 const logger = createLogger();
 const middleware = syncHistory(history);
 

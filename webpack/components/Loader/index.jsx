@@ -4,6 +4,9 @@ import { connect } from 'react-redux';
 import style from './style.css';
 
 class Loader extends React.Component {
+  constructor(props) {
+    super(props);
+  }
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     isFetching: PropTypes.bool.isRequired,
