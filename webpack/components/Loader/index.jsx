@@ -4,33 +4,36 @@ import { connect } from 'react-redux';
 import style from './style.css';
 
 class Loader extends React.Component {
+  displayName = 'Loader'
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired
+  }
   constructor(props) {
     super(props);
   }
-  static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    store: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
-  };
   render = () => {
     const { isFetching } = this.props;
     let innerBar = <div></div>;
     if(isFetching) {
-      innerBar = <div>
-        <div className={style.bar}></div>
-        <div className={style.bar}></div>
-        <div className={style.bar}></div>
-      </div>;
+      innerBar = (
+        <div>
+          <div className={style.bar}></div>
+          <div className={style.bar}></div>
+          <div className={style.bar}></div>
+        </div>
+      );
     }
     return (
-      <section id="loader">
+      <section id='loader'>
         <div className={style['load-bar']}>
           {innerBar}
         </div>
       </section>
     );
-  };
+  }
 }
 
 const mapStateToProps = (state) => {

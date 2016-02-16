@@ -6,51 +6,52 @@ import { routeActions } from 'react-router-redux';
 import './style.css';
 
 class Footer extends React.Component {
+  displayName = 'Footer'
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    push: PropTypes.func.isRequired,
+    store: PropTypes.object.isRequired
+  }
   constructor(props) {
     super(props);
   }
-  static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    store: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired
-  };
   render = () => {
     return (
-      <section id="footer">
-        <div className="container">
+      <section id='footer'>
+        <div className='container'>
           <hr/>
-          <div className="row">
-            <div className="col-sm-3">
+          <div className='row'>
+            <div className='col-sm-3'>
               <div>
-                FOOTER #1
+                {'FOOTER #1'}
               </div>
               <div>
-                Content
-              </div>
-            </div>
-            <div className="col-sm-3">
-              <div>
-                FOOTER #2
-              </div>
-              <div>
-                Content
+                {'Content'}
               </div>
             </div>
-            <div className="col-sm-3">
+            <div className='col-sm-3'>
               <div>
-                FOOTER #3
+                {'FOOTER #2'}
               </div>
               <div>
-                Content
+                {'Content'}
+              </div>
+            </div>
+            <div className='col-sm-3'>
+              <div>
+                {'FOOTER #3'}
+              </div>
+              <div>
+                {'Content'}
               </div>
             </div>
           </div>
         </div>
       </section>
     );
-  };
+  }
 }
 
 const mapStateToProps = (state) => {

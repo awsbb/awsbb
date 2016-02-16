@@ -61,21 +61,21 @@ import './style.css';
 ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
-      <Route path="/" component={App}>
+      <Route component={App} path='/'>
         <IndexRoute component={AppHome} />
-        <Route path="about" component={AppAbout} />
-        <Route path="login" component={AppLogin} />
-        <Route path="lostPassword" component={AppLostPassword} />
-        <Route path="register" component={AppRegister} />
-        <Route path="reset" component={AppReset} />
-        <Route path="thanks" component={AppThanks} />
-        <Route path="verify" component={AppVerify} />
+        <Route component={AppAbout} path='about' />
+        <Route component={AppLogin} path='login' />
+        <Route component={AppLostPassword} path='lostPassword' />
+        <Route component={AppRegister} path='register' />
+        <Route component={AppReset} path='reset' />
+        <Route component={AppThanks} path='thanks' />
+        <Route component={AppVerify} path='verify' />
       </Route>
-      <Route path="/user" component={User}>
+      <Route component={User} path='/user' >
         <IndexRoute component={UserHome} />
-        <Route path="changePassword" component={UserChangePassword} />
+        <Route component={UserChangePassword} path='changePassword' />
       </Route>
-      <Route path="*" component={NoMatch} />
+      <Route component={NoMatch} path='*' />
     </Router>
   </Provider>,
   document.getElementById('app')

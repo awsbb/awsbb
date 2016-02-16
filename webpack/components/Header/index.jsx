@@ -10,64 +10,73 @@ import * as SessionActions from '../../actions/session.js';
 import './style.css';
 
 class Header extends React.Component {
+  displayName = 'Header'
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    push: PropTypes.func.isRequired,
+    sessionActions: PropTypes.object.isRequired,
+    store: PropTypes.object.isRequired
+  }
   constructor(props) {
     super(props);
   }
-  static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    store: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
-    sessionActions: PropTypes.object.isRequired
-  };
+  handleLogout = (e) => {
+    e.preventDefault();
+    const { sessionActions } = this.props;
+    sessionActions.logout();
+  }
+  handleNavigation = (selectedKey = '') => {
+    const { push } = this.props;
+    push(`/${selectedKey}`);
+  }
   render = () => {
-    const { push, isAuthenticated } = this.props;
-    let UserNaviation = <Nav pullRight>
-      <NavItem onClick={() => push('/login')}>
-        <i className="fa fa-fw fa-sign-in"></i> Login
-      </NavItem>
-      <NavItem onClick={() => push('/register')}>
-        <i className="fa fa-fw fa-key"></i> Register
-      </NavItem>
-    </Nav>;
+    const { isAuthenticated } = this.props;
+    let UserNaviation = (
+      <Nav onSelect={this.handleNavigation} pullRight>
+        <NavItem eventKey={'login'}>
+          <i className='fa fa-fw fa-sign-in'></i> {'Login'}
+        </NavItem>
+        <NavItem eventKey={'register'}>
+          <i className='fa fa-fw fa-key'></i> {'Register'}
+        </NavItem>
+      </Nav>
+    );
     if(isAuthenticated) {
-      UserNaviation = <Nav pullRight>
-        <NavItem onClick={() => push('/user')}>
-          <i className="fa fa-fw fa-user"></i> Account
-        </NavItem>
-        <NavItem onClick={this.handleLogout}>
-          <i className="fa fa-fw fa-sign-out"></i> Logout
-        </NavItem>
-      </Nav>;
+      UserNaviation = (
+        <Nav onSelect={this.handleNavigation} pullRight>
+          <NavItem eventKey={'user'}>
+            <i className='fa fa-fw fa-user'></i> {'Account'}
+          </NavItem>
+          <NavItem onClick={this.handleLogout}>
+            <i className='fa fa-fw fa-sign-out'></i> {'Logout'}
+          </NavItem>
+        </Nav>
+      );
     }
     return (
-      <Navbar staticTop={true}>
+      <Navbar staticTop>
         <Navbar.Header>
           <Navbar.Toggle/>
           <Navbar.Brand>
-            <Link to="/">awsBB</Link>
+            <Link to='/'>{'awsBB'}</Link>
           </Navbar.Brand>
         </Navbar.Header>
         <Navbar.Collapse>
-          <Nav>
-            <NavItem onClick={() => push('/')}>
-              <i className="fa fa-fw fa-home"></i> Home
+          <Nav onSelect={this.handleNavigation}>
+            <NavItem>
+              <i className='fa fa-fw fa-home'></i> {'Home'}
             </NavItem>
-            <NavItem onClick={() => push('/about')}>
-              <i className="fa fa-fw fa-flag"></i> About
+            <NavItem eventKey={'about'}>
+              <i className='fa fa-fw fa-flag'></i> {'About'}
             </NavItem>
           </Nav>
           {UserNaviation}
         </Navbar.Collapse>
       </Navbar>
     );
-  };
-  handleLogout = (e) => {
-    e.preventDefault();
-    const { sessionActions } = this.props;
-    sessionActions.logout();
-  };
+  }
 }
 
 const mapStateToProps = (state) => {

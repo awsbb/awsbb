@@ -7,32 +7,26 @@ import { routeActions } from 'react-router-redux';
 import './style.css';
 
 class NoMatch extends React.Component {
+  displayName = 'NoMatch'
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    push: PropTypes.func.isRequired,
+    store: PropTypes.object.isRequired
+  }
   constructor(props) {
     super(props);
   }
-  static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    store: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired
-  };
   render = () => {
-    const { push } = this.props;
     return (
-      <section id="no-match">
-        <div className="container">
-          <h1>404</h1>
-          <Button
-            bsClass="btn"
-            bsStyle="primary"
-            onClick={() => push('/')}>
-            ★GO HOME★
-          </Button>
+      <section id='no-match'>
+        <div className='container'>
+          <h1>{'404'}</h1>
         </div>
       </section>
     );
-  };
+  }
 }
 
 const mapStateToProps = (state) => {

@@ -8,28 +8,29 @@ import Footer from '../../components/Footer';
 import './style.css';
 
 class User extends React.Component {
+  displayName = 'User'
+  static propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool.isRequired,
+    isFetching: PropTypes.bool.isRequired,
+    store: PropTypes.object.isRequired
+  }
   constructor(props) {
     super(props);
   }
-  static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    isFetching: PropTypes.bool.isRequired,
-    store: PropTypes.object.isRequired,
-    dispatch: PropTypes.func.isRequired
-  };
   render = () => {
     const { children } = this.props;
     return (
       <div>
         <Loader/>
         <Header/>
-        <section id="main">
+        <section id='main'>
           {children}
         </section>
         <Footer/>
       </div>
     );
-  };
+  }
 }
 
 const mapStateToProps = (state) => {
