@@ -3,7 +3,7 @@ import { Button } from 'react-bootstrap';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
-import { routeActions } from 'react-router-redux';
+import { routerActions } from 'react-router-redux';
 
 import './style.css';
 
@@ -49,7 +49,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     dispatch,
-    push: bindActionCreators(routeActions.push, dispatch)
+    push: bindActionCreators(routerActions.push, dispatch)
   };
 };
 

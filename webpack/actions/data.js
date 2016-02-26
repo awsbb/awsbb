@@ -1,6 +1,6 @@
 
 import { Rover } from '../common';
-import { routeActions } from 'react-router-redux';
+import { routerActions } from 'react-router-redux';
 import * as SessionActions from './session.js';
 
 export const DATA_REQUEST = 'DATA_REQUEST';
@@ -69,7 +69,7 @@ export function queryAPIThenLogout({ method = 'GET', url, query = {}, data = {},
       .catch((err) => {
         dispatch(dataFailure(err.message || err.errorMessage));
         if (errorRoute) {
-          dispatch(routeActions.push(errorRoute));
+          dispatch(routerActions.push(errorRoute));
         }
       });
   };
@@ -84,13 +84,13 @@ export function queryAPI({ method = 'GET', url, query = {}, data = {}, authentic
       .then((data) => {
         dispatch(dataSuccess(data));
         if (successRoute) {
-          dispatch(routeActions.push(successRoute));
+          dispatch(routerActions.push(successRoute));
         }
       })
       .catch((err) => {
         dispatch(dataFailure(err.message || err.errorMessage));
         if (errorRoute) {
-          dispatch(routeActions.push(errorRoute));
+          dispatch(routerActions.push(errorRoute));
         }
       });
   };

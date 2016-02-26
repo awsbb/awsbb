@@ -13,18 +13,17 @@ import { compose, createStore, combineReducers, applyMiddleware } from 'redux';
 import createLogger from 'redux-logger';
 import { persistStore, autoRehydrate } from 'redux-persist';
 import thunk from 'redux-thunk';
-import { syncHistory, routeReducer } from 'react-router-redux';
+import { syncHistoryWithStore, routerReducer, routerMiddleware } from 'react-router-redux';
 
 import reducers from './reducers';
 
-const history = hashHistory;
+const middleware = routerMiddleware(hashHistory);
 const logger = createLogger();
-const middleware = syncHistory(history);
 
 const reducer = combineReducers(Object.assign({}, {
   store: reducers
 }, {
-  routing: routeReducer
+  routing: routerReducer
 }));
 
 const store = compose(autoRehydrate(), applyMiddleware(
@@ -32,6 +31,8 @@ const store = compose(autoRehydrate(), applyMiddleware(
   thunk,
   logger
 ))(createStore)(reducer);
+
+const history = syncHistoryWithStore(hashHistory, store);
 
 persistStore(store, {
   blacklist: []

@@ -1,6 +1,6 @@
 
 import { Rover } from '../common';
-import { routeActions } from 'react-router-redux';
+import { routerActions } from 'react-router-redux';
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';
@@ -75,13 +75,13 @@ export function login({ email, password, successRoute = '/', errorRoute }) {
         localStorage.setItem('user', user);
         dispatch(loginSuccess(user));
         if (successRoute) {
-          dispatch(routeActions.push(successRoute));
+          dispatch(routerActions.push(successRoute));
         }
       })
       .catch((err) => {
         dispatch(loginFailure(err.message || err.errorMessage));
         if (errorRoute) {
-          dispatch(routeActions.push(errorRoute));
+          dispatch(routerActions.push(errorRoute));
         }
       });
   };
@@ -92,7 +92,7 @@ const killSession = ({ dispatch, successRoute }) => {
   localStorage.removeItem('sessionID');
   localStorage.removeItem('user');
   dispatch(logoutSuccess());
-  dispatch(routeActions.push(successRoute));
+  dispatch(routerActions.push(successRoute));
 };
 
 export function logout(successRoute = '/') {
