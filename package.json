@@ -6,6 +6,8 @@
   "scripts": {
     "postinstall": "sh ./scripts/init.sh",
     "start": "nodemon",
+    "update": "sh ./scripts/update.sh",
+    "postupdate": "sh ./scripts/init.sh",
     "clean": "sh ./scripts/clean.sh",
     "eslint": "sh ./scripts/eslint.sh 2>/dev/null",
     "test": "sh ./scripts/lab.sh",
@@ -43,7 +45,7 @@
     "catbox": "*",
     "catbox-redis": "*",
     "classnames": "*",
-    "compression-webpack-plugin": "0.2.0",
+    "compression-webpack-plugin": "*",
     "css-loader": "*",
     "eslint": "*",
     "eslint-plugin-babel": "*",

@@ -3,11 +3,10 @@ export function query({ url, configuration = {}, authenticated = false }) {
   const token = localStorage.getItem('token');
   const config = {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8'
-    },
+    headers: {},
     ...configuration
   };
+  config.headers['Content-Type'] = config.headers['Content-Type'] || 'application/json; charset=utf-8';
   if (sessionID) {
     config.headers['X-awsBB-SessionID'] = `${sessionID}`;
   }

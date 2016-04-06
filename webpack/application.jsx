@@ -34,10 +34,6 @@ const store = compose(autoRehydrate(), applyMiddleware(
 
 const history = syncHistoryWithStore(hashHistory, store);
 
-persistStore(store, {
-  blacklist: []
-});
-
 // CONTAINERS
 import App from './containers/App';
 import User from './containers/User';
@@ -59,25 +55,62 @@ import NoMatch from './views/NoMatch';
 
 import './style.css';
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Router history={history}>
-      <Route component={App} path='/'>
-        <IndexRoute component={AppHome} />
-        <Route component={AppAbout} path='about' />
-        <Route component={AppLogin} path='login' />
-        <Route component={AppLostPassword} path='lostPassword' />
-        <Route component={AppRegister} path='register' />
-        <Route component={AppReset} path='reset' />
-        <Route component={AppThanks} path='thanks' />
-        <Route component={AppVerify} path='verify' />
-      </Route>
-      <Route component={User} path='/user' >
-        <IndexRoute component={UserHome} />
-        <Route component={UserChangePassword} path='changePassword' />
-      </Route>
-      <Route component={NoMatch} path='*' />
-    </Router>
-  </Provider>,
-  document.getElementById('app')
-);
+class Application extends React.Component {
+  state = {
+    initialized: false
+  }
+  componentWillMount = () => {
+    persistStore(store, {
+      blacklist: []
+    }, () => {
+      setTimeout(() => {
+        this.setState({
+          initialized: true
+        });
+      }, 2500);
+    });
+  }
+  render = () => {
+    if (!this.state.initialized) {
+      return (
+        <div>
+          <div className='pre-loader'>
+            <div className='load-container'>
+              <p className='load-title'>
+                <div className='drop-it'>{'awsBB'}</div>
+              </p>
+              <div className='spinner'>
+                <div className='bounce1'></div>
+                <div className='bounce2'></div>
+                <div className='bounce3'></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <Provider store={store}>
+        <Router history={history}>
+          <Route component={App} path='/'>
+            <IndexRoute component={AppHome} />
+            <Route component={AppAbout} path='about' />
+            <Route component={AppLogin} path='login' />
+            <Route component={AppLostPassword} path='lostPassword' />
+            <Route component={AppRegister} path='register' />
+            <Route component={AppReset} path='reset' />
+            <Route component={AppThanks} path='thanks' />
+            <Route component={AppVerify} path='verify' />
+          </Route>
+          <Route component={User} path='/user' >
+            <IndexRoute component={UserHome} />
+            <Route component={UserChangePassword} path='changePassword' />
+          </Route>
+          <Route component={NoMatch} path='*' />
+        </Router>
+      </Provider>
+    );
+  }
+}
+
+ReactDOM.render(<Application />, document.getElementById('app'));
