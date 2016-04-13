@@ -14,7 +14,7 @@ customNPMModules=(./server/aws/npm/@awsbb/*);
 
 for directory in "${lambdaFunctions[@]}"; do
   cd $directory
-  if [ ! -d "node_modules" ]; then
+  if [ ! -d node_modules ]; then
     npm i
   fi
   npm run build
@@ -23,7 +23,7 @@ done
 
 for directory in "${customNPMModules[@]}"; do
   cd $directory
-  if [ ! -d "node_modules" ]; then
+  if [ ! -d node_modules ]; then
     npm i
   fi
   npm run build

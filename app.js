@@ -5,6 +5,8 @@ const Hapi = require('hapi');
 const WebpackPlugin = require('hapi-webpack-plugin');
 
 const path = require('path');
+const good = require('good');
+const goodConsole = require('good-console');
 const inert = require('inert');
 const vision = require('vision');
 const app = require('./server');
@@ -76,13 +78,13 @@ server.connection({
 });
 
 server.register([{
-  register: require('good'),
+  register: good,
   options: {
     requestHeaders: true,
     requestPayload: true,
     responsePayload: true,
     reporters: [{
-      reporter: require('good-console'),
+      reporter: goodConsole,
       events: {
         log: '*',
         error: '*',
