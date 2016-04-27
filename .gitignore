@@ -3,7 +3,6 @@
 *.logs
 configuration/env.json
 debug/*
-lib/*
 node_modules/*
 reports/*
 .coverrun
@@ -11,4 +10,3 @@ reports/*
 .idea/*
 
 local-config.json
-config.json

@@ -1,10 +1,11 @@
 {
-  "name": "awsBB",
+  "name": "awsbb",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
   "scripts": {
     "postinstall": "sh ./scripts/init.sh",
+    "check": "npm-check -u",
     "start": "nodemon",
     "update": "sh ./scripts/update.sh",
     "postupdate": "sh ./scripts/init.sh",
@@ -69,6 +70,7 @@
     "nodemailer": "*",
     "nodemailer-mailgun-transport": "*",
     "nodemon": "*",
+    "npm-check": "*",
     "postcss-loader": "*",
     "postcss-modules": "*",
     "prettydiff": "*",
@@ -100,6 +102,6 @@
     "whatwg-fetch": "*"
   },
   "engines": {
-    "node": ">=5.0.0"
+    "node": ">=6.0.0"
   }
 }

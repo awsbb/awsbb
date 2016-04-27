@@ -2,7 +2,7 @@
   "name": "forum-categories-get",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "eslint": "eslint --ext .js --ext .jsx --quiet ./",
     "test": "lab tests/ -m 10000 -l -v -c -r console -o stdout -r console -o reports/coverage.txt -r html -o reports/coverage.html -r json -o reports/coverage.json",

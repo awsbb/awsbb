@@ -104,20 +104,21 @@ server.register([{
   options: './webpack.config.js'
 }], (err) => {
   if (err) {
-    return console.error(err);
-  }
-  server.route({
-    method: 'GET',
-    path: '/{param*}',
-    handler: {
-      directory: {
-        path: path.join(__dirname, './distribution'),
-        index: true,
-        lookupCompressed: true
+    console.error(err);
+  } else {
+    server.route({
+      method: 'GET',
+      path: '/{param*}',
+      handler: {
+        directory: {
+          path: path.join(__dirname, './distribution'),
+          index: true,
+          lookupCompressed: true
+        }
       }
-    }
-  });
-  server.start(() => {
-    console.log('Server Running @', server.info.uri);
-  });
+    });
+    server.start(() => {
+      console.log('Server Running @', server.info.uri);
+    });
+  }
 });

@@ -3,7 +3,6 @@
 *.logs
 configuration/env.json
 debug/*
-lib/*
 node_modules/*
 reports/*
 .coverrun
