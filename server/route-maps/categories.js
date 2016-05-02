@@ -1,4 +1,4 @@
-import { handler as forumCategoriesGet } from '../aws/lambda/ForumCategoriesGet';
+import { handler as forumCategoriesGet } from '@awsbb/forum-categories-get';
 
 export function setup(server) {
   server.route({

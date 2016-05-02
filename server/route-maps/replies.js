@@ -1,4 +1,4 @@
-import { handler as forumRepliesGet } from '../aws/lambda/ForumRepliesGet';
+import { handler as forumRepliesGet } from '@awsbb/forum-replies-get';
 
 export function setup(server) {
   server.route({

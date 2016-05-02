@@ -6,7 +6,6 @@ const WebpackPlugin = require('hapi-webpack-plugin');
 
 const path = require('path');
 const good = require('good');
-const goodConsole = require('good-console');
 const inert = require('inert');
 const vision = require('vision');
 const app = require('./server');
@@ -80,18 +79,32 @@ server.connection({
 server.register([{
   register: good,
   options: {
-    requestHeaders: true,
-    requestPayload: true,
-    responsePayload: true,
-    reporters: [{
-      reporter: goodConsole,
-      events: {
-        log: '*',
-        error: '*',
-        response: '*',
-        request: '*'
-      }
-    }]
+    ops: {
+      interval: 15000
+    },
+    includes: {
+      request: [
+        'headers',
+        'payload'
+      ],
+      response: [
+        'payload'
+      ]
+    },
+    reporters: {
+      console: [{
+        module: 'good-squeeze',
+        name: 'Squeeze',
+        args: [{
+          log: '*',
+          error: '*',
+          response: '*',
+          request: '*'
+        }]
+      }, {
+        module: 'good-console'
+      }, 'stdout']
+    }
   }
 }, {
   register: inert

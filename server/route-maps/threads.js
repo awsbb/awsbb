@@ -1,4 +1,4 @@
-import { handler as forumThreadsGet } from '../aws/lambda/ForumThreadsGet';
+import { handler as forumThreadsGet } from '@awsbb/forum-threads-get';
 
 export function setup(server) {
   server.route({

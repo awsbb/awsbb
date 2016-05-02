@@ -69,7 +69,7 @@ module.exports = {
   plugins: [
     // for these variables if used in a global way in the code, use the following libraries instead of browser defaults
     new webpack.ProvidePlugin({
-      Promise: 'es6-promise',
+      Promise: 'bluebird',
       fetch: 'imports?this=>global!exports?global.fetch!whatwg-fetch'
     }),
     // I don't even know... but skips the error reporting phase and continues on??? that way hotreplacement/etc doesn't bail out.

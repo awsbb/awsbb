@@ -1,5 +1,5 @@
 import pkg from '../package.json';
-import _ from 'underscore';
+import _ from 'lodash';
 
 const DefaultHeaders = ['authorization', 'content-type', 'if-none-match'];
 

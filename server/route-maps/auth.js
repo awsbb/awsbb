@@ -1,10 +1,10 @@
-import { handler as authChangePassword } from '../aws/lambda/AuthChangePassword';
-import { handler as authCreateUser } from '../aws/lambda/AuthCreateUser';
-import { handler as authLogin } from '../aws/lambda/AuthLogin';
-import { handler as authLogout } from '../aws/lambda/AuthLogout';
-import { handler as authLostPassword } from '../aws/lambda/AuthLostPassword';
-import { handler as authResetPassword } from '../aws/lambda/AuthResetPassword';
-import { handler as authVerifyUser } from '../aws/lambda/AuthVerifyUser';
+import { handler as authChangePassword } from '@awsbb/auth-change-password';
+import { handler as authCreateUser } from '@awsbb/auth-create-user';
+import { handler as authLogin } from '@awsbb/auth-login';
+import { handler as authLogout } from '@awsbb/auth-logout';
+import { handler as authLostPassword } from '@awsbb/auth-lost-password';
+import { handler as authResetPassword } from '@awsbb/auth-reset-password';
+import { handler as authVerifyUser } from '@awsbb/auth-verify-user';
 
 export function setup(server) {
   server.route({
