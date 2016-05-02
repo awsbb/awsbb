@@ -4,15 +4,13 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "postinstall": "sh ./scripts/init.sh",
     "check": "npm-check -u",
     "start": "nodemon",
-    "update": "sh ./scripts/update.sh",
-    "postupdate": "sh ./scripts/init.sh",
+    "build": "sh ./scripts/build.sh",
     "clean": "sh ./scripts/clean.sh",
     "eslint": "sh ./scripts/eslint.sh 2>/dev/null",
-    "test": "sh ./scripts/lab.sh",
-    "build": "sh ./scripts/build.sh"
+    "postinstall": "sh ./scripts/init.sh",
+    "test": "sh ./scripts/lab.sh"
   },
   "repository": {
     "type": "git",
@@ -36,11 +34,12 @@
     "babel-loader": "*",
     "babel-plugin-transform-runtime": "*",
     "babel-polyfill": "*",
-    "babel-preset-es2015": "*",
     "babel-preset-react": "*",
     "babel-preset-stage-0": "*",
+    "babel-preset-stage-1": "*",
+    "babel-preset-stage-2": "*",
+    "babel-preset-stage-3": "*",
     "babel-register": "*",
-    "babel-runtime": "*",
     "bluebird": "*",
     "boom": "*",
     "catbox": "*",
